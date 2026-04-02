@@ -11,52 +11,47 @@ description: Guides creation of structured, explicit, and detailed Product Requi
 
 ### Step 1 — Gather context
 
-Ask the user these questions. Do not proceed until questions 1–3 are answered with specifics.
+**Do not draft anything yet.**
+ 
+Through an open-ended conversation, develop a complete understanding of the problem space before proceeding. The conversation should cover:
 
-1. **What problem are you solving?** State it as a user or business problem, not as a feature request.
-2. **Who has this problem?** Name the user type, their context, and how often they face it.
-3. **What does success look like?** What measurable outcome signals this worked?
-4. **What is explicitly out of scope?** What related problems are you intentionally not solving?
-5. **What constraints exist?** Hard limits on compatibility, compliance, budget, or technical non-negotiables.
-6. **What assumptions are you making?** Things you're treating as true that could turn out false.
-
-Questions 4–6 may be answered with "none" but must be explicitly addressed.
-
-### Step 2 — Interview until fully understood
-
-Do not draft anything yet. Interview the user until you have a complete, shared understanding of the problem and what success looks like. Be relentless: walk down every branch of the product decision tree, resolving dependencies between decisions one by one before moving on.
+- Define the core problem from the user’s perspective, including the specific pain points it addresses and the consequences of leaving it unsolved.
+- Identify all target users, including primary, secondary, and edge-case personas, and clearly differentiate their goals, constraints, and behaviors.
+- Specify the measurable outcomes (quantitative and/or qualitative) that indicate the solution is successful post-implementation.
+- Establish clear scope boundaries: what is included, what is explicitly excluded, and what is intentionally deferred, with justification for each.
+- Document hard constraints (technical, legal, operational) and key assumptions; explicitly call out which assumptions would invalidate the solution if proven false.
+- Enumerate all distinct user types and map each to their specific needs, use cases, and expected interactions with the system.
+- Define behavior across edge conditions, including empty states, error states, onboarding/first-time use, and advanced/power-user scenarios.
+- Clarify prioritization by distinguishing must-have requirements from nice-to-have enhancements, including the rationale behind each classification.
+- Identify adjacent problem areas or extensions that are intentionally not addressed, and explain why they are out of scope for this iteration.
+- Articulate clear failure conditions: what specific outcomes, gaps, or user/stakeholder reactions would indicate the solution was incorrectly designed or implemented.
 
 **How to conduct the interview:**
-- Ask one focused question at a time — not a list. Wait for the answer before asking the next.
+- Ask one focused question at a time. Wait for the answer before asking the next.
 - When an answer opens a new branch (edge case, persona variation, scope boundary), follow it to resolution before continuing.
-- When a decision depends on a prior unresolved decision, surface the dependency explicitly and resolve the blocker first.
+- When a decision depends on a prior unresolved decision, surface the dependency and resolve the blocker first.
 - Push back on vague answers. "It depends" is not an answer — ask what it depends on, then ask about each case.
 - Keep going until you can state the full scope, requirements, and success criteria without needing to invent anything yourself.
 
-**Topics to cover before moving on:**
+**Additional rules for the interview:**
+- Do not proceed until you can state all of the above without inventing anything.
+- If the user cannot answer a question, record it as an open question in the PRD — do not invent an answer.
+- When asking questions, use dedicated tools (e.g. AskUserQuestion) to present them clearly and consistently to the user.
 
-- Every distinct user type and their specific needs (not just the primary persona)
-- What happens at the edges: empty states, error states, first-time use, power use
-- Where the scope boundary is, and why — not just what's in, but what's explicitly adjacent and deferred
-- Which requirements are must-haves vs. nice-to-haves, and why
-- What would make a stakeholder say "this shipped wrong"
-
-If the user cannot answer a question, record it as an open question in the PRD — do not invent an answer.
-
-### Step 3 — Draft using the template
+### Step 2 — Draft using the template
 
 Follow the template below. Every section is required. Write "None." for sections with no content — do not omit them.
 
 **File location:** Write the PRD to `.specs/[feature-slug]/PRD.md`. Derive the slug from the feature name: lowercase, words separated by hyphens (e.g. `user-onboarding`, `payment-refunds`). Create the directory if it does not exist. This keeps the PRD co-located with related documents (plans, specs) that will be added later for the same initiative.
 
-### Step 4 — Review with the user
+### Step 3 — Review with the user
 
 Present the draft. Ask:
 - Are all non-goals captured?
 - Is there anything missing or incorrect?
 - Are the success criteria measurable as stated?
 
-If the feedback surfaces new information, gaps, or contradictions, return to Step 2 and continue the interview before updating the draft. Repeat steps 2–4 until the PRD is complete and accurate.
+If the feedback surfaces new information, gaps, or contradictions, return to Step 1 and continue the interview before updating the draft. Repeat steps 1–3 until the PRD is complete and accurate.
 
 ## PRD Template
 

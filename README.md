@@ -32,5 +32,5 @@ npx skills add emiliosheinz/agent-skills --global
 
 | Skill | Description |
 |-------|-------------|
-| <nobr>`write-prd`</nobr> | Guides creation of structured, explicit, and detailed Product Requirement Documents (PRDs). Use when you want to write a PRD, define a feature, or plan what to build before implementation begins. |
-| <nobr>`plan-prd`</nobr> | Transforms a PRD into a phased execution plan using vertical slice methodology. Use when you have a PRD and want to plan implementation, convert requirements into actionable phases, or generate an execution plan. |
+| <nobr>`plan-prd`</nobr> | Transforms a Product Requirement Document (PRD) into a phased execution plan using vertical slice methodology. Use when the user has a PRD and wants to plan implementation, convert requirements into actionable phases, or generate an execution plan. |
+| <nobr>`write-prd`</nobr> | Guides creation of structured, explicit, and detailed Product Requirement Documents (PRDs). Use when the user wants to write a PRD, define a feature, or plan what to build before implementation begins. |

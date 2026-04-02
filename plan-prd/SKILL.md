@@ -15,6 +15,8 @@ Look for the PRD at `.specs/[feature-slug]/PRD.md`. If the path is ambiguous or 
 
 Read the entire PRD before doing anything else.
 
+Read `.specs/[feature-slug]/STATE.md` to understand what has already been completed. Update it marking Step 1 as complete.
+
 ### Step 2 — Explore the codebase
 
 Before identifying architectural decisions, explore the existing codebase to understand:
@@ -24,6 +26,8 @@ Before identifying architectural decisions, explore the existing codebase to und
 - Integration points relevant to the feature
 
 This step grounds the plan in how the system actually works, not how it might be assumed to work. Architectural decisions in the next step must align with existing patterns unless the PRD explicitly calls for deviation.
+
+Update STATE.md marking Step 2 as complete.
 
 ### Step 3 — Extract architectural decisions
 
@@ -37,6 +41,8 @@ Durable decisions to identify:
 - **Auth strategy:** how access control is enforced
 
 Do not invent decisions the PRD did not make. If a decision cannot be determined from the PRD or the codebase, record it as an open decision in the plan.
+
+Update STATE.md marking Step 3 as complete.
 
 ### Step 4 — Draft vertical slices
 
@@ -60,7 +66,11 @@ Include a test step in a phase only when:
 
 Do not add tests as a standalone phase. Do not write tests for coverage.
 
+Update STATE.md marking Step 4 as complete.
+
 ### Step 5 — Review with the user
+
+Before presenting to the user, verify that every requirement ID from the PRD appears in at least one phase's "PRD requirements satisfied" list. If any requirement is uncovered, assign it to a phase or explicitly mark it as deferred with a reason.
 
 Present the plan as a list of phase titles with one-sentence objectives. Ask:
 - Does the ordering make sense given your constraints?
@@ -69,9 +79,22 @@ Present the plan as a list of phase titles with one-sentence objectives. Ask:
 
 If the user surfaces gaps or changes, update the draft before writing the file.
 
+Update STATE.md marking Step 5 as complete.
+
 ### Step 6 — Write the plan file
 
 Write the final plan to `.specs/[feature-slug]/PLAN.md` in the same directory as the PRD.
+
+Update STATE.md marking Step 6 as complete and append an `## Implementation` section with one checkbox per phase, derived from the phases just written:
+
+```markdown
+## Implementation
+- [ ] Phase 1: [Name]
+- [ ] Phase 2: [Name]
+...
+```
+
+As each phase is implemented, the corresponding checkbox should be marked complete.
 
 ---
 
@@ -95,7 +118,9 @@ Durable decisions that apply across all phases. Phases must not contradict these
 
 Decisions required for implementation but not determinable from the PRD or codebase. Must be resolved before the affected phase begins.
 
-- **[Decision]:** [What needs to be decided and why it matters]
+| Decision | What needs to be decided | Blocks |
+|----------|--------------------------|--------|
+| [Decision] | [What needs to be decided and why it matters] | Phase N |
 
 ---
 

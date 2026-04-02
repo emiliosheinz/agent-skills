@@ -38,11 +38,22 @@ Through an open-ended conversation, develop a complete understanding of the prob
 - If the user cannot answer a question, record it as an open question in the PRD — do not invent an answer.
 - When asking questions, use dedicated tools (e.g. AskUserQuestion) to present them clearly and consistently to the user.
 
+**Before moving to Step 2, verify internally that you can answer all of the following without inventing anything:**
+- What is the core problem from the user's perspective?
+- Who are the users and what does each need?
+- What does success look like, measurably?
+- What is explicitly out of scope, and why?
+- What are the hard constraints?
+
+If any cannot be answered from what the user has said, continue the interview.
+
 ### Step 2 — Draft using the template
 
 Follow the template below. Every section is required. Write "None." for sections with no content — do not omit them.
 
 **File location:** Write the PRD to `.specs/[feature-slug]/PRD.md`. Derive the slug from the feature name: lowercase, words separated by hyphens (e.g. `user-onboarding`, `payment-refunds`). Create the directory if it does not exist. This keeps the PRD co-located with related documents (plans, specs) that will be added later for the same initiative.
+
+**State tracking:** When creating the directory, also create `.specs/[feature-slug]/STATE.md` using the template at the end of this skill. Mark Step 1 as complete.
 
 ### Step 3 — Review with the user
 
@@ -52,6 +63,8 @@ Present the draft. Ask:
 - Are the success criteria measurable as stated?
 
 If the feedback surfaces new information, gaps, or contradictions, return to Step 1 and continue the interview before updating the draft. Repeat steps 1–3 until the PRD is complete and accurate.
+
+Once the PRD is accepted, update STATE.md marking Steps 2 and 3 as complete.
 
 ## PRD Template
 
@@ -116,7 +129,7 @@ Group by user or workflow where it aids clarity.
 
 ### [Group name]
 
-- **[P0|P1|P2]** `[REQ-NNN]` The system must/should [verb] [object] [condition or outcome].
+- **[P0|P1|P2]** `[PREFIX-NNN]` The system must/should [verb] [object] [condition or outcome].
 
 **Rules for writing requirements:**
 - Use "must" for P0 and P1; use "should" for P2.
@@ -124,6 +137,7 @@ Group by user or workflow where it aids clarity.
 - Each requirement is independently verifiable as pass/fail.
 - No implementation details: no tech stack, no data store names, no protocol choices.
 - State the user outcome, not the internal mechanism.
+- Requirement IDs use a prefix derived from the feature slug, uppercased and shortened to 3–5 characters (e.g. feature `user-onboarding` → prefix `ONBD`; `payment-refunds` → `PAY`). IDs are sequential within the PRD: `ONBD-01`, `ONBD-02`.
 
 ## Constraints & Assumptions
 
@@ -207,3 +221,24 @@ If you are building order tracking but not order editing, "order editing" must a
 
 **Conflating constraints with requirements**
 A constraint limits *how* you can solve the problem ("must comply with GDPR"). A requirement defines *what* the system must do ("must allow users to delete their account data"). Keep them separate.
+
+---
+
+## STATE.md Template
+
+```markdown
+# State: [Feature or Product Name]
+
+## write-prd
+- [ ] Step 1 — Context gathered
+- [ ] Step 2 — PRD drafted
+- [ ] Step 3 — Review complete
+
+## plan-prd
+- [ ] Step 1 — PRD located and read
+- [ ] Step 2 — Codebase explored
+- [ ] Step 3 — Architectural decisions extracted
+- [ ] Step 4 — Phases drafted
+- [ ] Step 5 — Review complete
+- [ ] Step 6 — PLAN.md written
+```

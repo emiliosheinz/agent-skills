@@ -2,8 +2,9 @@
 name: implement
 description: >
   Executes implementation by consuming existing PRD, technical design, and
-  implementation plan artifacts. Use when asked to implement a feature, build
-  something, start implementing, write the code, or execute an existing plan.
+  implementation plan artifacts, or a bug report produced by `/diagnose`. Use
+  when asked to implement a feature, build something, start implementing,
+  write the code, execute an existing plan, or apply a fix from a bug report.
 ---
 
 # Implementation Executor
@@ -15,6 +16,7 @@ You execute implementation tasks by translating existing requirements (PRD), tec
 - Define requirements → `/create-prd`
 - Design architecture → `/create-technical-design`
 - Plan phases and tasks → `/create-implementation-plan`
+- Diagnose a bug before fixing → `/diagnose`
 
 ## Core Principle: Small Vertical Slices with TDD
 
@@ -37,20 +39,26 @@ Implementation generates a lot of context: artifact contents, test output, code 
 
 These are guidelines, not rules. Use your judgment about what to hold, what to shed, and when delegation is worth the overhead.
 
-## Process
+## Modes
 
-### Step 1 -- Understand the Context
+This skill runs in one of two modes. Detect the mode from the user's request and the artifact path.
 
-**Check recent git history first.** Run `git log -5 --oneline` to see the last 5 commits. This tells you what has already landed and where the work left off, so you do not duplicate or skip completed work.
+- **Feature mode** (default): the source artifacts are a PRD, technical design, and/or implementation plan under `.specs/[feature-slug]/`. Runs the full Process below as written.
+- **Bug-fix mode**: the source artifact is a bug report at `.specs/bugs/[bug-name].md` produced by `/diagnose`. Triggered when the user references a path under `.specs/bugs/`, says "fix the bug," "apply the fix," "implement the diagnose report," or similar. The Process applies with the deltas in **Bug-Fix Mode Deltas** below.
 
-Locate and read available artifacts:
+If the request is ambiguous (could be either a fresh feature or a bug fix), ask the user using `AskUserQuestion`.
 
-- Look for implementation plan at `.specs/[feature-slug]/IMPLEMENTATION-PLAN.md` to understand the intended phases and tasks. This is your primary source for what to implement.
-- Look for implementation state at `.specs/[feature-slug]/IMPLEMENTATION-STATE.md` to see which phases and tasks have already been completed. This guides your phase selection.
-- Look for technical design at `.specs/[feature-slug]/TECHNICAL-DESIGN.md` to understand architectural decisions, API contracts, data flow, and other technical details.
-- Look for PRD at `.specs/[feature-slug]/PRODUCT-REQUIREMENTS.md` to understand the requirements, user stories, acceptance criteria, and constraints.
+## Bug-Fix Mode Deltas
 
-If the user specifies a feature slug or path, use that. If not, ask using AskUserQuestion.
+When in bug-fix mode, the Process below applies with these differences:
+
+- **Step 1 — Context.** Read `.specs/bugs/[bug-name].md` instead of the feature artifacts. Extract: **Root Cause** (with file:line evidence), **Reproduction** (the loop and command that proves the bug), **Fix Proposal** (numbered steps to apply), **Regression Test** (the test that locks the fix in).
+  - If the report's status is `blocked`, stop. The report has no confirmed root cause — tell the user to re-run `/diagnose` with more context rather than implementing a guess.
+  - If the report's status is already `resolved` or recent commits indicate the fix has landed, stop and tell the user.
+  - There is no phase selection. The bug report is a single unit of work. Skip `IMPLEMENTATION-STATE.md` entirely.
+- **Step 2 — Execute.** The Red step writes the **Regression Test** from the report and confirms it fails with the symptom the report describes — wrong symptom means wrong test. The Green step applies the **Fix Proposal** steps in order. Refactor as normal.
+- **Step 3 — Validate.** Replace **Check 3 — Requirement tracing** with **Check 3 — Bug verification**: re-run the original reproduction loop from the report and confirm it now passes; confirm the regression test is committed and green. Checks 1, 2, and 4 are unchanged.
+- **Step 4 — Commit.** Update the bug report: change `Status: confirmed` to `Status: resolved` and append a `**Resolved:** YYYY-MM-DD — <commit-sha>` line. Use a `fix:` commit type and reference the bug name in the message.
 
 **If artifacts are missing**, do not stop. Instead, perform a quick research phase to derive what you need:
 

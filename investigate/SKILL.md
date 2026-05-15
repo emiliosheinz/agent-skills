@@ -1,160 +1,200 @@
 ---
 name: investigate
 description: >
-  Guides the agent through a five-phase debugging workflow to diagnose and fix
-  issues. Use when reporting a bug, error, crash, broken or unexpected behavior,
-  exception, failing test, or anything that is not working as expected.
+  Diagnoses bugs through a structured loop: adaptive intake, a fast feedback
+  loop, reproduction, falsifiable hypotheses, and a saved fix proposal. Use
+  when reporting a bug, error, crash, broken or unexpected behavior, exception,
+  failing test, or anything that is not working as expected.
 ---
 
 # Investigation Executor
 
-**Goal:** identify and verify the root cause of a issue through systematic investigation, reproduce it with a minimal test case following project conventions, and produce a concrete fix proposal saved as a persistent artifact.
+**Goal:** find and verify the root cause of an issue, then save a concrete fix proposal as a persistent artifact.
+
+**Hard rule:** you diagnose, you do not fix. Never edit application code to "make the bug go away." The fix proposal goes in the report; `/implement` executes it once the user has reviewed.
 
 ## Routing
 
+- Execute the proposed fix → `/implement`
 - Building a new feature → `/create-prd`
 - Proposing a significant change → `/create-rfc`
 - Documenting an architectural decision → `/create-adr`
 
-## Progress Checklist
-
-Track your phase as you work. Update this mentally — never skip ahead:
-
-- [ ] Phase 1 — Intake complete (all six questions answered)
-- [ ] Phase 2 — Investigation complete (evidence catalogued, no conclusions yet)
-- [ ] Phase 3 — Hypotheses ranked (3–5 candidates with confidence levels)
-- [ ] Phase 4 — Hypothesis verified (reproduction confirmed, fix not yet proposed)
-- [ ] Phase 5 — Report saved to `.specs/bugs/[bug-name].md`
-
 ## Phase 1 — Intake
 
-**Do not read any code or form any theory yet.**
+There is no fixed question list. Interview the user until you have enough to attempt reproduction. Apply these rules:
 
-Use `AskUserQuestion` to gather the following information. Capture what the user has already shared in their message — only ask for what is genuinely missing. Accept "unknown" as a valid answer, but record it explicitly.
+1. **One question at a time.** Use `AskUserQuestion`. Never bundle topics.
+2. **Walk the tree.** Each answer either closes a branch or opens new ones. Follow new branches to resolution before returning to the parent.
+3. **Codebase first.** Do not ask what you can read. Save the user's attention for things only they know.
+4. **Record, do not invent.** "Unknown" is a valid answer — write it down rather than guessing.
 
-1. What did you expect to happen?
-2. What is actually happening? (include any error messages verbatim)
-3. When did this start? Did anything change recently — deploy, dependency update, config change?
-4. What is your environment? (language, framework/runtime, version, OS)
-5. Is this reproducible consistently, or intermittent?
-6. Can you share the relevant code, logs, or stack trace?
+**Topics that usually need to be resolved before reproduction is possible:**
 
-**Context-gathering rules:**
-- Use `AskUserQuestion` for each missing piece. Ask one topic at a time — do not batch unrelated questions.
-- When a response introduces a new condition, variation, or uncertainty, follow that branch to resolution before continuing.
-- When a question cannot be answered due to a prior unknown, resolve the unknown first.
+- Expected vs. actual behavior, with the verbatim error or stack trace
+- Reproduction trigger: inputs, sequence of actions, environment
+- Determinism: every time, intermittent, or a specific rate
+- What recently changed: deploy, dependency upgrade, config flip
 
-**Gate:** Do not proceed to Phase 2 until all six questions are answered or marked "unknown".
+Stop the intake the moment you have enough to attempt reproduction. Anything still missing will surface in Phase 2 — return here only if it turns out to be something only the user can answer.
 
-## Phase 2 — Investigate
+## Phase 2 — Build a feedback loop
 
-**This phase is purely observational. Make no conclusions.**
+**This is the skill.** A fast, deterministic, pass/fail signal is what separates a fixed bug from staring at code. Bisection, hypothesis-testing, and instrumentation all just consume that signal — without one, no amount of reading the code will save you.
 
-Read the codebase to understand its conventions before examining the evidence:
+Spend disproportionate effort here. Be aggressive. Be creative. Refuse to give up.
 
-1. Scan for project documentation: `README`, `CONTRIBUTING`, `docs/`, `.cursorrules`, `.claude/`, any style guides.
-2. Identify the testing framework: check `package.json`, `pyproject.toml`, `Gemfile`, `go.mod`, or equivalent. Note the test runner command, file naming pattern, and assertion style used in existing tests.
-3. Note folder structure, naming conventions, linting/formatting rules.
-4. Check `.specs/` for existing bug reports — do not duplicate a report that already exists.
+### Strategies, roughly in order of preference
 
-Then read all available evidence from the intake:
+1. **Failing test in the project's existing testing framework** — at whatever seam reaches the bug (unit, integration, e2e). Always try this first. Follow the project's conventions for test structure, fixtures, and assertions.
+2. **Curl / HTTP script** against a running dev server.
+3. **CLI invocation** with a fixture input, diffing stdout against a known-good snapshot.
+4. **Headless browser script** Playwright — drives the UI, asserts on DOM, console, or network.
+5. **Replay a captured trace** — save a real payload or event log, replay it through the code path in isolation.
+6. **Throwaway harness** — minimal subset of the system (one service, mocked deps) that exercises the bug code path with a single call.
+7. **Property / fuzz loop** — for "sometimes wrong output" bugs, run many random inputs and look for the failure mode.
+8. **Bisection harness** — if the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so `git bisect run` can drive it.
+9. **Differential loop** — same input through old vs. new (or two configs), diff outputs.
 
-- Stack traces and error messages (exact text)
-- Relevant source files and config files
-- Logs and environment variables provided
-- **Absences matter too**: note missing logs, silent failures, or unreachable code paths
+### Iterate on the loop itself
 
-Record observations only. No theories yet.
+Treat the loop as a product. Once you have a loop, sharpen it: faster (cache setup, skip unrelated init), more deterministic (pin time, seed RNG, freeze network), sharper signal (assert on the specific symptom, not "didn't crash"). A 2-second deterministic loop is a debugging superpower; a 30-second flaky loop is barely better than nothing.
 
-## Phase 3 — Hypothesize
+### Non-deterministic bugs
 
-Produce a ranked list of **3–5 root cause candidates**. For each:
+The goal isn't a clean repro — it's a high enough reproduction rate to debug against. Loop the trigger, parallelize, stress, narrow timing windows. A 50%-flake bug is debuggable; 1% is not — keep raising the rate.
 
-| Field | Content |
-|-------|---------|
-| **Claim** | What is broken and why |
-| **Evidence** | Specific observations from Phase 2 that support it (file, line, log line, error text) |
-| **Confidence** | High / Medium / Low |
+### When you genuinely cannot build a loop
+
+Stop. Skip to Phase 6 with status `blocked`. List every strategy tried and why each failed. Ask the user for whatever would unblock you: environment access, a captured artifact (HAR, log dump, core dump, screen recording with timestamps), or permission to add temporary instrumentation. Do not proceed to hypothesize without a loop.
+
+## Phase 3 — Reproduce
+
+Run the loop. Confirm:
+
+- The failure mode is the one **the user described** — not a different failure nearby. Wrong bug means wrong fix.
+- The failure reproduces across runs (or, for flaky bugs, at a high enough rate).
+- You have captured the exact symptom (error message, wrong output, slow timing) so the fix can be verified against it.
+
+Do not proceed until the bug reproduces.
+
+## Phase 4 — Hypothesize
+
+Produce **3–5 ranked, falsifiable hypotheses** before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
+
+Each hypothesis must state a prediction:
+
+> *"If `<X>` is the cause, then `<changing Y>` will make the bug disappear, or `<changing Z>` will make it worse."*
+
+If you cannot state the prediction, the hypothesis is a vibe — discard it or sharpen it. For each, cite the specific evidence from Phase 2 or 3 that supports it (file:line, log line, error text).
 
 Rank from highest to lowest confidence.
 
-**Gate:** If all hypotheses are Low confidence, ask one targeted clarifying question before continuing to Phase 4. Ask only one question — do not batch them.
+## Phase 5 — Verify
 
-## Phase 4 — Verify
+Work hypotheses from highest to lowest confidence. For each:
 
-Work through hypotheses from highest to lowest confidence. For each:
+1. Restate the prediction from Phase 4.
+2. Run the smallest probe that would confirm or refute it. Prefer debugger or REPL inspection over logs; targeted logs over "log everything." Tag any temporary logs with a unique prefix (e.g. `[DEBUG-...]`) so cleanup is one grep.
+3. **Change one variable at a time** — otherwise you cannot attribute the result.
+4. **Confirmed** → proceed to Phase 6.
+5. **Refuted** → mark it and move to the next hypothesis.
 
-1. Define a targeted check that would confirm or refute the hypothesis.
-2. Write a minimal test case in the project's established testing framework (see Phase 2 findings). The test must:
-   - Follow existing conventions: file location, naming pattern, assertion style, test runner
-   - Isolate the single failing behavior — no unrelated setup
-   - Be runnable, not pseudocode
-   - Assert expected vs. actual behavior explicitly
-3. Run the test case.
-4. If confirmed: stop. Mark the hypothesis confirmed and proceed to Phase 5.
-5. If refuted: mark it refuted and move to the next hypothesis.
+### If no hypothesis is confirmed
 
-**If no hypothesis is confirmed after all checks:** return to Phase 2. Use the new negative evidence to narrow the search. Ask one focused clarifying question if needed.
+Use the negative evidence from refuted hypotheses to generate new ones, then return to Phase 4. If the hypothesis well runs dry, return to Phase 2: sharpen the loop, try a different strategy. **Loop until you confirm a hypothesis or have genuinely exhausted strategies.**
 
-**Reproduce-first rule:** Never propose a fix before a hypothesis is confirmed by a test case or reproduction. If the issue genuinely cannot be reproduced (e.g., production-only, requires external state), say so explicitly — describe what was attempted and why reproduction failed. You may still propose a fix, but mark confidence as Low and note the reproduction gap in the report.
+### When you have genuinely exhausted everything
 
-## Phase 5 — Propose and Save
+Stop. Save the report with status `blocked` (see Phase 6). List every hypothesis considered, every probe run, what each result told you, and what would unblock the next attempt.
 
-Only after Phase 4 verification is complete:
+## Phase 6 — Propose and save
 
-1. Derive a kebab-case bug name from the issue (e.g., `auth-token-expiry-not-refreshing`, `null-pointer-on-empty-cart`).
-2. Check whether `.specs/bugs/[bug-name].md` already exists. If it does, use `[bug-name]-2.md`.
-3. Create `.specs/bugs/` if it does not exist.
-4. Write the report using the template below.
-5. Tell the user the full file path.
+1. Derive a kebab-case bug name from the issue (e.g. `auth-token-expiry-not-refreshing`).
+2. If `.specs/bugs/[bug-name].md` already exists, append `-2`, `-3`, etc.
+3. Create `.specs/bugs/` if missing.
+4. Write the report using the matching template below.
+5. Remove any `[DEBUG-...]` instrumentation you added — single grep cleanup.
+6. Tell the user the file path and route them to `/implement`.
 
-### Report Template
+### Template — confirmed root cause
 
 ```markdown
 # Bug: [bug-name]
 
 **Date:** YYYY-MM-DD
-**Status:** open
+**Status:** confirmed
+**Confidence:** [High / Medium / Low] — one-sentence justification.
 
 ## Root Cause
 
-Plain-language explanation of what broke and why. Cite specific evidence —
-file name, line number, log line, or error message.
-
-## Confidence
-
-[High / Medium / Low] — one sentence justifying the confidence level.
+Plain-language explanation of what broke and why. Cite specific evidence: file:line, log line, error message.
 
 ## Reproduction
 
-[Minimal test case written in the project's test framework. If reproduction
-failed, explain what was attempted and why.]
+The feedback loop that confirms the bug. Include the exact command to run it and what a failing run looks like. If a test was written, give the file path and the command to run it.
 
-## Fix
+## Hypotheses Tested
 
-Numbered, concrete steps to resolve the issue. Each step must be actionable
-and consistent with the project's conventions and style. No vague instructions
-like "handle the error appropriately."
+| # | Hypothesis | Prediction | Result |
+|---|------------|------------|--------|
+| 1 | ... | ... | Confirmed / Refuted |
+
+## Fix Proposal
+
+Numbered, concrete steps. Each step actionable and consistent with project conventions. Cite file:line. This section is what `/implement` will execute — write it for that consumer. No vague phrases like "handle the error appropriately."
 
 1. ...
 2. ...
 
+## Regression Test
+
+The test that should lock this down: file path, framework, what it asserts. If no correct seam exists for the test, say so — that itself is the finding.
+
 ## Prevention
 
-What would stop this from recurring: a test to add, a monitoring alert, a
-config guard, a refactor, or a documentation update. Align with tools and
-patterns already in use.
+Optional. What would stop this from recurring: a test to add, a monitoring alert, a config guard, a refactor, a doc update. Required for regressions.
+```
 
-Required for regressions. Encouraged otherwise.
+### Template — blocked
+
+```markdown
+# Bug: [bug-name]
+
+**Date:** YYYY-MM-DD
+**Status:** blocked
+
+## What We Know
+
+What the user reported, verbatim error or symptom, and any partial reproduction signal observed.
+
+## Attempts
+
+| # | Strategy | Outcome | Why it failed |
+|---|----------|---------|---------------|
+| 1 | Failing unit test in `vitest` | Could not reach the seam | Bug requires production database state |
+
+## Hypotheses Considered
+
+Hypotheses generated but not testable. Include the prediction and what would be needed to test it.
+
+## What Would Unblock This
+
+Specific asks: environment access, captured artifact (HAR, log dump, screen recording with timestamps), permission to add temporary instrumentation, knowledge only the user has.
+
+## Suggested Next Steps
+
+Concrete actions for the user or another agent to try.
 ```
 
 ## Gotchas
 
-- **Never propose a fix before verifying the hypothesis.** Verification means a test case ran and confirmed the behavior, not that the hypothesis "seems right."
-- **Never skip the reproduce step because the issue seems obvious.** Obvious causes are often wrong.
-- **Never treat a Low-confidence hypothesis as confirmed.** If confidence is Low after a check, mark it refuted or inconclusive and move on.
-- **Ask only one clarifying question at a time.** Multiple questions at once slow resolution and overwhelm the user.
-- **Write test cases that match the project's existing conventions.** Do not invent a new testing style. Read existing tests in Phase 2 before writing anything.
-- **Never save the report before Phase 4 verification is complete.** The report is an artifact of confirmed diagnosis, not speculation.
-- **Always check for an existing `.specs/bugs/` file** before writing. Use the `-2` suffix to avoid overwriting.
-- **Absences are evidence.** A missing log line, a silent failure, or an unreachable branch can be as diagnostic as an error message.
+- **You diagnose, you do not fix.** The proposal goes in the report. `/implement` runs it.
+- **No artifact before reproduction.** A confirmed report is an artifact of a confirmed diagnosis. If you cannot reproduce, write the `blocked` template — not a guess dressed up as a finding.
+- **Falsifiable or it is a vibe.** A hypothesis without a prediction is not a hypothesis.
+- **One variable at a time during verification.** Otherwise the result is not attributable.
+- **The loop is the skill.** When stuck, sharpen the loop before generating more hypotheses.
+- **Tag debug logs, clean them up.** Untagged logs survive; tagged logs die in one grep.
+- **Absences are evidence.** A missing log line, a silent failure, an unreachable branch can be as diagnostic as an error.
+- **One question at a time during intake.** Multiple questions at once slow resolution.
+- **Refuse to give up.** Loop until you have a confirmed root cause or have honestly exhausted every strategy — there is no middle state where speculation is acceptable.

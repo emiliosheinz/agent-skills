@@ -25,7 +25,7 @@ The technical design must survive implementation changes. If the team migrates O
 
 ## Routing
 
-- Understand the problem space first → `/research`
+- Understand the problem space first → `/contextualize`
 - Define requirements → `/create-prd`
 - Debate and decide options → `/create-rfc`
 - Record a finalized decision → `/create-adr`
@@ -79,29 +79,33 @@ After mandatory and critical sections, offer these. Skip most for small/simple p
 
 Before gathering context, look for upstream artifacts in `.specs/[feature-slug]/`. If the feature slug is not yet known, ask for the feature name first and derive the slug.
 
-- **RESEARCH.md found** (`.specs/[feature-slug]/RESEARCH.md`): Read it. Use the Problem Framing, Stakeholders, Constraints, and Codebase Findings sections as a starting point. Skip asking for anything already answered by the research. Note which open questions from the research remain unresolved and address them during the interview.
+- **CONTEXT.md found** (`.specs/[feature-slug]/CONTEXT.md`): Read it. Treat Problem Framing, Stakeholders, Constraints, Prior Art, and Codebase Findings as the source of truth — do **not** re-ask any of those topics. Carry forward unresolved open questions and address them during the interview.
 - **PRD found** (`.specs/[feature-slug]/PRODUCT-REQUIREMENTS.md`): Read it. Use it as the source of truth for requirements, scope, and problem statement. Skip asking for information already covered by the PRD.
-- **Both found**: Read both. The PRD takes precedence for requirements; the RESEARCH.md provides additional context for constraints and codebase findings.
+- **Both found**: Read both. The PRD takes precedence for requirements and scope; `CONTEXT.md` provides background on constraints, prior art, and codebase findings.
 - **Neither found**: Proceed to gather context directly in Step 2.
 
 ### Step 2: Gather Context
 
 **Do not draft anything yet.**
 
-Gather missing context using `AskUserQuestion`. Capture intent from what the user has already shared — only ask for what is genuinely absent. Cover:
-- Project/feature name and type (new feature, integration, refactor/migration, etc.)
-- Problem statement: what is broken or missing, who is affected, quantified impact
+Gather missing context using `AskUserQuestion`. Capture intent from what the user has already shared — only ask for what is genuinely absent. Topics split into two groups:
+
+**Group A — derivable from upstream artifacts (skip when present):**
+- Project/feature name and type (new feature, integration, refactor/migration, etc.) *(from PRD if present)*
+- Problem statement: what is broken or missing, who is affected, quantified impact *(from `CONTEXT.md` or PRD)*
+- Known constraints — technical, legal, operational *(from `CONTEXT.md` or PRD)*
+- Codebase realities — relevant modules, patterns, integration boundaries *(from `CONTEXT.md`)*
+
+**Group B — technical-design-only (always cover):**
 - Solution approach: what is being built at a high level and why this approach over alternatives
-- Scope boundaries: what is explicitly in V1, what is explicitly deferred, and why
-- Key decisions already made and the reasoning behind them
-- Known risks and constraints (technical, legal, operational)
+- Scope boundaries: what is explicitly in V1, what is explicitly deferred, and why *(from PRD if present)*
+- Key technical decisions already made and the reasoning behind them
+- Known technical risks specific to the chosen approach
 
 **Context-gathering rules:**
 - Ask one focused topic at a time using `AskUserQuestion`. You may group tightly related sub-questions, but never ask about multiple unrelated topics at once.
 - When a response introduces a new trade-off, alternative, constraint, or integration boundary, follow that branch to resolution before moving on.
 - When a decision depends on a prior unresolved decision, surface the dependency and resolve the blocker first.
-
-Skip asking for information already covered by the PRD (Step 1).
 
 ### Step 3: Collect Mandatory Information
 

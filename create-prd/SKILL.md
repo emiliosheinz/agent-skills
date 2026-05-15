@@ -12,7 +12,7 @@ description: >
 
 ## Routing
 
-- Understand the problem space first → `/research`
+- Understand the problem space first → `/contextualize`
 - Decision still needs alignment → `/create-rfc`
 - Record a finalized decision → `/create-adr`
 - Document architecture → `/create-technical-design`
@@ -20,29 +20,34 @@ description: >
 
 ## Process
 
-### Step 1 — Check for upstream research
+### Step 1 — Check for upstream context
 
-Before gathering context, check for an existing research document at `.specs/[feature-slug]/RESEARCH.md`. If the feature slug is not yet known, ask for the feature name first and derive the slug.
+Before gathering anything, check for an existing context document at `.specs/[feature-slug]/CONTEXT.md`. If the feature slug is not yet known, ask for the feature name first and derive the slug.
 
-- **RESEARCH.md found**: Read it. Use it as the starting point for the interview — skip asking for anything already answered by the research (problem framing, stakeholders, constraints, open questions). Note which open questions from the research remain unresolved and address them during the interview.
-- **RESEARCH.md not found**: Proceed directly to Step 2.
+- **CONTEXT.md found**: Read it. Treat it as the source of truth for problem framing, stakeholders, hard constraints, prior art, codebase findings, and open questions. Do **not** re-ask any of those topics during the interview — only ask about what `CONTEXT.md` deliberately excludes (success criteria, scope boundaries, non-goals, priority, edge-case behavior, failure conditions). Carry forward unresolved open questions from `CONTEXT.md` and address them as part of Step 2.
+- **CONTEXT.md not found**: Proceed directly to Step 2 and gather everything inline.
 
 ### Step 2 — Gather context
 
 **Do not draft anything yet.**
- 
-Through an open-ended conversation, develop a complete understanding of the problem space before proceeding. The conversation should cover:
 
-- Define the core problem from the user’s perspective, including the specific pain points it addresses and the consequences of leaving it unsolved.
-- Identify all target users, including primary, secondary, and edge-case personas, and clearly differentiate their goals, constraints, and behaviors.
-- Specify the measurable outcomes (quantitative and/or qualitative) that indicate the solution is successful post-implementation.
-- Establish clear scope boundaries: what is included, what is explicitly excluded, and what is intentionally deferred, with justification for each.
-- Document hard constraints (technical, legal, operational) and key assumptions; explicitly call out which assumptions would invalidate the solution if proven false.
-- Enumerate all distinct user types and map each to their specific needs, use cases, and expected interactions with the system.
-- Define behavior across edge conditions, including empty states, error states, onboarding/first-time use, and advanced/power-user scenarios.
-- Clarify prioritization by distinguishing must-have requirements from nice-to-have enhancements, including the rationale behind each classification.
-- Identify adjacent problem areas or extensions that are intentionally not addressed, and explain why they are out of scope for this iteration.
-- Articulate clear failure conditions: what specific outcomes, gaps, or user/stakeholder reactions would indicate the solution was incorrectly designed or implemented.
+The conversation must cover two groups of topics. If `CONTEXT.md` was found in Step 1, **skip Group A entirely** — it is already captured. Otherwise, cover both.
+
+**Group A — derivable from `CONTEXT.md` (skip when present):**
+
+- The core problem from the user’s perspective, including the specific pain points and consequences of leaving it unsolved.
+- All target users — primary, secondary, and edge-case personas — and their differentiated goals, constraints, and behaviors.
+- Hard constraints (technical, legal, operational).
+
+**Group B — PRD-only (always cover):**
+
+- The measurable outcomes (quantitative or qualitative) that indicate the solution is successful post-implementation.
+- Scope boundaries: what is included, what is explicitly excluded, and what is intentionally deferred, with justification for each.
+- Key assumptions, with explicit callouts for which assumptions would invalidate the PRD if proven false.
+- Behavior across edge conditions — empty states, error states, onboarding/first-time use, and advanced/power-user scenarios.
+- Prioritization: must-have vs nice-to-have, with rationale for each classification.
+- Adjacent problem areas or extensions intentionally not addressed in this iteration, with reasons.
+- Failure conditions: specific outcomes, gaps, or user/stakeholder reactions that would indicate the solution was incorrectly designed or implemented.
 
 **How to gather context:**
 - Use the `AskUserQuestion` tool to ask one focused topic at a time. You may group tightly related sub-questions under one topic, but never ask about multiple unrelated topics in a single message.
@@ -57,13 +62,13 @@ Through an open-ended conversation, develop a complete understanding of the prob
 - Treat every open branch as a blocker. A branch is open if any answer is vague, conditional, or incomplete. Resolve it before moving on.
 
 **Before moving to Step 3, verify internally that you can answer all of the following without inventing anything:**
-- What is the core problem from the user's perspective?
-- Who are the users and what does each need?
+- What is the core problem from the user's perspective? *(from `CONTEXT.md` if present)*
+- Who are the users and what does each need? *(from `CONTEXT.md` if present)*
+- What are the hard constraints? *(from `CONTEXT.md` if present)*
 - What does success look like, measurably?
 - What is explicitly out of scope, and why?
-- What are the hard constraints?
 
-If any cannot be answered from what the user has said, continue the interview.
+If any cannot be answered from what the user (or `CONTEXT.md`) has said, continue the interview.
 
 ### Step 3 — Draft using the template
 

@@ -1,5 +1,5 @@
 ---
-name: investigate
+name: diagnose
 description: >
   Diagnoses bugs through a structured loop: adaptive intake, a fast feedback
   loop, reproduction, falsifiable hypotheses, and a saved fix proposal. Use
@@ -7,7 +7,7 @@ description: >
   failing test, or anything that is not working as expected.
 ---
 
-# Investigation Executor
+# Diagnose
 
 **Goal:** find and verify the root cause of an issue, then save a concrete fix proposal as a persistent artifact.
 

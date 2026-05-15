@@ -39,7 +39,7 @@ npx skills add emiliosheinz/agent-skills --global
 | <nobr>`create-rfc`</nobr> | Creates structured Request for Comments (RFC) documents for proposing and deciding on significant changes. Use when asked to create or write an RFC, draft a proposal, align stakeholders, or propose a change before a decision. |
 | <nobr>`create-technical-design`</nobr> | Creates technical design documents covering architecture, component responsibilities, data models, API contracts, and key decisions. Use when asked for a technical design, architecture document, system design, technical spec, or design doc. |
 | <nobr>`implement`</nobr> | Executes implementation by consuming existing PRD, technical design, and implementation plan artifacts. Use when asked to implement a feature, build something, start implementing, write the code, or execute an existing plan. |
-| <nobr>`investigate`</nobr> | Diagnoses bugs through a structured loop: adaptive intake, a fast feedback loop, reproduction, falsifiable hypotheses, and a saved fix proposal. Use when reporting a bug, error, crash, broken or unexpected behavior, exception, failing test, or anything that is not working as expected. |
+| <nobr>`diagnose`</nobr> | Diagnoses bugs through a structured loop: adaptive intake, a fast feedback loop, reproduction, falsifiable hypotheses, and a saved fix proposal. Use when reporting a bug, error, crash, broken or unexpected behavior, exception, failing test, or anything that is not working as expected. |
 
 ## Document Workflow
 

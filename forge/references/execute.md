@@ -12,10 +12,10 @@ the current phase touches — read selectively. Apply `.specs/<slug>/lessons.md`
 
 - **Feature mode** (default): source is `spec.md` / `design.md` / `plan.md` under
   `.specs/<slug>/`. Run the loop over the task table.
-- **Bug-fix mode:** source is `.specs/bugs/<name>.md` from `forge fix`. Triggered by
+- **Bug-fix mode:** source is `.specs/bugs/<name>.md` from `/forge fix`. Triggered by
   a path under `.specs/bugs/` or "fix the bug / apply the fix". See the deltas at the end.
 
-If artifacts are missing (direct `forge execute` on a quick change), do a **quick,
+If artifacts are missing (direct `/forge execute` on a quick change), do a **quick,
 focused** research pass — scan the codebase for patterns, test setup, entry points;
 derive scope, architecture, constraints, and acceptance criteria from the request and
 code; make the ACs explicit before writing code. Don't do a broad survey.
@@ -39,14 +39,14 @@ deliberate:
 Read the task table in `state.md`. Implement **exactly one phase per invocation** — the
 first phase whose prerequisite phases are complete and that isn't done yet. If the user
 names a phase, use that one. Do not roll on into the next phase; finish, report, and let
-the user invoke `forge execute` again. For a quick change with no plan, the whole change is
+the user invoke `/forge execute` again. For a quick change with no plan, the whole change is
 a single implicit task — run the per-task loop once and skip the phase machinery.
 
 **Promote before you sprawl.** On the quick/no-plan path, before writing code, enumerate
 the atomic steps. If they exceed ~5, reveal cross-file or ordering dependencies, or require
 a new public interface, **stop** — the change was mis-sized. Ratchet the size up, log the
 promotion reason in `state.md` Decisions (per `references/sizing.md`), and recommend
-`forge plan` (or `forge design` if a contract emerged) instead of plowing it through
+`/forge plan` (or `/forge design` if a contract emerged) instead of plowing it through
 inline. Recommend, don't auto-run.
 
 ## Run the phase
@@ -151,14 +151,14 @@ When the phase is done and green:
    corrected, a skipped gate), append it to `.specs/<slug>/lessons.md` per
    `references/lessons.md`. Routine success writes nothing.
 3. Summarize what was built, decisions made beyond the artifacts, and any unknowns.
-4. Recommend next: more phases remain → `forge execute` again for the next phase; all
+4. Recommend next: more phases remain → `/forge execute` again for the next phase; all
    phases done → suggest `verify`/review or shipping.
 
 ## Bug-fix mode deltas
 
 - **Load** `.specs/bugs/<name>.md` instead of feature artifacts. Extract Root Cause
   (file:line), Reproduction (the loop/command), Fix Proposal (the steps), Regression Test.
-  - Status `blocked` → stop; tell the user to re-run `forge fix` with more context.
+  - Status `blocked` → stop; tell the user to re-run `/forge fix` with more context.
   - Status already `resolved`, or recent commits show the fix landed → stop and say so.
   - No task table — the report is a single unit of work.
 - **Implement:** first add the Regression Test and confirm it fails with the *reported*

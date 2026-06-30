@@ -119,8 +119,8 @@ Before Part B, verify:
 - The user confirms the captured understanding is faithful.
 
 If the user only wanted shared understanding, **stop here** — write the Part A sections
-of `spec.md`, note it is context-only, and recommend resuming with `forge specify` (or
-`forge design`) later.
+of `spec.md`, note it is context-only, and recommend resuming with `/forge specify` (or
+`/forge design`) later.
 
 ---
 
@@ -197,6 +197,6 @@ Write `.specs/<slug>/spec.md` from `templates/spec.md`, sized per `references/si
 
 Then recommend the next verb by size:
 
-- **quick:** "Size: quick — skip design and plan. Run `forge execute`."
-- **standard / complex:** "Run `forge design` next." (Or `create-rfc` first if a
+- **quick:** "Size: quick — skip design and plan. Run `/forge execute`."
+- **standard / complex:** "Run `/forge design` next." (Or `/create-rfc` first if a
   significant decision still needs alignment.)

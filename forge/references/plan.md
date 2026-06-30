@@ -7,7 +7,7 @@ Skipped at `quick` size.
 Load first: `spec.md` (requirements + AC IDs), `design.md` (components, contracts,
 verification gates), `state.md` (size + decisions), `lessons.md`. If a design is missing,
 do a quick codebase scan to derive the architectural context the plan needs; prefer
-running `forge design` first for complex work.
+running `/forge design` first for complex work.
 
 **Before writing gates, learn the project's real test setup** (so a gate command isn't
 invented): sample 5–10 existing test files to derive the *actual* test runner command(s)
@@ -109,4 +109,4 @@ external/team dependencies, ordering hazards, and rollout/rollback for productio
 
 Write `.specs/<slug>/plan.md` from `templates/plan.md` and populate the **task table in
 `state.md`**, grouped by phase, all tasks `pending`. Update `state.md` with any size
-promotion (and its reason). Recommend `forge execute` next.
+promotion (and its reason). Recommend `/forge execute` next.

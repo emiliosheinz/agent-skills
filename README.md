@@ -34,7 +34,7 @@ npx skills add emiliosheinz/agent-skills --global
 |-------|-------------|
 | <nobr>`create-adr`</nobr> | Creates Architecture Decision Records (ADRs) to document architectural choices and their rationale. Use when asked to create or write an ADR, document a decision, record why something was chosen, or capture an architectural decision. |
 | <nobr>`create-rfc`</nobr> | Creates structured Request for Comments (RFC) documents for proposing and deciding on significant changes. Use when asked to create or write an RFC, draft a proposal, align stakeholders, or propose a change before a decision. |
-| <nobr>`forge`</nobr> | Spec-driven development workflow that takes any change from problem to shipped, verified code through five explicit phases. Use when asked to build or implement a feature, write a spec / PRD / requirements, design architecture or a technical design, create an implementation plan, execute or build code, or diagnose and fix a bug. Auto-sizes from one-line fixes to multi-repo refactors. Invoke a phase with `forge specify|design|plan|execute|fix`. |
+| <nobr>`forge`</nobr> | Spec-driven development workflow that takes any change from problem to shipped, verified code through five explicit phases. Use when asked to build or implement a feature, write a spec / PRD / requirements, design architecture or a technical design, create an implementation plan, execute or build code, or diagnose and fix a bug. Auto-sizes from one-line fixes to multi-repo refactors. Invoke a phase with `/forge specify|design|plan|execute|fix`. |
 
 ## Spec-Driven Development with `forge`
 
@@ -50,11 +50,11 @@ flowchart LR
 
 | Phase | Verb | Question it answers | Output |
 |-------|------|---------------------|--------|
-| Specify | `forge specify <name>` | What is the problem, and what must we build? | `.specs/<slug>/spec.md` |
-| Design | `forge design` | What is the architecture, contracts, and the gates for "done"? | `.specs/<slug>/design.md` |
-| Plan | `forge plan` | What are the phases of tasks, and what runs in parallel? | `.specs/<slug>/plan.md` |
-| Execute | `forge execute` | Turn the plan into verified, committed code | working code |
-| Fix | `forge fix <bug>` | Reproduce, root-cause, and fix a bug end to end | `.specs/bugs/<name>.md` + code |
+| Specify | `/forge specify <name>` | What is the problem, and what must we build? | `.specs/<slug>/spec.md` |
+| Design | `/forge design` | What are the architecture, contracts, and gates for "done"? | `.specs/<slug>/design.md` |
+| Plan | `/forge plan` | What are the phases of tasks, and what runs in parallel? | `.specs/<slug>/plan.md` |
+| Execute | `/forge execute` | Turn the plan into verified, committed code | working code |
+| Fix | `/forge fix <bug>` | Reproduce, root-cause, and fix a bug end to end | `.specs/bugs/<name>.md` + code |
 
 ### Auto-sizing
 
@@ -68,14 +68,14 @@ the size in `state.md`; each phase scales its depth and tells you which phases t
 ### Flexible entry points
 
 Start at whichever phase fits — a verb with no prior artifacts derives just enough context
-to do its job. `forge specify` for a fresh problem, `forge design` when requirements are
-already clear, `forge plan` straight from a known design, `forge execute` for a small
-change, `forge fix` for a bug found while verifying the work.
+to do its job. `/forge specify` for a fresh problem, `/forge design` when requirements are
+already clear, `/forge plan` straight from a known design, `/forge execute` for a small
+change, `/forge fix` for a bug found while verifying the work.
 
 ### Lateral skills
 
-`create-rfc` and `create-adr` are not tied to any phase — use them whenever a significant
+`/create-rfc` and `/create-adr` are not tied to any phase — use them whenever a significant
 decision needs proposing or recording.
 
-- **Decision** — `create-rfc`: should we do X or Y? Which approach?
-- **Record** — `create-adr`: why did we choose X over Y?
+- **Decision** — `/create-rfc`: should we do X or Y? Which approach?
+- **Record** — `/create-adr`: why did we choose X over Y?

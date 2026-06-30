@@ -4,8 +4,8 @@
 diagnose → confirm → implement → verify. Output: `.specs/bugs/<name>.md` (the diagnosis
 record) plus the committed code change.
 
-`fix` is the bug counterpart to the full pipeline. The common use: after `forge execute`
-you verify the work yourself, find something wrong, and run `forge fix <description of the
+`fix` is the bug counterpart to the full pipeline. The common use: after `/forge execute`
+you verify the work yourself, find something wrong, and run `/forge fix <description of the
 bug>` to both diagnose and repair it without re-running specify/design/plan.
 
 **Discipline:** reproduce before you change code. The point of the diagnosis phases below
@@ -32,7 +32,7 @@ No fixed question list. Interview until you have enough to attempt reproduction:
 Usually needed before reproduction: expected vs. actual behavior with the verbatim error
 or stack trace; the trigger (inputs, sequence, environment); determinism (every time /
 intermittent / rate); what recently changed (deploy, dependency bump, config flip). Stop
-intake the moment you can attempt reproduction. (When called right after `forge execute`,
+intake the moment you can attempt reproduction. (When called right after `/forge execute`,
 much of this is already in context — don't re-ask it.)
 
 ### Phase 2 — Build a feedback loop

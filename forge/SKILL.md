@@ -6,7 +6,7 @@ description: >
   feature, write a spec / PRD / requirements, design architecture or a technical
   design, create an implementation plan, execute or build code, or diagnose and fix a
   bug. Auto-sizes from one-line fixes to multi-repo refactors. Invoke a phase with
-  `forge specify|design|plan|execute|fix`.
+  `/forge specify|design|plan|execute|fix`.
 ---
 
 # Forge
@@ -16,11 +16,11 @@ time; each phase does its work, updates shared state, and **recommends** the nex
 without running it. The depth of every phase auto-sizes to the change (see Sizing).
 
 ```
-forge specify <name>   Understand the problem + capture requirements   → spec.md
-forge design           Architecture, contracts, verification gates      → design.md
-forge plan             Atomic tasks, dependencies, AC traces            → plan.md
-forge execute          Implement, then independent verifiers, then fix  → working code
-forge fix <bug>        Reproduce, root-cause, AND fix a bug end to end  → bugs/<name>.md + code
+/forge specify <name>   Understand the problem + capture requirements   → spec.md
+/forge design           Architecture, contracts, verification gates      → design.md
+/forge plan             Atomic tasks, dependencies, AC traces            → plan.md
+/forge execute          Implement, then independent verifiers, then fix  → working code
+/forge fix <bug>        Reproduce, root-cause, AND fix a bug end to end  → bugs/<name>.md + code
 ```
 
 ## Dispatch
@@ -41,7 +41,7 @@ error on a missing or unknown verb. `specify`/`fix` take a feature/bug name; if
 absent, ask for one and derive a kebab-case slug.
 
 `fix` is end to end: it diagnoses the bug **and** applies the fix (running the execute
-bug-fix flow), so after `forge execute` you can verify the work yourself and `forge fix
+bug-fix flow), so after `/forge execute` you can verify the work yourself and `/forge fix
 <bug>` anything you find.
 
 This is not a router: the user drives phase transitions. Flexible entry is fine — start
@@ -119,5 +119,5 @@ specify/design/execute/fix. Append **only when something non-obvious was learned
    the next phase.
 4. Record honestly: open questions, skipped gates, and assumptions stay visible; never
    paper a gap over with an invented answer.
-5. `create-rfc` and `create-adr` are separate skills — reach for them whenever a
+5. `/create-rfc` and `/create-adr` are separate skills — reach for them whenever a
    significant decision needs proposing or recording, at any point in the flow.

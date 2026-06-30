@@ -19,11 +19,11 @@ Invoke a phase when you want to:
 ## Phases
 
 ```
-forge specify <name>   Understand the problem + capture requirements   → spec.md
-forge design           Architecture, contracts, verification gates      → design.md
-forge plan             Atomic tasks, dependencies, AC traces            → plan.md
-forge execute          Implement, then independent verifiers, then fix  → working code
-forge fix <bug>        Reproduce, root-cause, AND fix a bug end to end  → bugs/<name>.md + code
+/forge specify <name>   Understand the problem + capture requirements   → spec.md
+/forge design           Architecture, contracts, verification gates      → design.md
+/forge plan             Atomic tasks, dependencies, AC traces            → plan.md
+/forge execute          Implement, then independent verifiers, then fix  → working code
+/forge fix <bug>        Reproduce, root-cause, AND fix a bug end to end  → bugs/<name>.md + code
 ```
 
 You drive each transition; a phase recommends the next verb but never auto-runs it. Start
@@ -76,13 +76,13 @@ available; nothing in forge requires them.
 ## Usage
 
 ```
-forge specify checkout-refund
-forge design
-forge plan
-forge execute
-forge fix flaky-logout
+/forge specify checkout-refund
+/forge design
+/forge plan
+/forge execute
+/forge fix flaky-logout
 ```
 
 If you omit the verb, the skill infers the phase from your request and confirms it.
-`create-rfc` and `create-adr` remain separate skills for proposing or recording a
+`/create-rfc` and `/create-adr` remain separate skills for proposing or recording a
 significant decision at any point.

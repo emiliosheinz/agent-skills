@@ -6,7 +6,7 @@
 Load first: `.specs/<slug>/spec.md` (source of truth for requirements, ACs, scope) and
 `.specs/<slug>/state.md` (size + Decisions log). Apply `.specs/<slug>/lessons.md`. If no
 spec exists, gather the minimum design context inline (problem, constraints, codebase
-realities) — but prefer running `forge specify` first for anything past `quick`.
+realities) — but prefer running `/forge specify` first for anything past `quick`.
 
 ## Core principle: architecture over implementation
 
@@ -47,7 +47,7 @@ The design must survive an implementation rewrite.
 Read the Decisions log in `state.md`. Every active decision must be **consciously applied
 or explicitly superseded with a reason** — silently ignoring one creates invisible
 inconsistency. Record new architectural decisions you make back into the Decisions log
-(or reach for `create-adr` if one deserves a standalone record).
+(or reach for `/create-adr` if one deserves a standalone record).
 
 ## Critical sections (include when applicable)
 
@@ -84,5 +84,5 @@ Write `.specs/<slug>/design.md` from `templates/design.md`, sized per
 decision applied or superseded; no implementation details leaked; risks have
 mitigations. Update `state.md` (decisions, any size promotion with reason).
 
-Recommend `forge plan` next (or `forge execute` for a small standard change whose task
+Recommend `/forge plan` next (or `/forge execute` for a small standard change whose task
 breakdown is obvious — say so explicitly).

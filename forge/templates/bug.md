@@ -21,7 +21,7 @@ like. If a test was written, give its path and run command.
 | 1 | ... | ... | Confirmed / Refuted |
 
 ## Fix Proposal
-Numbered, concrete steps for `forge fix` to apply. Each actionable, cite file:line.
+Numbered, concrete steps for `/forge fix` to apply. Each actionable, cite file:line.
 No vague phrases like "handle the error appropriately".
 1. ...
 

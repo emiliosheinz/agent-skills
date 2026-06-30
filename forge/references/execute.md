@@ -42,6 +42,13 @@ names a phase, use that one. Do not roll on into the next phase; finish, report,
 the user invoke `forge execute` again. For a quick change with no plan, the whole change is
 a single implicit task — run the per-task loop once and skip the phase machinery.
 
+**Promote before you sprawl.** On the quick/no-plan path, before writing code, enumerate
+the atomic steps. If they exceed ~5, reveal cross-file or ordering dependencies, or require
+a new public interface, **stop** — the change was mis-sized. Ratchet the size up, log the
+promotion reason in `state.md` Decisions (per `references/sizing.md`), and recommend
+`forge plan` (or `forge design` if a contract emerged) instead of plowing it through
+inline. Recommend, don't auto-run.
+
 ## Run the phase
 
 1. **Split the phase** into its `[P]` (parallel-safe) tasks and its sequential tasks, per
@@ -51,7 +58,10 @@ a single implicit task — run the per-task loop once and skip the phase machine
    needs (file paths, the AC IDs, the task gate, constraints); the subagent returns the
    files it changed and does **not** commit — you run its gate and commit. (Workflow is a
    fine accelerator for the fan-out where available; sequential subagent calls are the
-   universal fallback. One level of delegation.)
+   universal fallback. One level of delegation.) The subagent returns a **compact contract**
+   — paths changed, task-gate result (pass/fail), AC IDs satisfied, deviations/blockers/
+   assumptions. No raw logs, diffs, or test dumps; anything over ~100 lines goes to a file
+   and the subagent returns the path.
 3. Each task follows the **per-task loop** below.
 4. **Run the phase gate** once every task in the phase is green — the broader check (full
    test suite + lint, or build) that confirms the phase integrates.
@@ -64,48 +74,73 @@ For each task:
 
 1. **State intent.** Briefly: assumptions, files to touch, the AC IDs it satisfies, and
    what "done" means (the task's gate + done-when).
-2. **Implement.** Write the code and its co-located tests. Test-first is encouraged. Derive
-   tests from the spec's acceptance criteria (the expected *values*), not from the
-   implementation. Write only what the task needs — no anticipatory code.
+2. **Implement, simply.** Write the code and its co-located tests. Test-first is encouraged.
+   Derive tests from the spec's acceptance criteria (the expected *values*), not from the
+   implementation. Write only what the task needs — no anticipatory code, no single-use
+   abstractions, no unrequested configurability, no error handling for impossible states.
+   **Shallowness litmus:** a test that would still pass under a plausible *wrong*
+   implementation is shallow — strengthen it before moving on (this is the cheap
+   discrimination check for quick/standard, where verifier 5 is size-gated out).
 3. **Run the task gate.** The deterministic command from the plan. Non-zero = not done;
    fix and re-run. Never proceed on a failing gate.
-4. **Commit atomically.** One task = one commit, only the files in the task definition.
+4. **Self-check before committing.** Would a senior engineer call this overcomplicated? If
+   so, simplify. Confirm the tests aren't shallow and nothing beyond the task crept in.
+5. **Commit atomically.** One task = one commit, only the files in the task definition.
    Conventional Commits, type matching the change (`feat`/`fix`/`refactor`/...), imperative
    mood, body when the "why" isn't obvious. (Skip Claude/AI co-author trailers.)
-5. **Update `state.md`.** Mark the task `done` with evidence (commit sha, test count).
+6. **Update `state.md`.** Mark the task `done` with evidence (commit sha, test count).
 
 ### Verify the phase (independent subagents)
 
 Once all the phase's tasks are committed and the phase gate is green, dispatch the
 size-gated verifiers from `references/verification.md` over the phase's changes (author ≠
-verifier; fresh context; run in parallel). Collect their verdicts into an overall PASS/FAIL.
+verifier; fresh context; run in parallel). Collect their verdicts into an overall PASS/FAIL
+plus the **severity-ranked gap list** (Blocker → Major → Minor → Cosmetic).
 
 **Fix the delta — bounded loop.** If any verifier FAILs, collect the specific failures
-(failing AC IDs, tests, lint issues, architecture violations, surviving mutants) into
-`state.md`'s Validation delta, fix **only those**, re-commit, and re-run the failed
-verifiers. **Max 3 fix→re-verify cycles per phase.** If still failing after 3, stop and
-escalate to the user with the delta and what was tried — never loop forever or weaken a
-check.
+into `state.md`'s Validation delta and fix **top-down by severity** (blockers first, so the
+budget isn't burned on cosmetics), re-commit, and re-run the failed verifiers. **Max 3
+fix→re-verify cycles per phase.** If still failing after 3, stop and escalate to the user
+with the delta and what was tried — never loop forever or weaken a check. A `SPEC-GAP`
+verdict is not an implementer failure: record it against the AC ID and route it back to
+`spec.md` rather than spending a fix cycle on it.
+
+**On PASS**, record a compact **Verification evidence** subsection in `state.md` — one row
+per AC (`AC ID → file:line → spec-defined expected value → covered`) plus the sensor
+result. One row per AC, no prose or logs; this preserves the AC→code proof that would
+otherwise evaporate on green.
 
 ## Test integrity (non-negotiable)
 
 - Don't weaken assertions to force a pass.
 - Don't delete, skip, or disable tests to get green. Test counts must not silently drop.
+- Every test you write must map to an AC, edge case, or done-when criterion — no
+  speculative what-if tests, no tests of framework/library behavior (verifier 3 removes
+  orphans).
 - If a test is genuinely wrong per the spec, stop and ask before changing it.
 - Don't fake a gate — a check that can't run is recorded as a gap (see verification.md).
 
 ## Scope guardrail
 
-Resist refactoring or improving beyond the task. Surface bugs you find to the user;
-record deferred improvements as open items; ask "is this in the task definition?" — if
-no, don't touch it.
+Resist refactoring or improving beyond the task. Concretely:
+
+- **Match existing style**, even where you'd personally do it differently.
+- **Remove only what your change orphaned** — never pre-existing dead code. Note unrelated
+  dead code as a deferred open item instead of deleting it.
+- **Don't reformat or "improve" adjacent code** you didn't need to touch.
+- Surface bugs you find to the user; ask "is this in the task definition?" — if no, don't
+  touch it.
 
 ## When to stop and ask
 
-Only when proceeding is impossible: genuinely ambiguous scope with materially different
-outcomes, a missing dependency that can't be substituted, or existing code that makes the
-planned approach unworkable. For everything else, note the unknown and continue; surface
-all unknowns at the end.
+Stop and ask when proceeding is impossible: genuinely ambiguous scope with materially
+different outcomes, a missing dependency that can't be substituted, or existing code that
+makes the planned approach unworkable.
+
+Also **speak up (don't silently proceed)** when a materially simpler valid approach
+emerges mid-implementation, or when an AC genuinely reads two ways — surface it against the
+AC ID rather than guessing. For everything else, note the unknown and continue; surface all
+unknowns at the end.
 
 ## Finish
 

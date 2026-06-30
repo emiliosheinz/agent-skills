@@ -9,11 +9,14 @@ same ceremony. Size controls two things: **how deep each phase goes** (depth) an
 A change is the **largest** tier for which any trigger fires. When in doubt, size up —
 under-sizing skips rigor a change needed; over-sizing only wastes some effort.
 
+Numeric anchors are rough guides (≈), not hard rules — they just keep the quick/standard
+split from being pure vibe; the qualitative triggers decide.
+
 | Tier | Triggers (any one promotes to this tier) |
 |------|------------------------------------------|
-| **quick** | single file or single function; no new public interface; no schema/API/contract change; no new dependency; an existing test pattern already covers the seam |
-| **standard** | contained in one component/module/service; a handful of files; at most one new interface or endpoint; fits in one mental model |
-| **complex** | crosses components, services, or repos; new subsystem or migration; requirements are ambiguous; needs the implicit-requirement dimension sweep; security/PII/auth/payments surface |
+| **quick** | ≈ ≤2 files / ~30 LOC; single function or file; no new public interface; no schema/API/contract change; no new dependency; an existing test pattern already covers the seam |
+| **standard** | ≈ up to ~6 files within one component/module/service; at most one new interface or endpoint; fits in one mental model |
+| **complex** | crosses components, services, or repos; new subsystem or migration; requirements are ambiguous; needs the implicit-requirement dimension sweep; touches security/PII/auth/payments |
 
 ## Deriving and recording size
 
@@ -45,6 +48,13 @@ Each phase ends by stating the size and naming the next needed verb(s):
 - **quick** → `specify` recommends going straight to `execute` (design and plan skipped).
 - **standard** → `specify` → `design` (light) → `plan` → `execute`.
 - **complex** → the full pipeline, with every gate.
+
+**Condition-based skips refine the tier default** (the tier stays the baseline). A stage's
+exit recommendation may suggest skipping the next stage when its condition holds — at
+standard, `design` may recommend skipping itself when the change introduces no new public
+interface, pattern, or data model; `plan` may recommend skip-to-inline when there are ≤~3
+ordered steps with no cross-file dependency. Log any skip in `state.md` so the ratchet can
+still promote later.
 
 The user still drives every transition. Routing advice tells them what's worth doing;
 it never runs the next phase automatically.

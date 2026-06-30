@@ -23,9 +23,14 @@ The design must survive an implementation rewrite.
 
 1. **Architecture overview** — how components interact. Add a Mermaid diagram for
    complex changes.
-2. **Code-reuse analysis** — what already exists (from the spec's codebase findings)
-   that this should reuse or extend, with locations. Do not design new what the repo
-   already has.
+2. **Code-reuse analysis** — what already exists (from the spec's codebase findings) that
+   this should reuse or extend, with locations. Do
+   not design new what the repo already has. While reading that code, **flag concerns** it
+   surfaces that bear on the change — security (unvalidated input, auth gaps, exposed
+   secrets), performance (N+1, unbounded loops, missing indexes), test-coverage gaps on
+   paths you'll depend on, fragility/tech-debt in the chosen approach — each with a location
+   and a mandatory mitigation (record under Architectural risks). Stay scoped to the change;
+   don't audit the whole repo.
 3. **Components** — each with purpose, responsibility, interface/contract, dependencies.
 4. **Data models** — schemas and relationships, if any.
 5. **Error-handling matrix** — failure scenarios → user-facing/system outcome.
@@ -52,14 +57,25 @@ inconsistency. Record new architectural decisions you make back into the Decisio
 - **Monitoring/observability** — for production systems: key metrics + thresholds, log
   format and what must never be logged, alert severity and response.
 
-For complex changes also offer, as useful: alternatives considered, performance targets,
-external/team dependencies, migration plan.
+For complex changes also offer, as useful: performance targets, external/team
+dependencies, migration plan.
+
+## Explore approaches (complex)
+
+For a complex change, before detailing components, generate **2–3 viable approaches that
+all deliver the same scope**, lead with your recommendation (avoid analysis paralysis),
+tabulate the trade-offs, and **confirm the chosen approach before fleshing it out** — so
+you never detail a rejected architecture. Harness-agnostic: use `AskUserQuestion` when
+available, else present the recommendation and proceed unless the user objects. Record the
+chosen approach (and why the others lost) in the decisions/alternatives section.
 
 ## Research unknowns honestly
 
 If the design depends on an unfamiliar library/service, verify before committing to it:
 check the codebase, then docs, then the web (`WebFetch`/`WebSearch` when available).
-Don't design around an assumed API.
+Don't design around an assumed API. **If none of those confirm a needed fact, do not invent
+one** — record it as an explicit uncertainty / open question in `design.md` and surface it.
+"This is unconfirmed" beats a plausible fabrication that propagates design → plan → execute.
 
 ## Write and route
 

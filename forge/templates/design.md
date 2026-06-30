@@ -9,7 +9,8 @@
 
 <!-- Architecture over implementation: if swapping frameworks wouldn't change it, it
 belongs here; otherwise it's an implementation detail. Cite spec AC IDs; never restate
-criterion text. Size the depth per references/sizing.md. -->
+criterion text. Size the depth per references/sizing.md.
+Soft size budget ~5k words — if larger, you're likely restating the spec; reference by ID. -->
 
 ## Architecture Overview
 How components interact. Mermaid diagram for complex changes.
@@ -42,6 +43,11 @@ What makes the change done & correct. One row per spec requirement/AC ID.
 New architectural decisions made here (also mirror to state.md Decisions). Note any
 active decision applied or explicitly superseded.
 
+## Alternatives Considered (complex)
+The 2–3 same-scope approaches weighed, the recommendation, and why the others lost.
+
+| Approach | Trade-offs | Chosen? |
+|---|---|---|
+
 <!-- Include when applicable: Security (payments/auth/PII/integrations);
-Monitoring/Observability (production); Alternatives; Performance targets; Dependencies;
-Migration plan. -->
+Monitoring/Observability (production); Performance targets; Dependencies; Migration plan. -->

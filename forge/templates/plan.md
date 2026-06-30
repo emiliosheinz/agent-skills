@@ -8,8 +8,9 @@
 
 <!-- Atomic tasks grouped into phases. Phases run in sequence; `[P]` tasks run in parallel
 within a phase. Each task traces to a spec AC ID, co-locates its tests, and has a
-deterministic gate. Task IDs are PREFIX-PN-NN. The authoritative task status lives in
-state.md. -->
+deterministic gate using the project's REAL test runner (sampled from existing tests, not
+assumed). Task IDs are PREFIX-PN-NN. The authoritative task status lives in state.md.
+Soft size budget ~6k words. -->
 
 ## Overview
 What is being built and the execution approach. Links: spec.md, design.md.
@@ -23,12 +24,13 @@ What is being built and the execution approach. Links: spec.md, design.md.
 - **depends-on:** none
 - **AC-trace:** PREFIX-01
 - **tests:** <co-located tests; unit for logic, e2e for routes>
-- **gate:** `<deterministic command that returns clean iff the task succeeded>`
+- **reuses:** <optional — existing component/pattern to mirror, from design.md>
+- **gate:** `<deterministic command, project's real runner, clean iff the task succeeded>`
 - **done-when:**
   - [ ] <binary checkpoint>
   - [ ] gate passes: `<command>`
 
-### PREFIX-P1-02 — <one-line action>  <!-- seq: shares test DB with P1-01 -->
+### PREFIX-P1-02 — <one-line action>  <!-- seq — shares test DB with P1-01, see <test file> -->
 - **depends-on:** PREFIX-P1-01
 - ...
 

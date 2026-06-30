@@ -8,14 +8,20 @@
 | Updated | YYYY-MM-DD |
 
 <!-- state.md is the single source of truth, re-read at the start of every verb. Write
-size/decisions/status changes here as they happen. -->
+SURGICALLY — edit only the target section, never regenerate the whole file. Section write
+modes: Decisions = append-only · Tasks = update-in-place · Validation delta =
+clear-on-resolve · Handoff = overwrite.
+Soft size budget: keep this file tightest of all — it is re-read at the start of every
+verb. If it is growing, you are restating instead of referencing by AC ID; trim. -->
 
 ## Decisions
 Cross-phase decisions not captured in an artifact (incl. size promotions with reason).
+Append-only: to reverse a decision, add a new row and mark the prior one
+`superseded by AD-NN` — never delete or edit a logged decision.
 
-| # | Decision | Why | Date |
-|---|---|---|---|
-| AD-01 | <decision> | <rationale> | YYYY-MM-DD |
+| # | Decision | Why | Status | Date |
+|---|---|---|---|---|
+| AD-01 | <decision> | <rationale> | active | YYYY-MM-DD |
 
 ## Tasks
 Populated by `plan`, updated by `execute`. Tasks grouped by phase; phases run in order,
@@ -42,7 +48,21 @@ During execute retries, the specific failing items only (cleared when resolved).
 
 - <none>
 
+## Verification evidence
+Written by `execute` on phase PASS — one row per AC, no prose/logs. Preserves the AC→code
+proof on green.
+
+| AC ID | file:line | spec-defined expected value | covered | sensor |
+|---|---|---|---|---|
+
 ## Handoff
-What the next verb should pick up, and the recommended next verb.
+Overwrite-in-place. The recommended next verb stays first; the rest is a resume snapshot
+for a phase interrupted mid-task (cross-task position is recoverable from git via per-task
+commits).
 
 - Next: <verb> — <what it should do>
+- In-progress: <file:line, or none>
+- Completed task IDs: <…>
+- Blockers: <…>
+- Uncommitted files: <…>
+- Branch: <…>

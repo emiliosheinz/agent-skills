@@ -9,6 +9,13 @@ verification gates), `state.md` (size + decisions), `lessons.md`. If a design is
 do a quick codebase scan to derive the architectural context the plan needs; prefer
 running `forge design` first for complex work.
 
+**Before writing gates, learn the project's real test setup** (so a gate command isn't
+invented): sample 5–10 existing test files to derive the *actual* test runner command(s)
+and the test location/naming patterns this repo uses, and scan for testing standards
+(`CONTRIBUTING.md`, `AGENTS.md`/`CLAUDE.md`, coverage thresholds in test configs). Align
+task test expectations to those standards; fall back to defaults only when none exist
+(domain logic 1:1 to ACs; routes cover happy + edge + error). Never assume a command.
+
 ## Phases
 
 A **phase** is a coherent checkpoint: a set of tasks that are implemented and verified as a
@@ -45,8 +52,9 @@ form, token storage, API client, route guard.
 | **depends-on** | Task ids that must finish first. Keep minimal. Tasks in the same phase that depend on each other cannot both be `[P]`. |
 | **AC-trace** | The acceptance-criterion ID(s) from `spec.md` this task satisfies. Every task traces to at least one AC (enabling work traces to the task it unblocks). |
 | **tests** | The tests written **within this task**, co-located with the code it creates — never deferred to a later task. Use the highest test level the task's layer requires (unit for logic, e2e for routes/controllers). |
-| **gate** | A deterministic command that returns clean iff the task succeeded. |
+| **gate** | A deterministic command that returns clean iff the task succeeded. Use the project's real runner (see Load), not an assumed one. |
 | **done-when** | A binary checklist, each item true/false, ending with "gate passes: `<command>`". |
+| **reuses** *(optional)* | Path of an existing component/pattern this task should mirror, from `design.md`'s code-reuse analysis. The fresh implementer subagent acts on the task line, not the whole design — this points it at the right precedent. |
 
 ## Parallelism assessment (per phase)
 
@@ -62,7 +70,9 @@ concurrently). A task earns `[P]` **only when all three hold:**
 3. It shares **no mutable state** with the other `[P]` tasks in the phase.
 
 A task that fails any of these runs **sequentially** within its phase, even if its code is
-independent. State the reason briefly (e.g. "seq — shared test DB").
+independent. State the reason and **cite the evidence** — the test file/fixture that
+establishes the isolation model (e.g. "seq — integration tests share the test DB, see
+`src/.../user.e2e-spec.ts` truncates globally"), not an unverifiable assertion.
 
 ## Gates
 
@@ -85,7 +95,8 @@ Close `plan.md` with the execution order: phases in sequence, and within each ph
 - Every task is atomic (one component/function/endpoint/file).
 - The dependency graph is acyclic and every `depends-on` id exists.
 - No `[P]` task depends on another task in the same phase.
-- Every task has co-located tests, an AC trace, and a real gate.
+- Every task has co-located tests, an AC trace, and a real gate (a project-real command).
+- Every `[P]`/seq call cites its isolation-model evidence.
 - Each phase has a goal and a phase gate.
 
 ## Risks

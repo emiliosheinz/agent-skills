@@ -110,7 +110,10 @@ specify/design/execute/fix. Append **only when something non-obvious was learned
 ## Universal rules
 
 1. Re-read `state.md` at the start of every verb; write size/decisions/status changes
-   there as they happen, not at the end.
+   there as they happen, not at the end. **Write surgically:** edit only the target
+   section (replace the content between its `##` header and the next `##`/EOF); never
+   regenerate the whole file or reorder sections — that silently clobbers the append-only
+   `## Decisions` log or the `## Tasks` table while you meant to touch `## Handoff`.
 2. Never claim a task or gate passed without actually running it. No vibes-based done.
 3. Each phase finishes, reports, and **recommends the next verb** — it never auto-runs
    the next phase.

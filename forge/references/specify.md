@@ -74,6 +74,13 @@ For a wide or unfamiliar codebase, dispatch read-only subagents (one level of
 delegation; stateless; large findings to a file, return the path) to map areas in
 parallel. Ground every claim in something you actually read or ran.
 
+**Scan thoroughly** (the reuse analysis in `design.md` depends on it): use the best search
+the toolchain offers — prefer a syntax-aware/structural search when one is available, since
+a plain text/regex search misses how symbols are actually declared (arrow functions,
+methods, exported consts, decorators), and fall back to text search otherwise. Exclude
+generated, vendored, and build output so the scan doesn't surface false "prior art" from
+dependencies.
+
 ### A3. Surface external references — do not reinvent the wheel
 
 Actively look outward, not just at URLs the user mentioned. The point is to avoid
@@ -102,8 +109,13 @@ References**.
 Before Part B, verify:
 
 - Every open branch is closed or explicitly recorded as an open question.
-- Each remaining open question is either resolved or carried forward as a stated
-  assumption (with the chosen default and rationale) — never silently dropped.
+- Each remaining open question is either resolved or carried forward — never silently
+  dropped. Split carried-forward items into two buckets, because they have opposite
+  downstream consequences:
+  - **Agent discretion (user delegated):** the user said "you decide" — safe for design/
+    plan to settle without coming back.
+  - **Assumptions (unconfirmed):** a guess the work rests on; flag any that would
+    invalidate the spec if wrong, so design/plan surface them before building.
 - The user confirms the captured understanding is faithful.
 
 If the user only wanted shared understanding, **stop here** — write the Part A sections
@@ -122,9 +134,13 @@ missing:
   "support tickets for X down 30% within 60 days".
 - **Scope.** In-scope capabilities (discrete, verifiable) and a single **out-of-scope**
   table. Anything a reader might reasonably assume is included but isn't must appear
-  here, with a reason.
+  here, with a reason. The feature boundary is fixed once Part B starts: if the user
+  raises a new capability mid-spec, capture it under **Deferred Ideas** (newly-raised,
+  intentionally postponed — distinct from the static out-of-scope table) and continue,
+  rather than letting scope balloon or losing the idea.
 - **Requirements & acceptance criteria.** See below.
-- **Assumptions**, flagging which would invalidate the spec if proven false.
+- **Assumptions & discretion**, split per the closure gate (unconfirmed assumptions vs.
+  delegated discretion); flag assumptions that would invalidate the spec if proven false.
 - **Edge conditions:** empty/error/first-run/power-user behavior.
 
 ### Requirements and acceptance criteria
@@ -136,6 +152,8 @@ missing:
 - **IDs:** prefix = feature slug uppercased, shortened to 3–5 chars (`user-onboarding` →
   `ONBD`). Sequential: `ONBD-01`, `ONBD-02`.
 - Priorities: **P0** launch blocker · **P1** high value · **P2** nice to have.
+- Mark an AC **`critical`** when it governs auth, payments, or data integrity — execute's
+  mutation/discrimination sensor fires on critical ACs regardless of size.
 - Each requirement carries one or more **acceptance criteria** in WHEN/THEN/SHALL form:
   *WHEN <condition>, THEN the system SHALL <observable outcome>.* Each AC must have a
   single interpretation and a precise expected outcome.
@@ -146,12 +164,22 @@ trace that ties code back to intent.
 
 ### Implicit-requirement dimension sweep (complex tier)
 
-For complex changes, walk these nine dimensions; each resolves to a concrete requirement
-**or** an explicit "N/A because <reason>". Skipping a dimension silently is how
-production gaps ship.
+For complex changes, walk the relevant dimensions; each resolves to a concrete requirement
+**or** an explicit "N/A because <reason>". Skipping one silently is how production gaps
+ship. First **classify the feature's primary surface**, then walk the matching list *in
+addition to* the systems dimensions:
 
-input validation · failure states · idempotency · auth & rate limits · concurrency ·
-data lifecycle/retention · observability · external dependencies · state transitions
+- **systems / backend (always):** input validation · failure states · idempotency · auth &
+  rate limits · concurrency · data lifecycle/retention · observability · external
+  dependencies · state transitions
+- **UI:** empty/loading/error states · density · interactions · visual hierarchy
+- **API:** response format · error shapes · auth · versioning · rate limiting
+- **CLI:** output format · flags · modes · verbosity · exit codes
+- **content/docs:** structure · tone · depth · navigation
+- **data-org:** grouping · naming · duplicates · exceptions
+
+The nine systems dimensions alone are all back-of-house; a UI/CLI/content feature whose
+front-of-house ambiguity goes unswept is exactly what users notice.
 
 ### Requirement closure gate
 

@@ -11,3 +11,7 @@ gate). Routine success writes nothing. See references/lessons.md. -->
 ## Log
 <!-- Append-only, terse, tagged: date · [tag] · what went wrong · root cause · rule going forward. -->
 -
+
+## Retired
+<!-- Standing Rules struck after they proved wrong (~~rule~~ (date, reason)); never loaded. -->
+-

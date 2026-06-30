@@ -32,72 +32,50 @@ npx skills add emiliosheinz/agent-skills --global
 
 | Skill | Description |
 |-------|-------------|
-| <nobr>`contextualize`</nobr> | Gathers the context that downstream spec and design work depends on. Use when you need to understand a problem space, surface constraints and prior art, or build a shared map of the codebase before writing a PRD, a technical design, or an implementation plan. |
 | <nobr>`create-adr`</nobr> | Creates Architecture Decision Records (ADRs) to document architectural choices and their rationale. Use when asked to create or write an ADR, document a decision, record why something was chosen, or capture an architectural decision. |
-| <nobr>`create-implementation-plan`</nobr> | Creates implementation plans covering phases, tasks, sequencing, dependencies, milestones, and risks. Use when asked to create an implementation plan, plan an execution, break work into phases, or describe how to build something step by step. |
-| <nobr>`create-prd`</nobr> | Creates structured, explicit, and detailed Product Requirement Documents (PRDs). Use when asked to create or write a PRD, define product requirements, specify what to build, or capture requirements before implementation begins. |
 | <nobr>`create-rfc`</nobr> | Creates structured Request for Comments (RFC) documents for proposing and deciding on significant changes. Use when asked to create or write an RFC, draft a proposal, align stakeholders, or propose a change before a decision. |
-| <nobr>`create-technical-design`</nobr> | Creates technical design documents covering architecture, component responsibilities, data models, API contracts, and key decisions. Use when asked for a technical design, architecture document, system design, technical spec, or design doc. |
-| <nobr>`diagnose`</nobr> | Diagnoses bugs through a structured loop: adaptive intake, a fast feedback loop, reproduction, falsifiable hypotheses, and a saved fix proposal. Use when reporting a bug, error, crash, broken or unexpected behavior, exception, failing test, or anything that is not working as expected. |
-| <nobr>`implement`</nobr> | Executes implementation by consuming existing PRD, technical design, and implementation plan artifacts, or a bug report produced by `/diagnose`. Use when asked to implement a feature, build something, start implementing, write the code, execute an existing plan, or apply a fix from a bug report. |
+| <nobr>`forge`</nobr> | Spec-driven development workflow that takes any change from problem to shipped, verified code through five explicit phases. Use when asked to build or implement a feature, write a spec / PRD / requirements, design architecture or a technical design, create an implementation plan, execute or build code, or diagnose and fix a bug. Auto-sizes from one-line fixes to multi-repo refactors. Invoke a phase with `forge specify|design|plan|execute|fix`. |
 
-## Document Workflow
+## Spec-Driven Development with `forge`
 
-Skills map to different stages of the decision-to-implementation pipeline. Every skill can be used standalone — when upstream artifacts are missing, it gathers just enough context inline to derive what it needs.
-
-### Full pipeline
-
-```mermaid
-flowchart TB
-    subgraph main["Main Flow"]
-        direction LR
-        CTX["contextualize"] --> PRD["create-prd"] --> TD["create-technical-design"] --> IP["create-implementation-plan"] --> IMP["implement"]
-    end
-
-    subgraph lateral["Use at any point"]
-        direction LR
-        RFC["create-rfc"]
-        ADR["create-adr"]
-    end
-```
-
-RFC and ADR are not tied to any specific stage — use them whenever a significant decision needs alignment or recording.
-
-### Flexible entry points
-
-You do not have to start at the beginning. Jump in at whichever stage fits the task:
+`forge` runs the whole decision-to-implementation pipeline as five explicit phases under
+one skill. You invoke one phase at a time; each does its work, updates shared state, and
+**recommends** the next phase without auto-running it. Depth **auto-sizes** to the change.
 
 ```mermaid
 flowchart LR
-    CTX["contextualize"]
-    PRD["create-prd"]
-    TD["create-technical-design"]
-    IP["create-implementation-plan"]
-    IMP["implement"]
-
-    CTX -->|"full flow"| PRD --> TD --> IP --> IMP
-    CTX -->|"skip requirements"| TD
-    PRD -->|"skip design"| IP
-    TD -->|"skip planning"| IMP
-    IP -->|"skip to code"| IMP
+    SP["specify"] --> DE["design"] --> PL["plan"] --> EX["execute"]
+    FX["fix"] -.->|bug found after execute| EX
 ```
 
-| Stage | Skill | Question It Answers | Upstream Input |
-|-------|-------|---------------------|----------------|
-| Context | `contextualize` | What is the problem, who is affected, and what do we already know? | None — gathered via grilled interview, codebase scan, and external references |
-| Requirements | `create-prd` | What are we building, for whom, and why? | CONTEXT (optional) |
-| Decision | `create-rfc` | Should we do X or Y? Which approach? | PRD (optional) |
-| Record | `create-adr` | Why did we choose X over Y? | RFC outcome (optional) |
-| Design | `create-technical-design` | What is the architecture, data model, and API contract? | CONTEXT and/or PRD if available, otherwise gathers directly |
-| Plan | `create-implementation-plan` | How do we execute the work in phases? | Technical design or PRD if available, otherwise scans the codebase |
-| Build | `implement` | Turn the plan into tested, working code | Any combination of above, or derives from codebase |
+| Phase | Verb | Question it answers | Output |
+|-------|------|---------------------|--------|
+| Specify | `forge specify <name>` | What is the problem, and what must we build? | `.specs/<slug>/spec.md` |
+| Design | `forge design` | What is the architecture, contracts, and the gates for "done"? | `.specs/<slug>/design.md` |
+| Plan | `forge plan` | What are the phases of tasks, and what runs in parallel? | `.specs/<slug>/plan.md` |
+| Execute | `forge execute` | Turn the plan into verified, committed code | working code |
+| Fix | `forge fix <bug>` | Reproduce, root-cause, and fix a bug end to end | `.specs/bugs/<name>.md` + code |
 
-### Common combinations
+### Auto-sizing
 
-> `create-rfc` and `create-adr` can be invoked at any point when a significant decision needs to be proposed or recorded. They are not required for the main flow but are available whenever needed.
+Forge adapts from one-line fixes to multi-repo refactors. The first phase to run records
+the size in `state.md`; each phase scales its depth and tells you which phases to skip:
 
-- **Full process**: `contextualize` → `create-prd` → `create-technical-design` → `create-implementation-plan` → `implement`
-- **Known problem, no prior context**: `create-prd` → `create-technical-design` → `create-implementation-plan` → `implement`
-- **Technical task, no product work**: `create-technical-design` → `create-implementation-plan` → `implement`
-- **Simple feature**: `create-implementation-plan` → `implement`
-- **Straightforward task**: `implement` directly
+- **quick** (one file/function) — inline spec → `execute` (skip design and plan)
+- **standard** (one component) — full spec → light design → phased plan → execute
+- **complex** (crosses components/repos) — the full pipeline with every gate
+
+### Flexible entry points
+
+Start at whichever phase fits — a verb with no prior artifacts derives just enough context
+to do its job. `forge specify` for a fresh problem, `forge design` when requirements are
+already clear, `forge plan` straight from a known design, `forge execute` for a small
+change, `forge fix` for a bug found while verifying the work.
+
+### Lateral skills
+
+`create-rfc` and `create-adr` are not tied to any phase — use them whenever a significant
+decision needs proposing or recording.
+
+- **Decision** — `create-rfc`: should we do X or Y? Which approach?
+- **Record** — `create-adr`: why did we choose X over Y?

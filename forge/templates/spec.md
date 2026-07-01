@@ -6,14 +6,15 @@
 | Author | @Name |
 | Date | YYYY-MM-DD |
 | Size | quick / standard / complex |
+| Mode | full / context-only |
 
 <!--
 Auto-size the depth (see references/sizing.md):
 - quick: Problem + Acceptance Criteria only — a few lines. Delete the rest.
 - standard: all sections except the dimension sweep.
 - complex: all sections, including the dimension sweep and prior art.
-Acceptance criteria are authored HERE and nowhere else. Downstream phases cite IDs.
-Soft size budget ~3k words — if larger, you're restating instead of referencing by ID; trim.
+Acceptance criteria are written HERE and nowhere else. Downstream phases cite IDs.
+Target size ~3k words — if larger, you are restating instead of referencing by ID; trim.
 -->
 
 ## Part A — Understanding
@@ -44,6 +45,11 @@ integration boundaries, prior decisions). Observations only — no conclusions.
 | Question | Why it matters | Owner | Status |
 |---|---|---|---|
 
+<!-- Part A closure gate: confirm shared understanding with the user before filling Part B.
+     Carry remaining open questions into either "Assumptions" or "Agent discretion" in Part B. -->
+
+---
+
 ## Part B — Requirements
 
 ### Overview
@@ -58,26 +64,27 @@ Falsifiable outcomes, verifiable after shipping.
 ### Scope
 **In scope:** discrete, verifiable capabilities.
 **Out of scope:** anything a reader might assume is included but isn't — with a reason.
-**Deferred Ideas:** capabilities raised mid-spec, intentionally postponed (kept distinct
-from out-of-scope so they aren't lost or allowed to balloon scope).
+**Deferred Ideas:** capabilities raised mid-spec, intentionally postponed (kept
+distinct from out-of-scope so they aren't lost or allowed to expand scope).
 
 ### Requirements & Acceptance Criteria
 Functional only (what, not how). One per item. IDs `PREFIX-NN`, priority P0/P1/P2.
-Mark an AC `critical` when it governs auth, payments, or data integrity.
+Append `[critical]` to an AC when it governs auth, payments, or data integrity (omit
+the tag when not critical).
 
 - **[P0] PREFIX-01** — The system SHALL <observable outcome>.
-  - AC: WHEN <condition>, THEN the system SHALL <precise expected outcome>. [critical?]
+  - AC: WHEN <condition>, THEN the system SHALL <precise expected outcome>. [critical]
 
 ### Assumptions & Discretion
-- **Assumptions (unconfirmed):** treated as true; flag which would invalidate the spec if false.
-- **Agent discretion (user delegated):** points the user said "you decide" — safe to settle downstream.
+- **Assumptions (unconfirmed):** treated as true; flag which would invalidate the
+  spec if false.
+- **Agent discretion (user delegated):** points the user said "you decide" — safe to
+  settle downstream.
 
 ### Implicit-Requirement Dimensions (complex only)
-Classify the feature's primary surface, then resolve the systems list plus the matching
-surface list — each to a requirement or "N/A because <reason>":
-- **systems (always):** input validation · failure states · idempotency · auth & rate limits · concurrency · data lifecycle/retention · observability · external dependencies · state transitions
-- **UI:** empty/loading/error states · density · interactions · visual hierarchy
-- **API:** response format · error shapes · auth · versioning · rate limiting
-- **CLI:** output format · flags · modes · verbosity · exit codes
-- **content/docs:** structure · tone · depth · navigation
-- **data-org:** grouping · naming · duplicates · exceptions
+<!-- See references/specify.md for the dimension lists. Classify the feature's primary
+     surface (pick all that apply; name the primary), then resolve each dimension to a
+     concrete requirement OR an explicit "N/A because <reason>". -->
+
+| Surface(s) | Primary surface | Requirement IDs covered |
+|---|---|---|

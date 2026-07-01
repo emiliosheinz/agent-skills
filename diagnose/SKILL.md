@@ -1,200 +1,217 @@
 ---
 name: diagnose
 description: >
-  Diagnoses bugs through a structured loop: adaptive intake, a fast feedback
-  loop, reproduction, falsifiable hypotheses, and a saved fix proposal. Use
-  when reporting a bug, error, crash, broken or unexpected behavior, exception,
-  failing test, or anything that is not working as expected.
+  Root-causes complex bugs through a structured loop and saves a verified fix proposal —
+  it diagnoses, it never fixes. Builds a fast deterministic feedback loop, reproduces,
+  then probes ranked falsifiable hypotheses with parallel subagents and confirms the
+  cause adversarially before writing the report. Use when a bug, error, crash, exception,
+  failing or flaky test, regression, or unexplained behavior needs root-causing —
+  especially when it is intermittent, subtle, cross-system, or resisted a first fix.
 ---
 
 # Diagnose
 
-**Goal:** find and verify the root cause of an issue, then save a concrete fix proposal as a persistent artifact.
+**Goal:** find and verify the root cause of a bug, then save a concrete, actionable fix
+proposal as a persistent artifact.
 
-**Hard rule:** you diagnose, you do not fix. Never edit application code to "make the bug go away." The fix proposal goes in the report; `/implement` executes it once the user has reviewed.
+**Hard rule — you diagnose, you do not fix.** Never edit application code to make the
+bug go away. The fix goes in the report as a proposal; applying it is a separate step,
+taken only after the user has reviewed. Temporary instrumentation (tagged debug logs, a
+throwaway harness) is allowed and gets cleaned up before you finish.
 
-## Routing
+**When to reach for it:** when the cause is unknown and the bug is hard — intermittent,
+subtle, cross-system, or it already survived one wrong fix. Diagnose goes deep (parallel
+probes, adversarial confirmation) and stops at a reviewed proposal. For a bug you already
+understand and just want to fix, skip this and fix it directly.
 
-- Execute the proposed fix → `/implement`
-- Building a new feature → `/create-prd`
-- Proposing a significant change → `/create-rfc`
-- Documenting an architectural decision → `/create-adr`
+## Orchestration (subagent contract)
+
+Diagnosis is where independent, parallel perspectives pay off most: an agent that
+grades its own reasoning tends to pass it, and hypotheses probe faster in parallel than
+one at a time. Use subagents under one contract:
+
+- **One level of delegation.** Subagents do not spawn subagents.
+- **Stateless.** Put everything a subagent needs in its prompt: the repro command, the
+  one hypothesis it owns, the file:line evidence, what a pass/fail looks like. It shares
+  none of your context.
+- **Compact returns.** A subagent returns a structured verdict (below), not raw logs.
+  Anything over ~100 lines goes to a file; it returns the path.
+- **Isolate shared state.** Parallel probes are safe only when they do not fight over
+  the same mutable resource (one dev server, one DB row, one port). Probes that need
+  exclusive access run sequentially, or each in its own git worktree / fixture.
+- **Workflow is an optional speed-up** for dispatching the fan-out where the runtime
+  supports it. Plain sequential subagent calls always work as a fallback — never
+  require Workflow.
+- **`AskUserQuestion` for intake**, one question at a time, with a recommended default.
+  Fall back to a single plain-text question. Never bundle unrelated questions.
+
+Probe verdict format (Phase 5):
+
+```markdown
+### Probe H<n> — <hypothesis>: CONFIRMED | REFUTED | INCONCLUSIVE
+Prediction: <the falsifiable prediction tested>
+Result: <what the probe observed — file:line, log line, value>
+```
+
+## The loop
+
+```text
+1 Intake      adaptive interview — only what the code can't tell you
+2 Feedback    a fast, deterministic, pass/fail signal for the bug   ← the skill
+3 Reproduce   run the loop; confirm it's the user's bug
+4 Hypothesize 3–5 ranked, falsifiable hypotheses, before testing any
+5 Verify      5a probe them in parallel · 5b confirm the winner adversarially
+6 Report      save the proposal to .specs/bugs/<name>.md for review
+```
+
+Loop back freely: refuted hypotheses feed Phase 4; a dry hypothesis well sends you to
+Phase 2 to sharpen the loop. You leave this skill only with a confirmed cause or an
+honest `blocked` report — never a guess.
+
+## Calibrate depth
+
+Match effort to the bug; don't pay fan-out ceremony for a typo.
+
+- **Simple** (obvious once reproduced, deterministic) — run Phases 4–5 inline in the
+  main agent. Parallel probes and adversarial confirmation are optional.
+- **Hard** (intermittent, subtle, cross-system, or survived a prior fix) — the default
+  this skill is built for. Use parallel probes (5a) and adversarial confirmation (5b).
 
 ## Phase 1 — Intake
 
-There is no fixed question list. Interview the user until you have enough to attempt reproduction. Apply these rules:
+No fixed question list. Interview until you have enough to attempt reproduction:
 
-1. **One question at a time.** Use `AskUserQuestion`. Never bundle topics.
-2. **Walk the tree.** Each answer either closes a branch or opens new ones. Follow new branches to resolution before returning to the parent.
-3. **Codebase first.** Do not ask what you can read. Save the user's attention for things only they know.
-4. **Record, do not invent.** "Unknown" is a valid answer — write it down rather than guessing.
+1. **One question at a time** (`AskUserQuestion`; never bundle).
+2. **Walk the tree** — each answer closes a branch or opens new ones; follow new
+   branches to resolution before returning to the parent.
+3. **Codebase first** — don't ask what you can read. Save the user's attention for what
+   only they know.
+4. **Record, don't invent** — "unknown" is a valid answer; write it down.
 
-**Topics that usually need to be resolved before reproduction is possible:**
-
-- Expected vs. actual behavior, with the verbatim error or stack trace
-- Reproduction trigger: inputs, sequence of actions, environment
-- Determinism: every time, intermittent, or a specific rate
-- What recently changed: deploy, dependency upgrade, config flip
-
-Stop the intake the moment you have enough to attempt reproduction. Anything still missing will surface in Phase 2 — return here only if it turns out to be something only the user can answer.
+Usually needed before reproduction: expected vs. actual behavior with the verbatim
+error or stack trace; the trigger (inputs, sequence, environment); determinism (every
+time / intermittent / rate); what recently changed (deploy, dependency bump, config
+flip). Stop the moment you can attempt reproduction — anything still missing surfaces in
+Phase 2; return here only for what only the user can answer.
 
 ## Phase 2 — Build a feedback loop
 
-**This is the skill.** A fast, deterministic, pass/fail signal is what separates a fixed bug from staring at code. Bisection, hypothesis-testing, and instrumentation all just consume that signal — without one, no amount of reading the code will save you.
+**This is the skill.** A fast, deterministic, pass/fail signal is what separates a fixed
+bug from staring at code. Bisection, hypothesis-testing, and instrumentation all just
+consume that signal — without one, no amount of reading saves you. Spend
+disproportionate effort here. Be aggressive, be creative, refuse to give up.
 
-Spend disproportionate effort here. Be aggressive. Be creative. Refuse to give up.
+**Strategies, roughly in order of preference** (jump to a later one only when an earlier
+one is unworkable for this specific bug):
 
-### Strategies, roughly in order of preference
-
-1. **Failing test in the project's existing testing framework** — at whatever seam reaches the bug (unit, integration, e2e). Always try this first. Follow the project's conventions for test structure, fixtures, and assertions.
-2. **Curl / HTTP script** against a running dev server.
-3. **CLI invocation** with a fixture input, diffing stdout against a known-good snapshot.
-4. **Headless browser script** Playwright — drives the UI, asserts on DOM, console, or network.
-5. **Replay a captured trace** — save a real payload or event log, replay it through the code path in isolation.
-6. **Throwaway harness** — minimal subset of the system (one service, mocked deps) that exercises the bug code path with a single call.
-7. **Property / fuzz loop** — for "sometimes wrong output" bugs, run many random inputs and look for the failure mode.
-8. **Bisection harness** — if the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so `git bisect run` can drive it.
+1. **Failing test** in the project's framework, at whatever seam reaches the bug. Try this first.
+2. **curl / HTTP script** against a running dev server.
+3. **CLI invocation** with a fixture, diffing output against known-good.
+4. **Headless browser** (Playwright) driving the UI, asserting DOM / console / network.
+5. **Replay a captured trace** — a real payload or event log through the code path in isolation.
+6. **Throwaway harness** — minimal code with mocked deps that exercises the buggy path in one call.
+7. **Property / fuzz loop** — for "sometimes wrong output", many random inputs.
+8. **Bisection harness** — bug appeared between two known states → automate "boot at X, check" for `git bisect run`.
 9. **Differential loop** — same input through old vs. new (or two configs), diff outputs.
 
-### Iterate on the loop itself
+**Scout in parallel when the reachable seam is unclear.** Instead of trying strategies
+one at a time, dispatch a subagent per candidate strategy, each tasked to *stand up the
+loop and report whether it yields a fast deterministic signal* — not to debug. Keep the
+first loop that works; discard the rest. Skip scouting when strategy 1 obviously reaches
+the bug — just write the test.
 
-Treat the loop as a product. Once you have a loop, sharpen it: faster (cache setup, skip unrelated init), more deterministic (pin time, seed RNG, freeze network), sharper signal (assert on the specific symptom, not "didn't crash"). A 2-second deterministic loop is a debugging superpower; a 30-second flaky loop is barely better than nothing.
+**Then sharpen the loop — treat it as the product:**
 
-### Non-deterministic bugs
+- **Faster** — cache setup, skip unrelated init. A 2-second loop is a superpower; a 30-second flaky one barely helps.
+- **More deterministic** — pin time, seed RNG, freeze network, fix fixtures.
+- **Sharper signal** — assert the *specific* symptom the user reported, not "didn't crash".
 
-The goal isn't a clean repro — it's a high enough reproduction rate to debug against. Loop the trigger, parallelize, stress, narrow timing windows. A 50%-flake bug is debuggable; 1% is not — keep raising the rate.
+**Non-deterministic bugs:** the goal isn't a clean repro, it's a *high enough*
+reproduction rate to debug against. Loop the trigger, parallelize, stress, narrow timing
+windows. A 50%-flake bug is debuggable; 1% is not — keep raising the rate.
 
-### When you genuinely cannot build a loop
-
-Stop. Skip to Phase 6 with status `blocked`. List every strategy tried and why each failed. Ask the user for whatever would unblock you: environment access, a captured artifact (HAR, log dump, core dump, screen recording with timestamps), or permission to add temporary instrumentation. Do not proceed to hypothesize without a loop.
+**If you genuinely cannot build a loop:** stop. Skip to Phase 6 with status `blocked` —
+list every strategy tried and why each failed, and ask for what would unblock you
+(environment access, a captured artifact, permission to instrument). Do not hypothesize
+without a loop.
 
 ## Phase 3 — Reproduce
 
-Run the loop. Confirm:
+Run the loop. Confirm three things before going further:
 
-- The failure mode is the one **the user described** — not a different failure nearby. Wrong bug means wrong fix.
-- The failure reproduces across runs (or, for flaky bugs, at a high enough rate).
-- You have captured the exact symptom (error message, wrong output, slow timing) so the fix can be verified against it.
+- the failure is the one **the user described** — not a nearby failure (wrong bug → wrong fix);
+- it reproduces across runs (or, for flaky bugs, at a high enough rate);
+- you've **captured the exact symptom** (error text, wrong value, slow timing) so the fix can be verified against it.
 
 Do not proceed until the bug reproduces.
 
 ## Phase 4 — Hypothesize
 
-Produce **3–5 ranked, falsifiable hypotheses** before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
+Produce **3–5 ranked, falsifiable hypotheses before testing any of them** —
+single-hypothesis generation anchors on the first plausible idea. Each must state a
+prediction:
 
-Each hypothesis must state a prediction:
+> *"If X is the cause, then changing Y makes the bug disappear (or changing Z makes it worse)."*
 
-> *"If `<X>` is the cause, then `<changing Y>` will make the bug disappear, or `<changing Z>` will make it worse."*
-
-If you cannot state the prediction, the hypothesis is a vibe — discard it or sharpen it. For each, cite the specific evidence from Phase 2 or 3 that supports it (file:line, log line, error text).
-
-Rank from highest to lowest confidence.
+No prediction = a vibe, not a hypothesis — discard or sharpen it. For each, cite the
+specific evidence from Phase 2–3 that supports it (file:line, log line, error text).
+Rank highest to lowest confidence.
 
 ## Phase 5 — Verify
 
-Work hypotheses from highest to lowest confidence. For each:
+### 5a — Probe in parallel
 
-1. Restate the prediction from Phase 4.
-2. Run the smallest probe that would confirm or refute it. Prefer debugger or REPL inspection over logs; targeted logs over "log everything." Tag any temporary logs with a unique prefix (e.g. `[DEBUG-...]`) so cleanup is one grep.
-3. **Change one variable at a time** — otherwise you cannot attribute the result.
-4. **Confirmed** → proceed to Phase 6.
-5. **Refuted** → mark it and move to the next hypothesis.
+Give each hypothesis its own probe subagent, dispatched concurrently. Each subagent
+gets: the reproduction command, the one hypothesis and its prediction, the file:line
+evidence, and the verdict format from Orchestration. Each runs **the smallest probe**
+that confirms or refutes its prediction — prefer debugger/REPL inspection over logs;
+targeted logs over "log everything". Tag any temporary log with a unique prefix
+(`[DEBUG-xyz]`) so cleanup is one grep. Each probe **changes one variable only** —
+isolated contexts make this natural, but a probe that mutates shared state must run
+alone (see Orchestration).
 
-### If no hypothesis is confirmed
+Collect the verdicts. Working inline instead of fanning out is fine for a simple bug —
+same discipline, one context.
 
-Use the negative evidence from refuted hypotheses to generate new ones, then return to Phase 4. If the hypothesis well runs dry, return to Phase 2: sharpen the loop, try a different strategy. **Loop until you confirm a hypothesis or have genuinely exhausted strategies.**
+### 5b — Confirm adversarially
 
-### When you have genuinely exhausted everything
+A hypothesis that its own author's probe "confirmed" is a suspect, not a verdict — an
+agent grades its own work generously. Before accepting a root cause, hand it to a
+**fresh, independent subagent whose job is to refute it**: find a counterexample, an
+alternative cause that fits the same evidence, or a case where the predicted fix would
+*not* remove the symptom. Give it only the claimed cause, the repro loop, and the
+evidence — not your reasoning.
 
-Stop. Save the report with status `blocked` (see Phase 6). List every hypothesis considered, every probe run, what each result told you, and what would unblock the next attempt.
+- **Refutation fails** (the cause holds) → confirmed. Record how it held; go to Phase 6.
+- **Refutation succeeds** → the cause is wrong or incomplete. Fold the counter-evidence
+  into Phase 4 and probe again.
 
-## Phase 6 — Propose and save
+### If no hypothesis survives
 
-1. Derive a kebab-case bug name from the issue (e.g. `auth-token-expiry-not-refreshing`).
-2. If `.specs/bugs/[bug-name].md` already exists, append `-2`, `-3`, etc.
-3. Create `.specs/bugs/` if missing.
-4. Write the report using the matching template below.
-5. Remove any `[DEBUG-...]` instrumentation you added — single grep cleanup.
-6. Tell the user the file path and route them to `/implement`.
+Use the negative evidence from refuted hypotheses to generate new ones (back to Phase 4).
+If the hypothesis well runs dry, return to Phase 2: sharpen the loop or try a different
+strategy. **Loop until you confirm a cause or have genuinely exhausted every strategy.**
+When exhausted, stop and save a `blocked` report — never dress a guess as a finding.
 
-### Template — confirmed root cause
+## Phase 6 — Report and save
 
-```markdown
-# Bug: [bug-name]
+1. Derive a kebab-case bug name (e.g. `auth-token-expiry-not-refreshing`).
+2. Target `.specs/bugs/<bug-name>.md`; if it exists, append `-2`, `-3`. Create `.specs/bugs/` if missing.
+3. Write the report from `templates/report.md` — the **confirmed** variant, or **blocked** if you never reproduced or nothing survived 5b.
+4. Remove any `[DEBUG-...]` instrumentation you added (one grep) and delete throwaway harnesses.
+5. Tell the user the file path and summarize the root cause and the proposed fix.
 
-**Date:** YYYY-MM-DD
-**Status:** confirmed
-**Confidence:** [High / Medium / Low] — one-sentence justification.
-
-## Root Cause
-
-Plain-language explanation of what broke and why. Cite specific evidence: file:line, log line, error message.
-
-## Reproduction
-
-The feedback loop that confirms the bug. Include the exact command to run it and what a failing run looks like. If a test was written, give the file path and the command to run it.
-
-## Hypotheses Tested
-
-| # | Hypothesis | Prediction | Result |
-|---|------------|------------|--------|
-| 1 | ... | ... | Confirmed / Refuted |
-
-## Fix Proposal
-
-Numbered, concrete steps. Each step actionable and consistent with project conventions. Cite file:line. This section is what `/implement` will execute — write it for that consumer. No vague phrases like "handle the error appropriately."
-
-1. ...
-2. ...
-
-## Regression Test
-
-The test that should lock this down: file path, framework, what it asserts. If no correct seam exists for the test, say so — that itself is the finding.
-
-## Prevention
-
-Optional. What would stop this from recurring: a test to add, a monitoring alert, a config guard, a refactor, a doc update. Required for regressions.
-```
-
-### Template — blocked
-
-```markdown
-# Bug: [bug-name]
-
-**Date:** YYYY-MM-DD
-**Status:** blocked
-
-## What We Know
-
-What the user reported, verbatim error or symptom, and any partial reproduction signal observed.
-
-## Attempts
-
-| # | Strategy | Outcome | Why it failed |
-|---|----------|---------|---------------|
-| 1 | Failing unit test in `vitest` | Could not reach the seam | Bug requires production database state |
-
-## Hypotheses Considered
-
-Hypotheses generated but not testable. Include the prediction and what would be needed to test it.
-
-## What Would Unblock This
-
-Specific asks: environment access, captured artifact (HAR, log dump, screen recording with timestamps), permission to add temporary instrumentation, knowledge only the user has.
-
-## Suggested Next Steps
-
-Concrete actions for the user or another agent to try.
-```
+Write the **Fix Proposal** so whoever applies it can execute it verbatim — concrete
+numbered steps, each citing file:line. No "handle the error appropriately".
 
 ## Gotchas
 
-- **You diagnose, you do not fix.** The proposal goes in the report. `/implement` runs it.
-- **No artifact before reproduction.** A confirmed report is an artifact of a confirmed diagnosis. If you cannot reproduce, write the `blocked` template — not a guess dressed up as a finding.
-- **Falsifiable or it is a vibe.** A hypothesis without a prediction is not a hypothesis.
-- **One variable at a time during verification.** Otherwise the result is not attributable.
+- **You diagnose, you do not fix.** The proposal goes in the report; applying it is a separate step.
+- **No artifact before reproduction.** Can't reproduce → `blocked` report, not a guess dressed up as a finding.
 - **The loop is the skill.** When stuck, sharpen the loop before generating more hypotheses.
+- **Falsifiable or it's a vibe.** A hypothesis without a prediction isn't one.
+- **One variable at a time during probing.** Otherwise the result isn't attributable.
+- **Author ≠ confirmer.** A cause isn't confirmed until an independent probe tried and failed to refute it.
 - **Tag debug logs, clean them up.** Untagged logs survive; tagged logs die in one grep.
 - **Absences are evidence.** A missing log line, a silent failure, an unreachable branch can be as diagnostic as an error.
-- **One question at a time during intake.** Multiple questions at once slow resolution.
-- **Refuse to give up.** Loop until you have a confirmed root cause or have honestly exhausted every strategy — there is no middle state where speculation is acceptable.
+- **Refuse to give up.** Loop until confirmed or honestly exhausted — there is no middle state where speculation is acceptable.

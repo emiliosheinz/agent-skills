@@ -1,34 +1,44 @@
 # diagnose
 
-A Claude Code skill that finds the root cause of a bug through a structured loop: adaptive intake, a fast feedback loop, reproduction, falsifiable hypotheses, and a saved fix proposal. The skill diagnoses — it never implements the fix.
+A Claude Code skill that root-causes complex bugs through a structured loop: adaptive intake, a fast feedback loop, reproduction, falsifiable hypotheses probed by parallel subagents, and adversarial confirmation of the cause — ending in a saved fix proposal. The skill diagnoses; it never implements the fix.
 
 ## When to use
 
-Invoke this skill when you want to:
+Reach for `/diagnose` when the cause is unknown and the bug is hard — intermittent, subtle, cross-system, or it already survived a wrong fix. It goes deeper than a quick fix and stops at a reviewed proposal.
 
 - Debug an unexpected error, exception, or crash
-- Investigate a failing test or broken behavior
-- Diagnose an intermittent or hard-to-reproduce issue
-- Produce a documented bug report with a confirmed root cause and concrete fix proposal
+- Investigate a failing or flaky test, a regression, or broken behavior
+- Root-cause an intermittent or hard-to-reproduce issue
+- Produce a documented report with a confirmed root cause and concrete fix proposal
+
+For a bug you already understand and just want to fix, skip the ceremony and fix it directly — this skill is for the ones that resist that.
 
 ## How it works
 
-1. **Intake** — adaptive interview (one question at a time, walk-the-tree) until there is enough to attempt reproduction. No fixed question list.
-2. **Build a feedback loop** — the heart of the skill. A fast, deterministic, pass/fail signal for the bug. Strategies are tried in order, starting with a failing test in the project's existing framework, then HTTP scripts, headless browser, trace replay, throwaway harness, fuzz, bisection, differential loops. The loop is iterated on for speed, determinism, and signal sharpness.
+1. **Intake** — adaptive interview (one question at a time, walk-the-tree, codebase-first) until there's enough to attempt reproduction. No fixed question list.
+2. **Build a feedback loop** — the heart of the skill: a fast, deterministic, pass/fail signal for the bug. Strategies are tried in order (failing test first, then HTTP script, headless browser, trace replay, throwaway harness, fuzz, bisection, differential loop), scouted in parallel when the reachable seam is unclear, then sharpened for speed, determinism, and signal.
 3. **Reproduce** — run the loop and confirm the failure matches what the user described.
-4. **Hypothesize** — produce 3–5 ranked, falsifiable hypotheses, each stating a prediction.
-5. **Verify** — work hypotheses from highest to lowest confidence with targeted probes. Refuted hypotheses feed back into Phase 4; exhausted hypotheses feed back into Phase 2. Loops until confirmation or genuine exhaustion.
-6. **Propose and save** — write the bug report to `.specs/bugs/[bug-name].md` and route the user to `/implement` for the fix.
+4. **Hypothesize** — 3–5 ranked, falsifiable hypotheses, each stating a prediction, before testing any.
+5. **Verify** — probe every hypothesis with independent subagents in parallel, then hand the winning cause to a fresh subagent that tries to *refute* it. A cause is confirmed only when refutation fails; refuted hypotheses and dry hypothesis wells loop back to Phase 4 or Phase 2.
+6. **Report and save** — write the report to `.specs/bugs/<bug-name>.md`, summarizing the root cause and the proposed fix for the user to review and apply.
 
-When the bug cannot be reproduced or no hypothesis confirms after exhausting strategies, the skill stops, writes a `blocked` report listing every attempt and what would unblock it, and surfaces concrete next steps.
+When the bug can't be reproduced or no cause survives, the skill stops and writes a `blocked` report listing every attempt, every hypothesis considered, and what would unblock it.
 
 ## Output
 
-A Markdown file at `.specs/bugs/[bug-name].md` in one of two shapes:
+A Markdown file at `.specs/bugs/<bug-name>.md` (from `templates/report.md`) in one of two shapes:
 
-**Confirmed root cause** — root cause with file:line evidence, reproduction command, hypotheses tested, numbered fix proposal for `/implement` to execute, regression test plan, optional prevention measures.
+**Confirmed** — root cause with file:line evidence, the reproduction loop, hypotheses tested, how the cause survived refutation, a numbered fix proposal to execute, a regression test plan, and optional prevention.
 
-**Blocked** — what was tried, why each attempt failed, hypotheses considered, what would unblock the investigation, suggested next steps.
+**Blocked** — what was tried, why each attempt failed, hypotheses considered, and what would unblock the investigation.
+
+## Structure
+
+```text
+diagnose/
+  SKILL.md              the diagnosis loop and subagent contract
+  templates/report.md   confirmed + blocked report variants
+```
 
 ## Usage
 
@@ -36,4 +46,4 @@ A Markdown file at `.specs/bugs/[bug-name].md` in one of two shapes:
 /diagnose
 ```
 
-Claude will begin the adaptive intake immediately. Provide whatever you know — exact error messages, stack traces, reproduction steps, what changed recently. "Unknown" is a valid answer for anything you genuinely don't know.
+Claude begins the adaptive intake immediately. Provide whatever you know — exact error messages, stack traces, reproduction steps, what changed recently. "Unknown" is a valid answer for anything you genuinely don't know.

@@ -69,6 +69,22 @@ Derive a kebab-case bug name; if `.specs/<slug>/bugs/<name>.md` exists, append `
 
 ## Part 1 — Diagnose
 
+### Calibrate depth
+
+Match effort to the bug; the parent spec's Sizing does not decide this. Bug difficulty is
+a local Part 1 judgment, orthogonal to the ratcheted size in `state.md` — a quick-sized
+spec can host a hard bug.
+
+- **Simple** (obvious once reproduced, deterministic) — run Steps 4–5 inline in the main
+  agent. Parallel scouting, parallel probes, and a separate refuter are optional.
+- **Hard** (intermittent, subtle, cross-system, or the bug already survived a prior
+  `/forge fix`) — unlock parallel loop-scouting (Step 2), parallel probes (Step 5a), and
+  adversarial confirmation (Step 5b).
+
+On the hard path, probes run as subagents under the contract in `SKILL.md` Orchestration
+(cite, don't restate). Isolate shared state: a probe that mutates a shared resource (one
+dev server, one DB row, one port) runs alone or in its own worktree/fixture.
+
 ### Step 1 — Intake
 
 No fixed question list. Interview until you have enough to attempt reproduction:
@@ -110,6 +126,12 @@ for this specific bug):
    X, check".
 9. **Differential loop** — same input through old vs. new, diff outputs.
 
+**Scout in parallel when the reachable seam is unclear (hard path).** Dispatch one
+subagent per candidate strategy, each tasked only to stand up the loop and report whether
+it yields a fast deterministic signal — not to debug. Keep the first loop that works;
+discard the rest. Skip scouting when strategy 1 obviously reaches the bug — just write the
+test (the common case right after `/forge execute`, where context is already loaded).
+
 Then **sharpen the loop**: faster (cache setup, skip unrelated init), more
 deterministic (pin time, seed RNG, freeze network), sharper signal (assert the
 specific symptom). A 2-second deterministic loop is a superpower; a 30-second flaky
@@ -140,27 +162,62 @@ No prediction = not a hypothesis; discard or sharpen it.
 
 ### Step 5 — Verify the cause
 
-Work highest-confidence first. For each hypothesis:
+**Simple default (inline).** Work highest-confidence first. For each hypothesis:
 
 1. **Restate the prediction.**
 2. **Run the smallest probe** that confirms or refutes it. Prefer a debugger/REPL
    over logs. If you must add logs, tag them with a unique prefix like `[DEBUG-xyz]`
    so you can grep-clean them later.
 3. **Change one variable at a time.**
-4. **Decide:**
-   - Confirmed → write the report and go to Part 2.
-   - Refuted → mark it, try the next hypothesis.
+4. **Decide:** confirmed by the probe → hand to 5b before accepting it; refuted → mark
+   it, try the next hypothesis.
 
-**If none confirm:** use the negative evidence to generate new hypotheses (back to
-Step 4). If you exhaust your hypotheses, sharpen the loop (back to Step 2). Loop
-until confirmed or genuinely exhausted.
+#### 5a — Probe in parallel (hard path)
+
+Give each ranked hypothesis its own probe subagent, dispatched concurrently. Each is
+stateless: the reproduction command, its one hypothesis and prediction, and the file:line
+evidence — nothing else. Each runs the smallest probe that settles its prediction and
+returns this verdict (distinct from the verifier verdicts in `references/verification.md`):
+
+```markdown
+### Probe H<n> — <hypothesis>: CONFIRMED | REFUTED | INCONCLUSIVE
+Prediction: <the falsifiable prediction tested>
+Result: <what the probe observed — file:line, log line, value>
+```
+
+Collect the verdicts. A probe that mutates shared state runs alone (see Calibrate depth).
+
+#### 5b — Confirm adversarially
+
+`fix` commits the moment it confirms a cause — it removes the human review that the
+standalone `diagnose` skill leaves before a fix is applied. **The adversarial pass is
+that review.** Before accepting a cause, hand it to a fresh, independent subagent whose
+only job is to refute it — given only the claimed cause, the repro loop, and the evidence,
+never the author's reasoning. It hunts for a counterexample, an alternative cause that
+fits the same evidence, or an input where the predicted fix would not remove the symptom.
+
+- **Refutation fails** (the cause holds) → write the diagnosis record and go to Part 2.
+- **Refutation succeeds** → the cause is wrong or incomplete; fold the counter-evidence
+  into Step 4 and probe again.
+
+5b is **mandatory when the bug survived a prior fix**; an inline red-team (same context)
+is acceptable for a Simple bug, a separate refuter subagent for a Hard one.
+
+**If none survive:** use the negative evidence to generate new hypotheses (back to Step
+4). Exhausted your hypotheses → sharpen the loop (back to Step 2). When genuinely
+exhausted — no hypothesis survives both probing and refutation — **stop and write the
+report with status `blocked`; do not enter Part 2.** Never auto-apply a guess.
 
 ### Write the diagnosis record
 
-Write `.specs/<slug>/bugs/<name>.md` from `templates/bug.md` (confirmed variant) with
-the parent slug, root cause, reproduction loop, hypotheses tested, related AC IDs,
-fix proposal, and regression test. This record is the input to Part 2 — write the
-Fix Proposal as concrete, actionable steps.
+Write the record **only after 5b's refutation fails** — a refuted cause never gets written
+as the confirmed variant; it loops back to Step 4. Write `.specs/<slug>/bugs/<name>.md`
+from `templates/bug.md` (confirmed variant) with the parent slug, root cause, reproduction
+loop, hypotheses tested, related AC IDs, fix proposal, and regression test. Note how the
+cause survived refutation in the Root Cause / Hypotheses Tested sections; if 5b surfaced a
+surviving counter-case (an input the fix must still hold for), fold it into the Regression
+Test / Prevention field so Part 2 checks against it. This record is the input to Part 2 —
+write the Fix Proposal as concrete, actionable steps.
 
 ---
 
@@ -203,6 +260,11 @@ report and ask the user for what would unblock it.
 - **Reproduce before you fix.** No code change before the bug reproduces and the
   cause is confirmed. A `blocked` diagnosis stops here; it does not get a guessed
   fix.
+- **Author ≠ confirmer.** A cause isn't confirmed until an independent probe tried and
+  failed to refute it — and because `fix` commits the moment it confirms, a self-graded
+  wrong cause ships as a wrong fix.
+- **Exhausted is `blocked`, never a guess.** No hypothesis survives probing and
+  refutation → stop at a `blocked` report; do not enter Part 2.
 - **Falsifiable or it isn't a hypothesis.** One variable at a time. The loop is the
   skill — when stuck, sharpen it before generating more hypotheses.
 - **The regression test must fail for the reported reason before the fix, and pass

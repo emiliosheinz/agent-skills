@@ -224,21 +224,33 @@ names the parent spec.
 
 **Implement:**
 
-1. Add the **Regression Test** first and confirm it fails with the *reported* symptom
-   (wrong symptom = wrong test). Place it alongside the parent spec's existing
-   verification gates.
+1. Add the **Regression Test** first (if `/forge fix` did not already author it while
+   building the loop) and confirm it fails with the *reported* symptom (wrong symptom =
+   wrong test). Place it alongside the parent spec's existing verification gates. If the
+   record's Regression Test field reports no correct seam, fall back to the reproduction
+   loop as the gate and record the missing-seam gap in `state.md` per
+   `references/verification.md` graceful degradation — never fabricate or fake a test.
 2. Apply the **Fix Proposal** steps in order. Make the minimal change that fixes the
    root cause — resist scope creep; surface unrelated issues separately.
 
 **Verify:**
 
-- Re-run the report's reproduction loop and confirm it now passes.
+- Re-run the report's reproduction loop and confirm it now passes. Read the loop's
+  determinism/rate from the record's Reproduction field: for an intermittent bug, re-run
+  enough times (or at the reported stress level) to distinguish a fix from luck — one
+  green run is not proof.
 - Confirm the regression test is committed and green.
 - Run verifiers 1–2 (plus 3 against the bug's expected behavior and the Related AC
-  IDs).
-- Size is usually quick / standard.
+  IDs). Size is usually quick / standard — but if any Related AC is marked `critical` in
+  the parent spec, run verifier 5 (≥5 mutations covering the critical path's branches) on
+  the fix's new code regardless of size, per `references/verification.md` "Criticality
+  overrides the size gate".
+- On any verifier FAIL, work the delta top-down by severity, re-commit, and re-run the
+  failed verifiers — max 3 cycles, then escalate to the user with the delta (the bounded
+  loop from the main flow). A `SPEC-GAP` verdict routes back to `spec.md`, not a fix cycle.
 
 **Commit** atomically with a `fix:` type referencing the bug name. Update the report:
-`Status: resolved` plus a `Resolved: YYYY-MM-DD — <sha>` line. Append a Decisions row
-to the parent `.specs/<slug>/state.md` recording that the fix landed (see
-`references/fix.md` Part 2 for the row format).
+`Status: resolved` plus a `Resolved: YYYY-MM-DD — <sha>` line. On PASS, append a compact
+**Verification evidence** row to `.specs/<slug>/state.md` (regression test file:line →
+Related AC ID / reported symptom → covered), and append a Decisions row recording that
+the fix landed (see `references/fix.md` Part 2 for the row format).

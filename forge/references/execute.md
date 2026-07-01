@@ -19,9 +19,9 @@ Load first:
 
 - **Feature mode** (default). Source is `spec.md` / `design.md` / `plan.md` under
   `.specs/<slug>/`. Run the loop over the task table.
-- **Bug-fix mode.** Source is `.specs/bugs/<name>.md` from `/forge fix`. Triggered by
-  a path under `.specs/bugs/` or "fix the bug / apply the fix". See "Bug-fix mode
-  deltas" at the end.
+- **Bug-fix mode.** Source is `.specs/<slug>/bugs/<name>.md` from `/forge fix`.
+  Triggered by a path under `.specs/<slug>/bugs/` or "fix the bug / apply the fix".
+  See "Bug-fix mode deltas" at the end.
 
 If artifacts are missing (direct `/forge execute` on a quick change), do a **quick,
 focused** research pass: scan the codebase for patterns, test setup, entry points.
@@ -209,12 +209,15 @@ When the phase is done and green:
 
 ## Bug-fix mode deltas
 
-Triggered when source is `.specs/bugs/<name>.md`.
+Triggered when source is `.specs/<slug>/bugs/<name>.md`. The bug file's `Slug:` field
+names the parent spec.
 
 **Preconditions (check first):**
 
-- Load `.specs/bugs/<name>.md`. Extract Root Cause (file:line), Reproduction (the
-  loop/command), Fix Proposal (the steps), and Regression Test.
+- Load the parent context alongside the bug file: `.specs/<slug>/spec.md`,
+  `.specs/<slug>/design.md`, `.specs/<slug>/state.md`, `.specs/<slug>/lessons.md`.
+- Load `.specs/<slug>/bugs/<name>.md`. Extract Root Cause (file:line), Reproduction
+  (the loop/command), Related AC IDs, Fix Proposal (the steps), and Regression Test.
 - Status `blocked` → **stop.** Tell the user to re-run `/forge fix` with more context.
 - Status already `resolved`, or recent commits show the fix landed → stop and say so.
 - No task table — the report is a single unit of work.
@@ -222,7 +225,8 @@ Triggered when source is `.specs/bugs/<name>.md`.
 **Implement:**
 
 1. Add the **Regression Test** first and confirm it fails with the *reported* symptom
-   (wrong symptom = wrong test).
+   (wrong symptom = wrong test). Place it alongside the parent spec's existing
+   verification gates.
 2. Apply the **Fix Proposal** steps in order. Make the minimal change that fixes the
    root cause — resist scope creep; surface unrelated issues separately.
 
@@ -230,8 +234,11 @@ Triggered when source is `.specs/bugs/<name>.md`.
 
 - Re-run the report's reproduction loop and confirm it now passes.
 - Confirm the regression test is committed and green.
-- Run verifiers 1–2 (plus 3 against the bug's expected behavior).
+- Run verifiers 1–2 (plus 3 against the bug's expected behavior and the Related AC
+  IDs).
 - Size is usually quick / standard.
 
 **Commit** atomically with a `fix:` type referencing the bug name. Update the report:
-`Status: resolved` plus a `Resolved: YYYY-MM-DD — <sha>` line.
+`Status: resolved` plus a `Resolved: YYYY-MM-DD — <sha>` line. Append a Decisions row
+to the parent `.specs/<slug>/state.md` recording that the fix landed (see
+`references/fix.md` Part 2 for the row format).

@@ -6,8 +6,13 @@
 <!-- ===================== CONFIRMED ===================== -->
 # Bug: <bug-name>
 
+**Slug:** <parent-feature-slug>
 **Date:** YYYY-MM-DD
 **Status:** confirmed
+
+## Related AC IDs
+IDs from the parent `.specs/<slug>/spec.md` this bug regresses against, or `—` if
+none applies. Example: `ONBD-03`, `ONBD-07`.
 
 ## Root Cause
 Plain-language explanation of what broke and why. Cite file:line, log line, error
@@ -42,8 +47,13 @@ guard, refactor, or doc.
 <!-- ===================== BLOCKED ===================== -->
 # Bug: <bug-name>
 
+**Slug:** <parent-feature-slug>
 **Date:** YYYY-MM-DD
 **Status:** blocked
+
+## Related AC IDs
+IDs from the parent `.specs/<slug>/spec.md` this bug appears to regress against, or
+`—` if unknown.
 
 ## What We Know
 What was reported, the verbatim error/symptom, and any partial reproduction signal.

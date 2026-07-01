@@ -1,7 +1,7 @@
 # Fix
 
 **Goal:** find the root cause of a bug **and apply the fix**, end-to-end. One command:
-diagnose → confirm → implement → verify. Output: `.specs/bugs/<name>.md` (the
+diagnose → confirm → implement → verify. Output: `.specs/<slug>/bugs/<name>.md` (the
 diagnosis record) plus the committed code change.
 
 `fix` is the bug counterpart to the full pipeline. The common use: after
@@ -17,9 +17,53 @@ and a root cause is confirmed.
 > itself and does not hand off to another phase on success. SKILL.md's "recommend the
 > next verb" rule names this as the documented exception.
 
-Load `.specs/<slug>/lessons.md` if a related slug exists — past gotchas often explain
-the bug. Derive a kebab-case bug name; if `.specs/bugs/<name>.md` exists, append `-2`,
-`-3`.
+---
+
+## Step 0 — Bind the bug to a parent spec
+
+Every bug lives under a parent spec at `.specs/<slug>/bugs/<name>.md`. Bind the slug
+before intake.
+
+**Invocation forms.**
+
+- `/forge fix <bug-description>` — infer the slug (default).
+- `/forge fix <slug> <bug-name>` — user pinned the slug explicitly; use it verbatim
+  and skip inference.
+
+**Inference order (default form).**
+
+1. **Recent execute context.** If the current session shows a recent `/forge execute`
+   invocation, prefer that slug.
+2. **Keyword scan of `.specs/*/spec.md`.** Match the bug description against each
+   spec's title, acceptance criteria, and scope. Rank by keyword hits.
+3. **Ask** when inference is ambiguous.
+
+**Candidate resolution.**
+
+- Exactly one candidate — proceed with it and state the slug you picked before
+  intake.
+- Zero or two-or-more candidates — ask the user to choose. Use `AskUserQuestion` with
+  the candidates as options (plus "none of these") when available; fall back to a
+  single plain-text question listing available slugs.
+
+**Refuse when no spec exists (canonical rule).** If no matching spec exists after
+inference and asking, **stop**. Do **not** create the bug file. Do **not** auto-create
+a placeholder spec. Report the situation and offer two options:
+
+- list the available slugs under `.specs/` so the user can pick one, or
+- recommend running `/forge specify <slug>` first to capture the parent context, then
+  re-run `/forge fix`.
+
+**Once the slug is bound**, load the parent context:
+
+- `.specs/<slug>/spec.md` — requirements and AC IDs the bug may violate.
+- `.specs/<slug>/design.md` — architecture, contracts, verification gates.
+- `.specs/<slug>/state.md` — size, Decisions log, task status.
+- `.specs/<slug>/lessons.md` — Standing Rules plus tagged Log entries; past gotchas
+  often explain the bug.
+
+Derive a kebab-case bug name; if `.specs/<slug>/bugs/<name>.md` exists, append `-2`,
+`-3`. Create `.specs/<slug>/bugs/` if missing.
 
 ---
 
@@ -113,10 +157,10 @@ until confirmed or genuinely exhausted.
 
 ### Write the diagnosis record
 
-Write `.specs/bugs/<name>.md` from `templates/bug.md` (confirmed variant) with the
-root cause, reproduction loop, hypotheses tested, fix proposal, and regression test.
-This record is the input to Part 2 — write the Fix Proposal as concrete, actionable
-steps.
+Write `.specs/<slug>/bugs/<name>.md` from `templates/bug.md` (confirmed variant) with
+the parent slug, root cause, reproduction loop, hypotheses tested, related AC IDs,
+fix proposal, and regression test. This record is the input to Part 2 — write the
+Fix Proposal as concrete, actionable steps.
 
 ---
 
@@ -126,15 +170,20 @@ Once the root cause is confirmed, **apply it immediately** by running the bug-fi
 flow in `references/execute.md` ("Bug-fix mode deltas"). In short:
 
 1. Add the **regression test** from the report and confirm it fails with the
-   *reported* symptom (wrong symptom = wrong test).
+   *reported* symptom (wrong symptom = wrong test). Place it alongside the parent
+   spec's existing verification gates so the same test infrastructure covers it.
 2. Apply the **fix proposal** steps in order. Make the minimal change that fixes the
    root cause — resist scope creep; surface unrelated issues separately.
 3. **Verify:** re-run the report's reproduction loop and confirm it now passes; run
    verifiers 1–2 from `references/verification.md` (tests, lint), plus verifier 3
-   against the bug's expected behavior. Bounded fix loop (≤3 cycles), then escalate,
-   same as execute.
+   against the bug's expected behavior and the parent spec's Related AC IDs.
+   Bounded fix loop (≤3 cycles), then escalate, same as execute.
 4. **Commit** atomically with a `fix:` type referencing the bug name.
 5. Update the report: `Status: resolved` plus a `Resolved: YYYY-MM-DD — <sha>` line.
+6. Append a Decisions row to `.specs/<slug>/state.md`:
+   `AD-NN | Fix <bug-name> for <AC-ID(s) or —> | <root cause summary> | active | date`.
+   The bug file remains the diagnosis record; the Decisions row is the trail from the
+   parent spec back to it.
 
 If the diagnosis came back `blocked`, do **not** enter Part 2 — stop with the blocked
 report and ask the user for what would unblock it.

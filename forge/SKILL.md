@@ -22,7 +22,7 @@ phase. Every phase's depth auto-sizes to the change — see Sizing.
 /forge design           Architecture, contracts, verification gates     → design.md
 /forge plan             Atomic tasks, dependencies, AC traces            → plan.md
 /forge execute          Implement, then run independent verifiers        → working code
-/forge fix <bug>        Reproduce, root-cause, AND fix a bug end-to-end  → bugs/<name>.md + code
+/forge fix <bug>        Reproduce, root-cause, AND fix a bug end-to-end  → <slug>/bugs/<name>.md + code
 ```
 
 ## Dispatch
@@ -36,7 +36,7 @@ before acting** — it is the step-by-step playbook for that phase.
 | `design` | `references/design.md` | `.specs/<slug>/design.md` |
 | `plan` | `references/plan.md` | `.specs/<slug>/plan.md` |
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
-| `fix` | `references/fix.md` (+ `references/execute.md`) | `.specs/bugs/<name>.md` + applied fix |
+| `fix` | `references/fix.md` (+ `references/execute.md`) | `.specs/<slug>/bugs/<name>.md` + applied fix |
 
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
@@ -49,8 +49,10 @@ a verb is missing or unknown. Common mappings:
 | "implement X", "build this", spec + plan already exist | `execute` |
 | "it's broken", "root-cause this", "fix this bug" | `fix` |
 
-`specify` takes a feature name; `fix` takes a bug description. If absent, ask for one
-and derive a kebab-case slug.
+`specify` takes a feature name; `fix` takes a bug description (and optionally an
+explicit parent slug: `/forge fix <slug> <bug-name>`). If absent, ask for one and
+derive a kebab-case slug. Every bug lives under a parent spec — see `references/fix.md`
+for how the slug is bound and what happens when no parent spec exists.
 
 `fix` runs end-to-end on purpose: it diagnoses the bug **and** applies the fix using
 execute's bug-fix flow. The common loop is `/forge execute` → you verify the work →
@@ -88,7 +90,7 @@ All work for a change lives under `.specs/<slug>/` (create it if missing):
 .specs/<slug>/plan.md       tasks grouped into phases (parallel within a phase, AC-traced)
 .specs/<slug>/state.md      size, decisions log, task status, handoff — the source of truth
 .specs/<slug>/lessons.md    what went wrong here and the rule going forward
-.specs/bugs/<name>.md       fix's diagnosis record (and the fix it applied)
+.specs/<slug>/bugs/<name>.md  fix's diagnosis record (and the fix it applied) for this spec
 ```
 
 Templates for each are in `templates/`. **`state.md` is the single source of truth.**

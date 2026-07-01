@@ -13,7 +13,7 @@ problem to shipping verified code. Works in Claude Code and OpenCode.
 /forge design           Architecture, contracts, verification gates     → design.md
 /forge plan             Atomic tasks, dependencies, AC traces            → plan.md
 /forge execute          Implement, then run independent verifiers        → working code
-/forge fix <bug>        Reproduce, root-cause, AND fix a bug end-to-end  → bugs/<name>.md + code
+/forge fix <bug>        Reproduce, root-cause, AND fix a bug end-to-end  → <slug>/bugs/<name>.md + code
 ```
 
 You drive each transition. A phase recommends the next verb but never runs it for you.
@@ -53,13 +53,12 @@ Size can only increase. A downgrade requires your confirmation. See
 
 ```text
 .specs/<slug>/
-├── spec.md       what & why
-├── design.md     how
-├── plan.md       atomic tasks grouped into phases
-├── state.md      single source of truth (size, decisions, tasks, handoff)
-└── lessons.md    what went wrong, with the rule for next time
-
-.specs/bugs/<name>.md   fix's diagnosis record + the applied fix
+├── spec.md         what & why
+├── design.md       how
+├── plan.md         atomic tasks grouped into phases
+├── state.md        single source of truth (size, decisions, tasks, handoff)
+├── lessons.md      what went wrong, with the rule for next time
+└── bugs/<name>.md  fix's diagnosis record + the applied fix, scoped to this spec
 ```
 
 `state.md` is the single source of truth. It is plain markdown, not JSON, so it works

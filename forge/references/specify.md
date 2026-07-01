@@ -78,8 +78,9 @@ change will touch. Record as observations, not conclusions:
 - Integration boundaries: external services, APIs, data stores
 
 For a wide or unfamiliar codebase, dispatch read-only subagents per SKILL.md's
-Orchestration rules to map areas in parallel. Ground every claim in something you
-actually read or ran.
+Orchestration rules to map areas in parallel. Read-only scouting is economy/low work
+(SKILL.md Model & effort selection) — don't spend frontier tokens locating files.
+Ground every claim in something you actually read or ran.
 
 **Scan thoroughly** — the reuse analysis in `design.md` depends on it. Use the best
 search the toolchain offers. Prefer a syntax-aware/structural search when one is

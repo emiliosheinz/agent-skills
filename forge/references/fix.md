@@ -85,6 +85,12 @@ On the hard path, probes run as subagents under the contract in `SKILL.md` Orche
 (cite, don't restate). Isolate shared state: a probe that mutates a shared resource (one
 dev server, one DB row, one port) runs alone or in its own worktree/fixture.
 
+Tier the fan-out (SKILL.md Model & effort selection): loop-scouting and single-hypothesis
+probes are standard/medium — each tests one falsifiable prediction. The adversarial
+refuter in Step 5b is the one dispatch that earns frontier/high effort: refuting a cause
+that already survived its author's probe is the hardest reasoning in the loop. A Simple
+bug worked inline needs no tier choice.
+
 ### Step 1 — Intake
 
 No fixed question list. Interview until you have enough to attempt reproduction:

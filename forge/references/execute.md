@@ -78,6 +78,9 @@ contract emerged). Recommend — do not run it for the user.
      gate and commit.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
      otherwise use sequential subagent calls.
+   - **Set each implementer's model tier and effort** per SKILL.md Model & effort
+     selection: a mechanical task or one with a `reuses` precedent goes to economy/low;
+     reserve standard/frontier for tasks that actually need the reasoning.
    - The subagent returns a **compact summary**: paths changed, task-gate result
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
      diffs, or test dumps. Anything over ~100 lines goes to a file; the subagent

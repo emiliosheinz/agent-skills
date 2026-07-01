@@ -42,8 +42,26 @@ one at a time. Use subagents under one contract:
 - **Workflow is an optional speed-up** for dispatching the fan-out where the runtime
   supports it. Plain sequential subagent calls always work as a fallback — never
   require Workflow.
+- **Match model tier and effort to each probe** — it's the primary cost lever (below).
 - **`AskUserQuestion` for intake**, one question at a time, with a recommended default.
   Fall back to a single plain-text question. Never bundle unrelated questions.
+
+### Model & effort selection
+
+Pick two dials per subagent; never let the whole fan-out default to the most expensive
+model. Agent-agnostic — map the tiers to whatever your runtime exposes (Claude Code:
+`haiku` / `sonnet` / `opus`; OpenCode: cheapest capable / default / strongest model
+configured), via the runtime's per-subagent model control. Where a runtime lacks a
+model or effort dial, skip that dial rather than blocking.
+
+| Probe | Tier | Effort |
+|-------|------|--------|
+| Loop-scouting (Phase 2) — stand up a repro loop, report pass/fail | economy–standard | low–medium |
+| Hypothesis probe (Phase 5a) — test one falsifiable prediction | standard | medium |
+| Adversarial refuter (Phase 5b) — refute a cause its own probe confirmed | frontier | high |
+
+The refuter is the one dispatch worth frontier reasoning: it must find a counterexample
+an author's probe missed. A Simple bug worked inline needs no tier choice.
 
 Probe verdict format (Phase 5):
 
@@ -117,8 +135,9 @@ one is unworkable for this specific bug):
 **Scout in parallel when the reachable seam is unclear.** Instead of trying strategies
 one at a time, dispatch a subagent per candidate strategy, each tasked to *stand up the
 loop and report whether it yields a fast deterministic signal* — not to debug. Keep the
-first loop that works; discard the rest. Skip scouting when strategy 1 obviously reaches
-the bug — just write the test.
+first loop that works; discard the rest. These scouts are economy–standard/low work (see
+Model & effort selection) — they run harnesses, they don't reason hard. Skip scouting
+when strategy 1 obviously reaches the bug — just write the test.
 
 **Then sharpen the loop — treat it as the product:**
 
@@ -180,7 +199,8 @@ agent grades its own work generously. Before accepting a root cause, hand it to 
 **fresh, independent subagent whose job is to refute it**: find a counterexample, an
 alternative cause that fits the same evidence, or a case where the predicted fix would
 *not* remove the symptom. Give it only the claimed cause, the repro loop, and the
-evidence — not your reasoning.
+evidence — not your reasoning. Dispatch it at the frontier tier with high effort (see
+Model & effort selection) — this is the reasoning that most rewards a stronger model.
 
 - **Refutation fails** (the cause holds) → confirmed. Record how it held; go to Phase 6.
 - **Refutation succeeds** → the cause is wrong or incomplete. Fold the counter-evidence

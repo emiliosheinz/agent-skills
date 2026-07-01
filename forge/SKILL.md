@@ -116,12 +116,53 @@ a corrected wrong assumption, a skipped gate. Routine success writes nothing. Se
 - **Workflow is an optional speed-up** for dispatching many subagents at once, where
   the runtime supports it. Plain sequential subagent calls always work as a backup.
   Never require Workflow.
+- **Match model tier and reasoning effort to the task — don't pay frontier rates for
+  mechanical work.** See Model & effort selection below. This is the primary cost lever.
 - **One level of delegation.** Subagents do not spawn subagents.
 - **Subagents are stateless.** Put everything they need in the prompt (file paths,
   section refs, constraints). Outputs over ~100 lines go to a file; return the path,
   not the content.
 - **Prefer `AskUserQuestion` when available**, with a recommended default per question.
   Fall back to a single plain-text question otherwise. Never bundle unrelated questions.
+
+### Model & effort selection (canonical — references cite, not restate)
+
+Every subagent dispatch picks two dials. Set them explicitly per task; never let the
+whole fan-out default to the most expensive model. This is agent-agnostic — map the
+tiers to whatever your runtime exposes.
+
+**Tier** — the model's capability class:
+
+| Tier | Use for | Claude Code | OpenCode |
+|------|---------|-------------|----------|
+| **economy** | mechanical, well-scoped, low-ambiguity work with a clear pass/fail or a precedent to mirror | `haiku` | cheapest capable model configured |
+| **standard** | ordinary implementation and verification needing moderate reasoning | `sonnet` | the default agent model |
+| **frontier** | ambiguous synthesis, cross-cutting design, adversarial judgment, hard trade-offs | `opus` | strongest model configured |
+
+Pass the tier via the runtime's per-subagent model control (`model` on the Agent tool
+or Workflow `agent()`, `model` in a subagent definition's frontmatter, or the OpenCode
+agent's model field). If a runtime exposes no per-subagent model control, skip this dial
+and rely on effort alone — never block on it.
+
+**Effort** — reasoning/thinking budget, where the runtime supports a reasoning-effort or
+thinking-budget setting: `low` for mechanical tasks, `medium` for ordinary work, `high`
+only for genuinely hard reasoning (adversarial refutation, ambiguous design). Where the
+runtime has no effort dial, fold the intent into tier choice.
+
+**Defaults by work type** (start here, adjust for the specific task):
+
+| Work | Tier | Effort |
+|------|------|--------|
+| Read-only codebase scouting (specify), mirror-a-precedent implementer with a `reuses` pointer | economy | low |
+| Mechanical `[P]` implementer task with a clear task gate | economy | low–medium |
+| Ordinary implementer task, most single-verifier runs | standard | medium |
+| Design/architecture synthesis, plan decomposition for a complex change | frontier | high |
+| Adversarial or cross-cutting verification (the AC-trace / integration verifier) | standard→frontier | high |
+
+**Size interacts with tier.** A `quick` change should almost never dispatch a frontier
+subagent; a `complex` change earns frontier for its design and adversarial gates but
+still routes mechanical tasks to economy. When unsure between two tiers, pick the lower
+and let a failed gate promote it — the same ratchet as sizing.
 
 ## Universal rules (apply to every phase)
 

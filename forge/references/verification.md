@@ -104,6 +104,12 @@ automated.
 SKILL.md's Orchestration rules. Use Workflow when the runtime supports it; otherwise
 sequential subagent calls. Verifiers spawn nothing.
 
+**Model tier per verifier** (SKILL.md Model & effort selection). The automated verifiers
+have a mechanical pass/fail and run at economy/low: test suite (1), lint (2), and the
+build/typecheck degradations. The analysis verifiers — spec coverage (3) and architecture
+compliance (4) — need judgment; run them at standard, or frontier with high effort for a
+complex change. Don't send all five to the frontier tier by default.
+
 ## Graceful degradation (never fake a gate)
 
 - **No test framework:** verifier 1 degrades to build/typecheck/run-the-thing.

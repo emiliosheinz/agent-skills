@@ -79,6 +79,22 @@ Size can only increase. A downgrade requires your confirmation. See
 in any agent runtime. `references/` holds the per-phase playbooks; `templates/` holds
 the document scaffolds.
 
+## Installation
+
+Install to the current project:
+
+```bash
+npx skills add emiliosheinz/agent-skills --skill forge
+```
+
+Install globally (available across all projects):
+
+```bash
+npx skills add emiliosheinz/agent-skills --skill forge --global
+```
+
+See the [root README](../README.md) for installing all skills at once.
+
 ## Try it
 
 ```bash

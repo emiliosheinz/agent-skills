@@ -31,6 +31,22 @@ A `NNN-kebab-case-title.md` file at `docs/adr/` (or a user-specified directory) 
 - Options considered with pros and cons (MADR format)
 - Links to related ADRs, RFCs, or tickets
 
+## Installation
+
+Install to the current project:
+
+```bash
+npx skills add emiliosheinz/agent-skills --skill create-adr
+```
+
+Install globally (available across all projects):
+
+```bash
+npx skills add emiliosheinz/agent-skills --skill create-adr --global
+```
+
+See the [root README](../README.md) for installing all skills at once.
+
 ## Usage
 
 ```

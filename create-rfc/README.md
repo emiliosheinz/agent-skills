@@ -35,6 +35,22 @@ A Markdown RFC document containing:
 - Action items — concrete next steps after the decision
 - Outcome — left as a placeholder to be filled when the decision is made
 
+## Installation
+
+Install to the current project:
+
+```bash
+npx skills add emiliosheinz/agent-skills --skill create-rfc
+```
+
+Install globally (available across all projects):
+
+```bash
+npx skills add emiliosheinz/agent-skills --skill create-rfc --global
+```
+
+See the [root README](../README.md) for installing all skills at once.
+
 ## Usage
 
 ```

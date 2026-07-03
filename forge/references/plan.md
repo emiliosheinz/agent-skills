@@ -5,8 +5,8 @@ at a time. Output: `.specs/<slug>/plan.md` plus the task table in `.specs/<slug>
 Skipped at `quick` size.
 
 > Inside plan and execute, "phase" means a group of tasks run as a unit. This is a
-> different concept from forge's outer phases (specify / design / plan / execute /
-> fix). Context makes which one is meant.
+> different concept from forge's outer phases (specify / design / plan / execute).
+> Context makes which one is meant.
 
 Load first:
 

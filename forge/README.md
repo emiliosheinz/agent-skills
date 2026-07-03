@@ -1,6 +1,6 @@
 # forge
 
-An agent skill that runs spec-driven development in five phases, from understanding a
+An agent skill that runs spec-driven development in four phases, from understanding a
 problem to shipping verified code. Works in Claude Code and OpenCode.
 
 > SKILL.md is the canonical entry point for the agent. This README is for humans
@@ -13,7 +13,6 @@ problem to shipping verified code. Works in Claude Code and OpenCode.
 /forge design           Architecture, contracts, verification gates     → design.md
 /forge plan             Atomic tasks, dependencies, AC traces            → plan.md
 /forge execute          Implement, then run independent verifiers        → working code
-/forge fix <bug>        Reproduce, root-cause, AND fix a bug end-to-end  → <slug>/bugs/<name>.md + code
 ```
 
 You drive each transition. A phase recommends the next verb but never runs it for you.
@@ -57,8 +56,7 @@ Size can only increase. A downgrade requires your confirmation. See
 ├── design.md       how
 ├── plan.md         atomic tasks grouped into phases
 ├── state.md        single source of truth (size, decisions, tasks, handoff)
-├── lessons.md      what went wrong, with the rule for next time
-└── bugs/<name>.md  fix's diagnosis record + the applied fix, scoped to this spec
+└── lessons.md      what went wrong, with the rule for next time
 ```
 
 `state.md` is the single source of truth. It is plain markdown, not JSON, so it works
@@ -69,7 +67,6 @@ the document scaffolds.
 
 ```bash
 /forge specify checkout-refund   # start a feature from scratch
-/forge fix flaky-logout          # reproduce, root-cause, and fix a bug in one command
 ```
 
 If you omit the verb, the skill infers the phase from your request and confirms it.

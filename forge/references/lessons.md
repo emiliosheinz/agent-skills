@@ -8,14 +8,14 @@ gotchas, and corrected wrong assumptions. Stored at `.specs/<slug>/lessons.md`.
 
 ## When to load
 
-At the start of every phase (`specify`, `design`, `plan`, `execute`, `fix`) for the
+At the start of every phase (`specify`, `design`, `plan`, `execute`) for the
 slug. Always read `## Standing Rules` (small). Read `## Log` entries filtered to the
 area or tag relevant to the work — the verb name (`testing`, `auth`) or any tag
 matching files in the current task is a good filter.
 
 ## When to write
 
-At the end of `execute` (after verification) and at the end of `fix`. Other phases
+At the end of `execute` (after verification). Other phases
 consume lessons; they do not produce them. **Write only when something non-obvious was
 learned:**
 

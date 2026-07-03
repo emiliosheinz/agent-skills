@@ -44,7 +44,10 @@ is still unclear.
 3. **Always offer a recommended answer.** Propose a default the user can accept or
    override, derived from the codebase, prior conversation, or context.
 4. **Codebase first.** If the code, `.specs/`, or git history can answer it, read
-   first — do not ask. Save the user's attention for what only they know.
+   first — do not ask. Save the user's attention for what only they know. The sharpest
+   questions come straight from A2's impact trace: a shared contract two callers depend
+   on, or an integration boundary the change crosses, is a fork only the user can settle
+   ("changing X for A also affects B — should B change too?").
 5. **Record, do not invent.** "I don't know" / "not decided" is a valid answer — write
    it down as an open question. Never cover a gap with an assumption.
 
@@ -66,10 +69,15 @@ Signals that often hide gaps (use to find branches, not as a script):
 - what is settled vs. assumed-settled vs. open;
 - prior attempts, internal or external.
 
-### A2. Scan the codebase
+### A2. Scan the codebase — map, then trace impact
 
-Scan what is relevant to the problem until you have mapped the codebase areas the
-change will touch. Record as observations, not conclusions:
+Two moves. **Move 1** maps what exists in the domain; **Move 2** traces how the change
+will interact with and affect it. Both are Part A: **record what is, decide nothing.**
+Everything here is an observation, not a conclusion. `quick` does a light Move 1 only;
+`standard` and `complex` do both.
+
+**Move 1 — Map the domain.** Scan what is relevant to the problem until you have mapped
+the areas the change will touch:
 
 - Existing modules, services, components in the same domain
 - Established patterns: structure, naming, data flow, testing approach
@@ -77,10 +85,33 @@ change will touch. Record as observations, not conclusions:
 - Technical debt or known limitations visible in code or comments
 - Integration boundaries: external services, APIs, data stores
 
-For a wide or unfamiliar codebase, dispatch read-only subagents per SKILL.md's
-Orchestration rules to map areas in parallel. Read-only scouting is economy/low work
-(SKILL.md Model & effort selection) — don't spend frontier tokens locating files.
-Ground every claim in something you actually read or ran.
+**Move 2 — Trace the impact (standard+).** Trace outward from the code the change would
+touch, recording where the problem area sits and what already depends on it — never how
+to change it:
+
+- **Dependents** — what currently calls, imports, or relies on the code in the problem
+  area. This is the observed blast radius.
+- **Shared contracts & state** — data models, schemas, events, queues, config, or DB
+  tables in that area that *other* code also reads or writes today.
+- **Integration points** — external services, APIs, and cross-repo/cross-service
+  boundaries the area sits behind (the "codebase(s)" plural case).
+- **Existing in-domain prior art** — utilities, patterns, or components that already do
+  something similar. Record that they *exist* and where; the reuse-vs-reinvent decision
+  belongs to design (`design.md` reads these findings), not to specify.
+
+**No delta, no plan.** Do not record what the change "adds / modifies / removes" or
+sketch an approach — that is Part B and design. Part A records the terrain the change
+lands in, nothing more.
+
+**How to run it (calibrated by size).** Decompose the touched surface into ranked areas,
+highest likely blast radius first. Dispatch one read-only subagent per area in parallel
+per SKILL.md's Orchestration rules, each stateless with a strict return contract: what's
+there · what the change would touch · dependents · integration points · in-domain prior
+art. Locating files is economy/low work (SKILL.md Model & effort selection) — don't spend
+frontier tokens on it; the author synthesizes the returns into the blast-radius picture.
+Investigate before deciding: note the conventions the code already shows rather than
+invent new ones. Ground every claim in something you actually read or ran. **What the
+code answers is not a question for the user — it feeds A1.**
 
 **Scan thoroughly** — the reuse analysis in `design.md` depends on it. Use the best
 search the toolchain offers. Prefer a syntax-aware/structural search when one is

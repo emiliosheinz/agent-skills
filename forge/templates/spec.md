@@ -10,7 +10,8 @@
 
 <!--
 Auto-size the depth (see references/sizing.md):
-- quick: Problem + Acceptance Criteria only — a few lines. Delete the rest.
+- quick: Problem + Acceptance Criteria only — a few lines. Delete the rest (including
+  Impact / Blast Radius).
 - standard: all sections except the dimension sweep.
 - complex: all sections, including the dimension sweep and prior art.
 Acceptance criteria are written HERE and nowhere else. Downstream phases cite IDs.
@@ -36,6 +37,13 @@ What has been tried/built/considered — internal or external.
 ### Codebase Findings
 Observations from the existing code relevant to this problem (modules, patterns,
 integration boundaries, prior decisions). Observations only — no conclusions.
+
+### Impact / Blast Radius (standard+)
+Observed: where the problem area sits and what already depends on it. Current state only —
+no proposed changes (that is design's job).
+
+| Area the change would touch | What currently depends on it | Integration boundary | Existing in-domain prior art |
+|---|---|---|---|
 
 ### External References
 | Reference | URL (fetched) | Key finding |

@@ -32,7 +32,7 @@ quick/standard split from being purely subjective; the qualitative triggers deci
 
 | Phase | quick | standard | complex |
 |-------|-------|----------|---------|
-| **specify** | inline spec: problem + 1–3 acceptance criteria, a few lines | full spec, no dimension sweep | full spec + implicit-requirement dimension sweep + prior-art / external-reference pass |
+| **specify** | inline spec: problem + 1–3 acceptance criteria, a few lines (light domain map, no impact trace) | full spec + impact trace (observed dependents, integration, in-domain prior art), no dimension sweep | full spec + impact trace with cross-repo/service ripples + implicit-requirement dimension sweep + prior-art / external-reference pass |
 | **design** | skip | interfaces + error matrix + verification gates | + architecture diagram, data models, alternatives, risk register |
 | **plan** | skip (execute works the change as one task inline) | 1–2 phases of tasks with a parallelism assessment | several dependency-ordered phases, sequencing, execution risks |
 | **execute** | implement + verifiers 1–2 (tests, lint) | per phase: + verifiers 3–4 (spec coverage, architecture) | per phase: + verifier 5 (mutation sensor) |

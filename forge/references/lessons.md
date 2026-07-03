@@ -8,16 +8,16 @@ gotchas, and corrected wrong assumptions. Stored at `.specs/<slug>/lessons.md`.
 
 ## When to load
 
-At the start of every phase (`specify`, `design`, `plan`, `execute`) for the
+At the start of every phase (`specify`, `design`, `plan`, `execute`, and `fix`) for the
 slug. Always read `## Standing Rules` (small). Read `## Log` entries filtered to the
 area or tag relevant to the work — the verb name (`testing`, `auth`) or any tag
 matching files in the current task is a good filter.
 
 ## When to write
 
-At the end of `execute` (after verification). Other phases
-consume lessons; they do not produce them. **Write only when something non-obvious was
-learned:**
+At the end of `execute` (after verification), and at the end of a `fix` that corrected a
+wrong assumption or exposed a hidden coupling. Other phases consume lessons; they do not
+produce them. **Write only when something non-obvious was learned:**
 
 - a hack or workaround invented to get unblocked,
 - a gotcha that cost real time (flaky test, hidden coupling, env quirk),

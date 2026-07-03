@@ -2,26 +2,30 @@
 name: forge
 description: >
   Spec-driven development workflow that takes a change from problem to shipped, verified
-  code in four phases: specify, design, plan, execute. Auto-sizes from one-line
-  fixes to multi-repo refactors. Invoke a phase with `/forge specify|design|plan|execute`.
+  code in four phases: specify, design, plan, execute — plus a `fix` command to correct
+  course mid-stream. Auto-sizes from one-line fixes to multi-repo refactors. Invoke with
+  `/forge specify|design|plan|execute|fix`.
   TRIGGER when: the user asks to ship/build/implement a feature, write a PRD or spec or
   requirements, design architecture, write a technical design, break work into tasks or
-  an implementation plan, run TDD or write acceptance criteria. SKIP for: trivial one-off
-  edits the user already has fully specified, pure code review, or questions about how
-  forge itself works.
+  an implementation plan, run TDD or write acceptance criteria, or correct/adjust an
+  in-flight change — a misstated requirement, a design or implementation detail that's
+  wrong, or a bug found while testing. SKIP for: trivial one-off edits the user already
+  has fully specified, pure code review, or questions about how forge itself works.
 ---
 
 # Forge
 
 Forge runs spec-driven development as four phases. You invoke one phase at a time. Each
 phase does its work, updates shared state, and recommends (but does not run) the next
-phase. Every phase's depth auto-sizes to the change — see Sizing.
+phase. A fifth command, `fix`, re-enters the flow to correct course at any layer. Every
+phase's depth auto-sizes to the change — see Sizing.
 
 ```text
 /forge specify <name>   Understand the problem + capture requirements   → spec.md
 /forge design           Architecture, contracts, verification gates     → design.md
 /forge plan             Atomic tasks, dependencies, AC traces            → plan.md
 /forge execute          Implement, then run independent verifiers        → working code
+/forge fix <change>     Correct course mid-stream, keep the chain aligned → aligned artifacts + code
 ```
 
 ## Dispatch
@@ -35,6 +39,7 @@ before acting** — it is the step-by-step playbook for that phase.
 | `design` | `references/design.md` (+ `references/review.md`) | `.specs/<slug>/design.md` |
 | `plan` | `references/plan.md` | `.specs/<slug>/plan.md` |
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
+| `fix` | `references/fix.md` | re-aligned artifacts + code |
 
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
@@ -45,6 +50,7 @@ a verb is missing or unknown. Common mappings:
 | "design this", "how should we build X", architecture question | `design` |
 | "break this into tasks", "plan the work" | `plan` |
 | "implement X", "build this", spec + plan already exist | `execute` |
+| "this detail is wrong", "correct course", "I don't like this design", "found a bug while testing", change to an in-flight spec/design/plan/code | `fix` |
 
 `specify` takes a feature name. If absent, ask for one and derive a kebab-case slug.
 
@@ -181,7 +187,9 @@ and let a failed gate promote it — the same ratchet as sizing.
 ### Hand-off
 
 5. Each phase finishes, reports, and **recommends the next verb** — it never runs the
-   next phase.
+   next phase. The one documented exception is `fix`: for a *contained* correction it
+   re-aligns the artifacts and runs the code delta end-to-end in the same invocation
+   (see `references/fix.md`); a larger correction still only recommends the phase chain.
 6. `/create-rfc` and `/create-adr` are separate skills. Use `/create-rfc` when a
    significant decision needs stakeholder alignment; use `/create-adr` when an
    architectural choice deserves a standalone record. Reach for either at any point in

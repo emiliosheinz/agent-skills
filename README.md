@@ -35,17 +35,19 @@ npx skills add emiliosheinz/agent-skills --global
 | <nobr>`create-adr`</nobr> | Creates Architecture Decision Records (ADRs) to document architectural choices and their rationale. Use when asked to create or write an ADR, document a decision, record why something was chosen, or capture an architectural decision. |
 | <nobr>`create-rfc`</nobr> | Creates structured Request for Comments (RFC) documents for proposing and deciding on significant changes. Use when asked to create or write an RFC, draft a proposal, align stakeholders, or propose a change before a decision. |
 | <nobr>`diagnose`</nobr> | Root-causes complex bugs through a structured loop and saves a verified fix proposal — it diagnoses, it never fixes. Builds a fast deterministic feedback loop, reproduces, then probes ranked falsifiable hypotheses with parallel subagents and confirms the cause adversarially before writing the report. Use when a bug, error, crash, exception, failing or flaky test, regression, or unexplained behavior needs root-causing — especially when it is intermittent, subtle, cross-system, or resisted a first fix. |
-| <nobr>`forge`</nobr> | Spec-driven development workflow that takes a change from problem to shipped, verified code in four phases: specify, design, plan, execute. Auto-sizes from one-line fixes to multi-repo refactors. Invoke a phase with `/forge specify|design|plan|execute`. TRIGGER when: the user asks to ship/build/implement a feature, write a PRD or spec or requirements, design architecture, write a technical design, break work into tasks or an implementation plan, run TDD or write acceptance criteria. SKIP for: trivial one-off edits the user already has fully specified, pure code review, or questions about how forge itself works. |
+| <nobr>`forge`</nobr> | Spec-driven development workflow that takes a change from problem to shipped, verified code in four phases: specify, design, plan, execute — plus a `fix` command to correct course mid-stream. Auto-sizes from one-line fixes to multi-repo refactors. Invoke with `/forge specify|design|plan|execute|fix`. TRIGGER when: the user asks to ship/build/implement a feature, write a PRD or spec or requirements, design architecture, write a technical design, break work into tasks or an implementation plan, run TDD or write acceptance criteria, or correct/adjust an in-flight change — a misstated requirement, a design or implementation detail that's wrong, or a bug found while testing. SKIP for: trivial one-off edits the user already has fully specified, pure code review, or questions about how forge itself works. |
 
 ## Spec-Driven Development with `forge`
 
 `forge` runs the whole decision-to-implementation pipeline as four explicit phases under
-one skill. You invoke one phase at a time; each does its work, updates shared state, and
-**recommends** the next phase without auto-running it. Depth **auto-sizes** to the change.
+one skill, plus a `fix` command that re-enters the flow to correct course. You invoke one
+phase at a time; each does its work, updates shared state, and **recommends** the next
+phase without auto-running it. Depth **auto-sizes** to the change.
 
 ```mermaid
 flowchart LR
     SP["specify"] --> DE["design"] --> PL["plan"] --> EX["execute"]
+    FX["fix"] -.->|re-align any layer| SP & DE & PL & EX
 ```
 
 | Phase | Verb | Question it answers | Output |
@@ -54,6 +56,7 @@ flowchart LR
 | Design | `/forge design` | What are the architecture, contracts, and gates for "done"? | `.specs/<slug>/design.md` |
 | Plan | `/forge plan` | What are the phases of tasks, and what runs in parallel? | `.specs/<slug>/plan.md` |
 | Execute | `/forge execute` | Turn the plan into verified, committed code | working code |
+| Fix | `/forge fix <change>` | Something's wrong mid-stream — re-align it end-to-end | aligned artifacts + code |
 
 ### Auto-sizing
 

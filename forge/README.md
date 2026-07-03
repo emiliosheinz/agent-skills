@@ -1,7 +1,8 @@
 # forge
 
-An agent skill that runs spec-driven development in four phases, from understanding a
-problem to shipping verified code. Works in Claude Code and OpenCode.
+An agent skill that runs spec-driven development in four phases — plus a `fix` command to
+correct course mid-stream — from understanding a problem to shipping verified code. Works
+in Claude Code and OpenCode.
 
 > SKILL.md is the canonical entry point for the agent. This README is for humans
 > browsing the repo — read SKILL.md if you want the rules the agent follows.
@@ -13,11 +14,21 @@ problem to shipping verified code. Works in Claude Code and OpenCode.
 /forge design           Architecture, contracts, verification gates     → design.md
 /forge plan             Atomic tasks, dependencies, AC traces            → plan.md
 /forge execute          Implement, then run independent verifiers        → working code
+/forge fix <change>     Correct course mid-stream, keep the chain aligned → aligned artifacts + code
 ```
 
 You drive each transition. A phase recommends the next verb but never runs it for you.
 Start at any phase — a phase that finds no earlier artifacts gathers the minimum
 context it needs.
+
+## Correcting course
+
+When something needs to change after a phase is done — a misstated requirement, a design
+or implementation detail you're unhappy with, a bug found while testing — `/forge fix
+<change>` folds it in without breaking the chain. It routes the correction to the layer
+it truly belongs to (a code complaint is often really a spec gap), re-aligns every layer
+below, keeps the acceptance-criteria trace intact, and runs the code delta right away
+when the change is contained. See `references/fix.md`.
 
 ## Auto-sizing
 

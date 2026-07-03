@@ -111,8 +111,12 @@ cites:
 ## Execution plan
 
 Close `plan.md` with the execution order: phases in sequence, and within each phase
-the `[P]` batch (run together) and the sequential tasks (run in order). This is
-exactly what `execute` consumes.
+the sequential tasks (run in order) plus the `[P]` tasks grouped into **implementer
+batches** — a small number of batches (aim ≤3), each a set of related `[P]` tasks
+(grouped by locality: same module or files) that one subagent implements together.
+Don't emit a batch per task: that fragments context and inflates cost for little
+parallelism. A phase with only a couple of small or tightly-coupled tasks gets no
+batches — `execute` runs it in the main agent. This is exactly what `execute` consumes.
 
 ## Validate before presenting
 

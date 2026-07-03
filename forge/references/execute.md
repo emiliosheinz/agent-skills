@@ -65,14 +65,27 @@ contract emerged). Recommend — do not run it for the user.
 
 ## Run the phase
 
-1. **Split the phase** into its `[P]` (parallel-safe) tasks and its sequential tasks,
+1. **Decide whether to delegate at all.** If the phase has only a couple of small
+   tasks, or its tasks are tightly coupled, implement them in the main agent — don't
+   pay subagent startup for a fan-out that barely parallelizes. Delegate only a
+   self-contained chunk worth its own context (roughly: multiple files, or one
+   substantial component). Fanning out one subagent per atomic task is the worst case:
+   each cold-starts, reloads the spec and test setup, and its output pollutes your
+   context for little real parallelism.
+2. **Split the phase** into its `[P]` (parallel-safe) tasks and its sequential tasks,
    per the plan's parallelism assessment.
-2. **Implement the tasks.** Run sequential tasks in order. Run `[P]` tasks
+3. **Implement the tasks.** Run sequential tasks in order. Run `[P]` tasks
    concurrently.
-   - To parallelize, hand each `[P]` task to an **implementer subagent** with
-     everything it needs: file paths, AC IDs, the task gate, constraints.
+   - **Batch, don't fan out per task.** Group the phase's `[P]` tasks into a small
+     number of batches (aim ≤3) of related tasks — batch by locality, so tasks touching
+     the same module or files go together. Hand each *batch* to one **implementer
+     subagent** that works its tasks in its own context (sequentially within the batch,
+     loading the shared files and setup once). One subagent per task only when the tasks
+     are genuinely unrelated *and* each is substantial.
+   - Give each subagent everything it needs: file paths, AC IDs, the task gates,
+     constraints.
    - The subagent returns the files it changed and does **not** commit; you run its
-     gate and commit.
+     gates and commit.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
      otherwise use sequential subagent calls.
    - **Set each implementer's model tier and effort** per SKILL.md Model & effort
@@ -82,11 +95,11 @@ contract emerged). Recommend — do not run it for the user.
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
      diffs, or test dumps. Anything over ~100 lines goes to a file; the subagent
      returns the path.
-3. Each task follows the **per-task loop** below.
-4. **Run the phase gate** once every task in the phase is green — the broader check
+4. Each task follows the **per-task loop** below.
+5. **Run the phase gate** once every task in the phase is green — the broader check
    (full test suite + lint, or build) that confirms the phase integrates.
-5. **Verify the phase** with independent subagents, then fix the delta (below).
-6. **Mark the phase `completed`** in `state.md` and write the Handoff section.
+6. **Verify the phase** with independent subagents, then fix the delta (below).
+7. **Mark the phase `completed`** in `state.md` and write the Handoff section.
 
 ### Per-task loop
 

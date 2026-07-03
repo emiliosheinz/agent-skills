@@ -38,6 +38,11 @@ Size can only increase. A downgrade requires your confirmation. See
 - **One spec, two passes.** `specify` understands the world as it is (Part A), then
   turns that into requirements with acceptance criteria (Part B). Acceptance criteria
   are written once, with stable IDs, and referenced by ID everywhere downstream.
+- **Adversarial review of the spec and design.** Before finalizing, `specify` and
+  `design` hand their draft to independent reviewer subagents that attack it from lenses
+  the author is blind to — completeness, testability, scope leak; coverage, failure
+  modes, over-engineering. Size-gated, and the fixes land in the artifact. Catches a
+  vague AC or an orphaned requirement at authoring time instead of at execute time.
 - **Phased plan.** `plan` groups small tasks into dependency-ordered phases. Tasks
   within a phase run in parallel when a safety check approves. Each task traces to an
   acceptance criterion.

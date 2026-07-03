@@ -102,6 +102,16 @@ available). Don't design around an assumed API.
 explicit uncertainty in `design.md` and surface it. "This is unconfirmed" beats a
 plausible fabrication that propagates design → plan → execute.
 
+## Review the design adversarially
+
+The validation checklist below is your own self-check — and an agent grades its own work
+generously. Before writing the final design, draft it and hand the draft to independent
+reviewer subagents that attack it from lenses you're blind to: requirement coverage,
+failure-mode/risk, and simplicity/reuse. Run the review per `references/review.md`
+(size-gated), fold the ranked delta back into the draft, and escalate any genuine
+architecture decision to the user. This catches an orphaned AC or an over-built component
+here instead of at execute time.
+
 ## Write and route
 
 Write `.specs/<slug>/design.md` from `templates/design.md`, sized per

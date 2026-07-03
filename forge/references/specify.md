@@ -207,6 +207,18 @@ Before writing the spec, confirm:
 
 ---
 
+## Review the spec adversarially
+
+The closure gates above are your own self-check — and an agent grades its own work
+generously. Before writing the final spec, draft it and hand the draft to independent
+reviewer subagents that attack it from lenses you're blind to: completeness, testability,
+and scope/implementation-leak. Run the review per `references/review.md` (size-gated —
+`quick` skips it), fold the ranked delta back into the draft, and escalate any genuine
+requirement or scope decision to the user. This catches a vague AC here instead of paying
+for it as a `SPEC-GAP` at execute time.
+
+---
+
 ## Write the spec and route
 
 Write `.specs/<slug>/spec.md` from `templates/spec.md`, sized per

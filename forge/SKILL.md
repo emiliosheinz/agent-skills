@@ -31,8 +31,8 @@ before acting** — it is the step-by-step playbook for that phase.
 
 | Verb | Read | Produces |
 |------|------|----------|
-| `specify` | `references/specify.md` | `.specs/<slug>/spec.md` |
-| `design` | `references/design.md` | `.specs/<slug>/design.md` |
+| `specify` | `references/specify.md` (+ `references/review.md`) | `.specs/<slug>/spec.md` |
+| `design` | `references/design.md` (+ `references/review.md`) | `.specs/<slug>/design.md` |
 | `plan` | `references/plan.md` | `.specs/<slug>/plan.md` |
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
 

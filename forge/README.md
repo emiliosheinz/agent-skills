@@ -1,4 +1,4 @@
-# forge
+# 🪨 Forge
 
 An agent skill that runs spec-driven development in four phases — plus a `fix` command to
 correct course mid-stream — from understanding a problem to shipping verified code. Works

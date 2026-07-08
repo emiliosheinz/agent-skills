@@ -34,8 +34,24 @@ design's gates, the commit/diff under review). They are stateless.
    **assertions were deleted or loosened**, unless `state.md` records a justified
    reason. (Gutting pre-existing tests to go green is invisible to verifier 5, which
    mutates only new code.)
-2. **Lint / format** *(automated)* — run the project's configured linters/formatters
-   (ESLint, Prettier, Biome, etc.). Report unfixed issues by file:line.
+2. **Static analysis** *(automated)* — the non-runtime correctness gate. Run three
+   sub-checks, each as the project's **own configured command** (discover them from
+   package scripts, config files, pre-commit hooks, or CI — never invent one), and give
+   each an independent verdict `PASS | FAIL | N/A`, reporting unresolved issues by
+   file:line:
+   1. **Type check** — the configured type/compile check (`tsc --noEmit`, `mypy`,
+      `cargo check`, `go vet`, …) — the non-emitting check, not a full artifact build
+      (a build can clobber a live/running server). On a typed codebase this must run; a
+      change must not ship type-unchecked.
+   2. **Lint** — the configured linters (ESLint, Biome, Ruff, clippy, golangci-lint).
+   3. **Format** — the configured formatter in **check mode** (`prettier --check`,
+      `biome format`, `gofmt -l`). Report drift; never auto-fix-and-hide — a formatter
+      that rewrites files masks the drift and mutates the diff under review.
+
+   **N/A vs gap.** A tool the project genuinely has no analogue for (e.g. no type
+   checker in a dynamically-typed repo) is `N/A` — not a failure. A tool that *is*
+   configured but wasn't run is a gap: record it, never report it green (see "never
+   fake a gate" below).
 3. **Spec coverage** *(analysis)* — **evidence-or-zero**, in both directions.
 
    **Forward (sufficiency).** For each AC ID the task claims, produce a row:
@@ -105,19 +121,22 @@ SKILL.md's Orchestration rules. Use Workflow when the runtime supports it; other
 sequential subagent calls. Verifiers spawn nothing.
 
 **Model tier per verifier** (SKILL.md Model & effort selection). The automated verifiers
-have a mechanical pass/fail and run at economy/low: test suite (1), lint (2), and the
-build/typecheck degradations. The analysis verifiers — spec coverage (3) and architecture
+have a mechanical pass/fail and run at economy/low: test suite (1) and static analysis
+(2) — typecheck, lint, and format are all mechanical. The analysis verifiers — spec coverage (3) and architecture
 compliance (4) — need judgment; run them at standard, or frontier with high effort for a
 complex change. Don't send all five to the frontier tier by default.
 
 ## Graceful degradation (never fake a gate)
 
-- **No test framework:** verifier 1 degrades to build/typecheck/run-the-thing.
-  Verifier 5 is **skipped and recorded as a gap** in `state.md` plus a lessons
-  candidate ("no test seam here") — not silently passed.
+- **No test framework:** verifier 1 degrades to running the affected code path
+  directly (a smoke check) — typecheck is verifier 2's job. Verifier 5 is **skipped and
+  recorded as a gap** in `state.md` plus a lessons candidate ("no test seam here") —
+  not silently passed.
 - **No spec / quick direct execute:** verifier 3 traces against the acceptance
   criteria derived inline at execute time, same structure.
-- **Missing linter:** verifier 2 reports "no linter configured" rather than passing.
+- **Missing static-analysis tool:** verifier 2 reports each sub-check independently. A
+  tool the project has configured but that can't run is "not configured" / a gap, never
+  passed; a tool with no analogue for the language is `N/A`.
 - **No `WebFetch` / `WebSearch`:** the external-reference pass in `specify` degrades
   to codebase-only; design's "research unknowns" relies on docs already in the repo.
 

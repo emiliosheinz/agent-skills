@@ -32,6 +32,7 @@ npx skills add emiliosheinz/agent-skills --global
 
 | Skill | Description |
 |-------|-------------|
+| <nobr>`commit-message-generator`</nobr> | Generates Conventional Commit messages from staged changes in any git repository. Use when asked to write a commit message, generate a commit, draft a commit for staged changes, or when the user says "commit", "commit message", or "conventional commit". |
 | <nobr>`create-adr`</nobr> | Creates Architecture Decision Records (ADRs) to document architectural choices and their rationale. Use when asked to create or write an ADR, document a decision, record why something was chosen, or capture an architectural decision. |
 | <nobr>`create-rfc`</nobr> | Creates structured Request for Comments (RFC) documents for proposing and deciding on significant changes. Use when asked to create or write an RFC, draft a proposal, align stakeholders, or propose a change before a decision. |
 | <nobr>`diagnose`</nobr> | Root-causes complex bugs through a structured loop and saves a verified fix proposal — it diagnoses, it never fixes. Builds a fast deterministic feedback loop, reproduces, then probes ranked falsifiable hypotheses with parallel subagents and confirms the cause adversarially before writing the report. Use when a bug, error, crash, exception, failing or flaky test, regression, or unexplained behavior needs root-causing — especially when it is intermittent, subtle, cross-system, or resisted a first fix. |

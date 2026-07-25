@@ -29,7 +29,7 @@ Schemas and relationships, if any.
 ## Verification Gates
 What makes the change done & correct. One row per spec requirement/AC ID.
 
-| AC ID | Gate (test type + what it asserts / build / runtime check) |
+| AC ID | Gate (test type + what it asserts / typecheck / runtime check) |
 |---|---|
 
 ## Architectural Risks

@@ -15,7 +15,7 @@ What is being built and the execution approach. Links: spec.md, design.md.
 ## Phase 1 — <goal / checkpoint this phase delivers>
 
 **Depends-on:** none
-**Phase gate:** `<full test + lint, or build — run once all tasks below are green>`
+**Phase gate:** `<full test + static analysis (typecheck + lint + format) — run once all tasks below are green>`
 
 ### PREFIX-P1-01 — <one-line action> `[P]` <!-- [P] — per-test in-memory DB, see <test file> -->
 - **depends-on:** none

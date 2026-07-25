@@ -59,7 +59,8 @@ Size can only increase. A downgrade requires your confirmation. See
   acceptance criterion.
 - **Independent verifiers.** `execute` implements a phase, then dispatches verifier
   subagents written by a different agent than the one that wrote the code. They check
-  tests, lint, spec coverage, architecture, and (for complex changes) mutation testing.
+  tests, static analysis (typecheck + lint + format), spec coverage, architecture, and
+  (for complex changes) mutation testing.
   A bounded fix loop addresses what they find.
 - **Lessons layer.** Each change keeps its own `lessons.md` listing what went wrong and
   the rule for next time. Each phase loads it at start.

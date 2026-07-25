@@ -51,7 +51,7 @@ The design must survive an implementation rewrite.
 5. **Error-handling matrix** — failure scenarios → user-facing or system outcome.
 6. **Verification gates (required).** Define what makes the change *done and correct*.
    For each requirement / AC ID from the spec, name the gate that proves it: a test
-   type and what it must assert, a build/typecheck check, or a runtime/observability
+   type and what it must assert, a typecheck check, or a runtime/observability
    check. These gates are what `plan` attaches to tasks and what `execute`'s verifiers
    enforce. Reference AC IDs; never restate the criterion text.
 7. **Architectural risks** — with impact, probability, and mitigation. Execution and

@@ -25,7 +25,7 @@ order, `[P]` tasks run in parallel within a phase. Task status: pending /
 in-progress / done / blocked. Mark a finished phase `**completed**` below its heading.
 
 ### Phase 1 — <goal>
-Phase gate: `<full test + lint / build>`
+Phase gate: `<full test + static analysis (typecheck + lint + format)>`
 
 | ID | par | depends-on | AC-trace | gate | status | evidence (sha) |
 |----|-----|------------|----------|------|--------|----------------|

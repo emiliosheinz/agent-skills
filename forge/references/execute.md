@@ -97,7 +97,8 @@ contract emerged). Recommend — do not run it for the user.
      returns the path.
 4. Each task follows the **per-task loop** below.
 5. **Run the phase gate** once every task in the phase is green — the broader check
-   (full test suite + lint, or build) that confirms the phase integrates.
+   (full test suite + static analysis: typecheck + lint + format) that confirms the
+   phase integrates.
 6. **Verify the phase** with independent subagents, then fix the delta (below).
 7. **Mark the phase `completed`** in `state.md` and write the Handoff section.
 

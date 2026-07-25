@@ -46,8 +46,8 @@ Each phase has:
 - **Tasks** — atomic tasks (below), with `[P]` markers from the parallelism assessment.
 - **Depends-on** — the earlier phase(s) that must complete first.
 - **Phase gate** — the command run once all the phase's tasks are done, to confirm the
-  phase as a whole is sound (typically the project's full test + lint, or build for
-  config-only phases).
+  phase as a whole is sound (typically the project's full test + static analysis —
+  typecheck + lint + format).
 
 **How many phases (plan deliberately; do not pad):**
 
@@ -103,10 +103,10 @@ cites:
   fail is useless. Name exact commands, never "tests should pass". Shapes:
   - exit-zero: `npm test -- src/auth/token.test.ts`
   - grep-zero: `grep -rn "deprecatedApi" src | wc -l | grep -qx 0`
-  - typecheck/build: `tsc --noEmit`
+  - typecheck: `tsc --noEmit`
 - **Phase gate:** once every task in a phase is green, run the broader check (full
-  test suite + lint, or build) so cross-task integration is confirmed before the next
-  phase.
+  test suite + static analysis — typecheck + lint + format) so cross-task integration
+  is confirmed before the next phase.
 
 ## Execution plan
 

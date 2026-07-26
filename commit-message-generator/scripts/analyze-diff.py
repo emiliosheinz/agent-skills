@@ -1,22 +1,33 @@
 #!/usr/bin/env python3
-"""Analyze staged changes and print structured facts for the agent.
+"""Analyze git state and print structured facts for the agent.
 
-Sole source of truth for what the staged diff contains. The agent must run this
-script before writing a commit message and never read the diff manually.
+Sole source of truth for what the working tree contains. The agent must run
+this script before writing a commit message and never read the diff manually.
 
-Prints (in order):
-    Branch        : current branch name
-    Files changed : count
-    Status counts : A=added M=modified D=deleted R=renamed
-    Suggested type: feat | test | fix (heuristic — agent may override)
-    Likely scopes : top-level folders touched (sorted, deduped)
-    Files         : one per line, "<status>\t<path>"
+Modes (auto-detected, staged wins):
 
-Never writes or suggests a commit message. That is the agent's job.
+  Staged   — staged files exist. Prints:
+      State         : staged
+      Branch, Files changed, Status counts, Suggested type,
+      Likely scopes, Files (status\tpath).
+  Unstaged — no staged files but unstaged tracked or untracked files exist.
+      Prints:
+      State         : unstaged
+      Branch, Files changed (tracked+untracked), Status counts,
+      Likely scopes, Files (status\tpath; untracked marked with `?`).
+      Agent then proposes commit groups.
+  Empty    — nothing to commit. Exits 1.
+
+Flags:
+  --json         Emit JSON instead of the human-readable block.
+  --self-check   Run internal assertions and exit.
+
+Never writes a commit message. That is the agent's job.
 """
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from collections import Counter
@@ -31,7 +42,6 @@ def run(cmd: list[str]) -> str:
 
 
 def top_level(path: str) -> str:
-    # "src/api/foo.ts" -> "src"; "README.md" -> "."
     return path.split("/", 1)[0] if "/" in path else "."
 
 
@@ -56,7 +66,6 @@ def parse_name_status(raw: str) -> list[tuple[str, str]]:
             continue
         parts = line.split("\t")
         status = parts[0]
-        # Rename/copy status is "R100" or "C075" followed by old + new path
         path = parts[-1]
         entries.append((status[0], path))
     return entries
@@ -68,48 +77,117 @@ def suggest_type(entries: list[tuple[str, str]]) -> str:
     paths = [p for _, p in entries]
     if all(is_test_path(p) for p in paths):
         return "test"
-    if any(status == "A" for status, _ in entries):
+    if any(status in {"A", "?"} for status, _ in entries):
         return "feat"
     return "fix"
 
 
-def main() -> int:
+def collect_staged() -> list[tuple[str, str]]:
     raw = run(["git", "diff", "--staged", "--name-status"]).strip()
-    if not raw:
-        print("No staged changes. Stage files with `git add` first.")
-        return 1
+    return parse_name_status(raw) if raw else []
 
-    entries = parse_name_status(raw)
+
+def collect_unstaged_tracked() -> list[tuple[str, str]]:
+    raw = run(["git", "diff", "--name-status"]).strip()
+    return parse_name_status(raw) if raw else []
+
+
+def collect_untracked() -> list[tuple[str, str]]:
+    raw = run(["git", "ls-files", "--others", "--exclude-standard"]).strip()
+    if not raw:
+        return []
+    return [("?", line) for line in raw.splitlines() if line.strip()]
+
+
+def build_report(state: str, entries: list[tuple[str, str]], branch: str) -> dict:
+    counts = Counter(status for status, _ in entries)
+    scopes = sorted({top_level(p) for _, p in entries if top_level(p) != "."})
+    return {
+        "state": state,
+        "branch": branch,
+        "files_changed": len(entries),
+        "status_counts": dict(counts),
+        "suggested_type": suggest_type(entries),
+        "likely_scopes": scopes,
+        "files": [{"status": s, "path": p} for s, p in entries],
+    }
+
+
+def print_human(report: dict) -> None:
+    counts_str = " ".join(f"{k}={v}" for k, v in sorted(report["status_counts"].items()))
+    scopes = ", ".join(report["likely_scopes"]) if report["likely_scopes"] else "(root)"
+    print(f"State         : {report['state']}")
+    print(f"Branch        : {report['branch']}")
+    print(f"Files changed : {report['files_changed']}")
+    print(f"Status counts : {counts_str}")
+    print(f"Suggested type: {report['suggested_type']}")
+    print(f"Likely scopes : {scopes}")
+    print("Files         :")
+    for f in report["files"]:
+        print(f"  {f['status']}\t{f['path']}")
+
+
+def main(as_json: bool) -> int:
     branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
 
-    counts = Counter(status for status, _ in entries)
-    counts_str = " ".join(f"{k}={v}" for k, v in sorted(counts.items()))
+    staged = collect_staged()
+    if staged:
+        report = build_report("staged", staged, branch)
+    else:
+        unstaged = collect_unstaged_tracked() + collect_untracked()
+        if not unstaged:
+            msg = "Nothing to commit. Working tree clean."
+            if as_json:
+                print(json.dumps({"state": "empty", "message": msg}))
+            else:
+                print(msg)
+            return 1
+        report = build_report("unstaged", unstaged, branch)
 
-    scopes = sorted({top_level(p) for _, p in entries if top_level(p) != "."})
-
-    print(f"Branch        : {branch}")
-    print(f"Files changed : {len(entries)}")
-    print(f"Status counts : {counts_str}")
-    print(f"Suggested type: {suggest_type(entries)}")
-    print(f"Likely scopes : {', '.join(scopes) if scopes else '(root)'}")
-    print("Files         :")
-    for status, path in entries:
-        print(f"  {status}\t{path}")
+    if as_json:
+        print(json.dumps(report))
+    else:
+        print_human(report)
     return 0
 
 
+def self_check() -> None:
+    assert top_level("src/api/foo.ts") == "src"
+    assert top_level("README.md") == "."
+    assert is_test_path("tests/foo.py")
+    assert is_test_path("src/foo.test.ts")
+    assert is_test_path("__tests__/bar.js")
+    assert not is_test_path("src/foo.ts")
+    assert suggest_type([("A", "src/foo.ts")]) == "feat"
+    assert suggest_type([("?", "src/new.ts")]) == "feat"
+    assert suggest_type([("M", "tests/a.py"), ("M", "tests/b.py")]) == "test"
+    assert suggest_type([("M", "src/foo.ts")]) == "fix"
+    assert suggest_type([]) == "fix"
+
+    report = build_report(
+        "unstaged",
+        [("M", "src/api/foo.ts"), ("?", "src/api/new.ts"), ("M", "README.md")],
+        "main",
+    )
+    assert report["state"] == "unstaged"
+    assert report["files_changed"] == 3
+    assert report["status_counts"] == {"M": 2, "?": 1}
+    assert report["likely_scopes"] == ["src"]
+    assert report["suggested_type"] == "feat"
+
+    empty = build_report("staged", [], "main")
+    assert empty["files_changed"] == 0
+    assert empty["likely_scopes"] == []
+
+    payload = json.loads(json.dumps(report))
+    assert payload["files"][0] == {"status": "M", "path": "src/api/foo.ts"}
+
+    print("self-check ok")
+
+
 if __name__ == "__main__":
-    # ponytail: assert-based self-check; run with `python analyze-diff.py --self-check`
-    if len(sys.argv) > 1 and sys.argv[1] == "--self-check":
-        assert top_level("src/api/foo.ts") == "src"
-        assert top_level("README.md") == "."
-        assert is_test_path("tests/foo.py")
-        assert is_test_path("src/foo.test.ts")
-        assert is_test_path("__tests__/bar.js")
-        assert not is_test_path("src/foo.ts")
-        assert suggest_type([("A", "src/foo.ts")]) == "feat"
-        assert suggest_type([("M", "tests/a.py"), ("M", "tests/b.py")]) == "test"
-        assert suggest_type([("M", "src/foo.ts")]) == "fix"
-        print("self-check ok")
+    args = sys.argv[1:]
+    if "--self-check" in args:
+        self_check()
         sys.exit(0)
-    sys.exit(main())
+    sys.exit(main(as_json="--json" in args))

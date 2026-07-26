@@ -1,60 +1,76 @@
 # commit-message-generator
 
-Agent skill that generates Conventional Commit messages from the currently
-staged changes. Works in any git repository — scopes are derived from the diff
-each run, so there is no per-project setup.
+Agent skill that turns the current git state into one or more well-formed
+Conventional Commit messages. Works in any git repository — scopes and
+commit groups are derived from the diff each run, so there is no
+per-project setup.
 
 ## When to use
 
 Invoke this skill when you want to:
 
-- Turn a staged diff into a well-formed Conventional Commit message
-- Get a consistent commit style across many repositories
-- Draft a message you can review and edit before running `git commit`
+- Turn a staged diff into a well-formed Conventional Commit message.
+- Let the agent auto-stage a messy working tree and split it into
+  sensible commits, one at a time.
+- Get a consistent commit style across many repositories.
+- Draft a message you can review and edit before it runs `git commit`.
 
 ## Requirements
 
 - `git` on `PATH`
-- `python3` (used by the diff analyzer script — no external packages)
+- `python3` (used by the analyzer script — stdlib only, no packages)
 
 ## How it works
 
-1. Runs `scripts/analyze-diff.py` against the staged diff — the sole source of
-   truth for what changed (branch, files, status counts, suggested type,
-   likely scopes).
-2. Picks a type (`feat`, `fix`, `refactor`, `test`, `docs`, `chore`) from the
-   diff signals.
-3. Derives a scope from the top-level folders touched. Only asks the user when
-   the diff spans genuinely ambiguous or unrelated areas.
-4. Writes a subject line and — only when the diff is non-trivial — a 2–5 bullet
-   body.
-5. Adds a `Refs: KEY-123` footer if the branch name contains a ticket key
-   matching `[A-Z]{2,}-\d+` (e.g. `feature/JIRA-1234-foo` → `Refs: JIRA-1234`).
-6. For edge cases (breaking changes, reverts, merges, multi-scope diffs)
+1. Runs `scripts/analyze-diff.py` — the sole source of truth for what's in
+   the working tree. Reports one of two states:
+   - `staged` — staged files exist. The agent uses only those.
+   - `unstaged` — nothing staged; unstaged tracked changes and/or
+     untracked files exist. The agent proposes commit groups.
+2. **Staged path:** picks a type (`feat`, `fix`, `refactor`, `test`,
+   `docs`, `chore`), derives a scope from the top-level folders touched,
+   writes a subject and — only when the diff is non-trivial — a 2–5
+   bullet body.
+3. **Unstaged path:** proposes 1–4 logical commit groups from the file
+   list. On your confirmation, iterates the groups sequentially:
+   `git add -- <paths>` → generate message → confirm → commit → next
+   group.
+4. Adds a `Refs: KEY-123` footer if the branch name contains a ticket key
+   matching `[A-Z]{2,}-\d+` (e.g. `feature/JIRA-1234-foo` →
+   `Refs: JIRA-1234`).
+5. For edge cases (breaking changes, reverts, merges, multi-scope diffs)
    consults `references/conventional-commits.md` instead of improvising.
 
-The skill prints the message and waits for confirmation. Reply `yes` (also
-`lgtm`, `ship it`, `commit`) to commit, reply with feedback (e.g. "shorter",
+Every commit requires an explicit confirmation. Reply `yes` (also `lgtm`,
+`ship it`, `commit`) to commit, reply with feedback (e.g. "shorter",
 "change scope to auth", "drop the body") to revise, or reply `no` (also
-`cancel`, `abort`) to stop. Nothing is committed without your explicit
-go-ahead.
+`cancel`, `abort`) to stop. On cancel mid-run, already-confirmed commits
+stay; the current group is unstaged; remaining groups are skipped.
 
 ## Guarantees
 
 - Never runs `git commit` without your confirmation.
+- Never runs `git push`.
 - Never passes `--no-verify` — pre-commit hooks always run.
 - Never amends an existing commit.
-- Never stages files for you — you control what's in the diff.
+- Never uses `git add -A` / `git add .` — only the exact paths for the
+  current group.
+- Never touches staged files when the skill starts with a staged state.
+- Never modifies file contents on disk — cancels only unstage.
 - Never adds a `Co-Authored-By` trailer unless you ask.
 
 ## Special cases handled automatically
 
-- **Lockfile-only diff** (`package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`,
-  `Cargo.lock`, `poetry.lock`, `go.sum`) → `chore(deps): update lockfile`.
+- **Lockfile files** (`package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`,
+  `Cargo.lock`, `poetry.lock`, `go.sum`) → their own
+  `chore(deps): update lockfile` group.
+- **Docs-only files** (`README`, `docs/`, `*.md`) → their own `docs`
+  group, unless shipped alongside a feature in the same run.
+- **Config / meta files** (`.github/`, `.gitignore`, tooling configs) →
+  their own `chore` group unless intertwined with feature code.
 - **Rename-only diff** → `refactor` with the new name in the subject.
-- **More than 3 distinct scopes or mixed change types** → the skill lists the
-  scopes, suggests splitting into separate commits, and asks before proceeding
-  with a single message.
+- **More than 4 groups** — the skill declines to auto-split; it prints the
+  file list grouped by top-level folder and asks you to narrow scope.
 - **Trivial diff** (one-line fix, single rename) → subject only, no body.
 
 ## Output
@@ -82,6 +98,9 @@ feat(auth): refresh access tokens before expiry
 Refs: PROJ-482
 ```
 
+In a multi-group run, each group is confirmed and committed in turn, with
+`[N/M] committed <hash> <subject>` printed after each.
+
 ## Installation
 
 Install to the current project:
@@ -100,15 +119,18 @@ See the [root README](../README.md) for installing all skills at once.
 
 ## Usage
 
-Stage your changes, then invoke the skill:
+You do not need to stage anything first. Invoke the skill from your
+agent:
 
-```bash
-git add <files>
-# then, in your agent:
+```
 /commit-message-generator
 ```
 
-The agent runs the analyzer, prints the proposed commit message, and asks
-for confirmation. `yes` → it runs `git commit` for you. Feedback (e.g.
-"shorter", "change scope to auth", "drop the body") → it revises and asks
-again. `no` → it aborts and leaves your staged changes alone.
+- If files are already staged, the skill works with them exactly as
+  before: proposes a message, confirms, commits.
+- If nothing is staged, the skill inspects tracked changes + untracked
+  files, proposes commit groups, confirms the plan with you, then
+  stages + confirms + commits each group in sequence.
+
+Prefer to stage manually? Do it — the skill will respect your staged
+selection and skip the grouping step.

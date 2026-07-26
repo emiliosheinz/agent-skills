@@ -68,7 +68,7 @@ Size can only increase. A downgrade requires your confirmation. See
 ## Artifacts
 
 ```text
-.specs/<slug>/
+./.specs/<slug>/
 ├── spec.md         what & why
 ├── design.md       how
 ├── plan.md         atomic tasks grouped into phases

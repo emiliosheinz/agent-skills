@@ -1,7 +1,7 @@
 # Lessons
 
 A per-change memory so the agent gets better at *this* change over time: hacks,
-gotchas, and corrected wrong assumptions. Stored at `.specs/<slug>/lessons.md`.
+gotchas, and corrected wrong assumptions. Stored at `./.specs/<slug>/lessons.md`.
 
 > Moving lessons to a wider scope — repo-wide or skill-global — is a future step once
 > the per-change pattern proves itself. Keep them per-change for now.

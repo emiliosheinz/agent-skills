@@ -1,5 +1,9 @@
 # Fix
 
+> **Phase prelude:** resolve `SPECS_ROOT` per SKILL.md → *Artifact root
+> (session CWD)* before any read or write. Every `./.specs/...` path below is
+> `$SPECS_ROOT/...`.
+
 **Goal:** fold a mid-stream correction into an in-flight change and keep the whole chain
 aligned — spec → design → plan → code → tests. A correction can enter at any layer: a
 misstated requirement, a design detail you're unhappy with, a task that's wrong, an
@@ -14,12 +18,12 @@ it is contained.
 
 Load first:
 
-- `.specs/<slug>/state.md` — size, task table, Decisions, **Handoff** (read this before
+- `./.specs/<slug>/state.md` — size, task table, Decisions, **Handoff** (read this before
   touching anything — it tells you what is mid-task).
-- `.specs/<slug>/lessons.md` — Standing Rules and Log.
+- `./.specs/<slug>/lessons.md` — Standing Rules and Log.
 - Only the artifact sections the correction touches — read selectively.
 
-If there is no `.specs/<slug>/` at all, `fix` has nothing to align: refuse and route —
+If there is no `./.specs/<slug>/` at all, `fix` has nothing to align: refuse and route —
 `/forge execute` for a trivial self-contained change, or `/forge specify` to capture the
 parent context. Never fabricate a spec.
 

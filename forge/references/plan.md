@@ -1,7 +1,11 @@
 # Plan
 
+> **Phase prelude:** resolve `SPECS_ROOT` per SKILL.md → *Artifact root
+> (session CWD)* before any read or write. Every `./.specs/...` path below is
+> `$SPECS_ROOT/...`.
+
 **Goal:** group the work into **phases** of atomic tasks that `execute` runs one phase
-at a time. Output: `.specs/<slug>/plan.md` plus the task table in `.specs/<slug>/state.md`.
+at a time. Output: `./.specs/<slug>/plan.md` plus the task table in `./.specs/<slug>/state.md`.
 Skipped at `quick` size.
 
 > Inside plan and execute, "phase" means a group of tasks run as a unit. This is a
@@ -10,10 +14,10 @@ Skipped at `quick` size.
 
 Load first:
 
-- `.specs/<slug>/spec.md` — requirements and AC IDs.
-- `.specs/<slug>/design.md` — components, contracts, verification gates.
-- `.specs/<slug>/state.md` — size and decisions.
-- `.specs/<slug>/lessons.md` — Standing Rules plus tagged Log entries.
+- `./.specs/<slug>/spec.md` — requirements and AC IDs.
+- `./.specs/<slug>/design.md` — components, contracts, verification gates.
+- `./.specs/<slug>/state.md` — size and decisions.
+- `./.specs/<slug>/lessons.md` — Standing Rules plus tagged Log entries.
 
 If a design is missing, do a quick codebase scan to derive the architectural context
 the plan needs; prefer running `/forge design` first for complex work.
@@ -136,7 +140,7 @@ production deploys (strategy, triggers + thresholds, steps).
 
 ## Write and route
 
-Write `.specs/<slug>/plan.md` from `templates/plan.md` and populate the **task table
+Write `./.specs/<slug>/plan.md` from `templates/plan.md` and populate the **task table
 in `state.md`**, grouped by phase, all tasks `pending`. Update `state.md` with any
 size promotion (and its reason).
 

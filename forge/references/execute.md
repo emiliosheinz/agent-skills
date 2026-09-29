@@ -1,5 +1,9 @@
 # Execute
 
+> **Phase prelude:** resolve `SPECS_ROOT` per SKILL.md → *Artifact root
+> (session CWD)* before any read or write. Every `./.specs/...` path below is
+> `$SPECS_ROOT/...`.
+
 **Goal:** turn the plan into working, verified, committed code — **one phase at a
 time.** Within a phase: implement its tasks (in parallel where the plan marks them
 `[P]`), then verify the phase with independent subagents, fix what they flag, and mark
@@ -10,14 +14,14 @@ the phase done.
 
 Load first:
 
-- `.specs/<slug>/state.md` — size, task table by phase, decisions, handoff.
-- `.specs/<slug>/lessons.md` — Standing Rules plus tagged Log entries.
+- `./.specs/<slug>/state.md` — size, task table by phase, decisions, handoff.
+- `./.specs/<slug>/lessons.md` — Standing Rules plus tagged Log entries.
 - The artifacts the current phase touches — read selectively.
 - `references/verification.md` for the verifier contract.
 
 ## Source
 
-Source is `spec.md` / `design.md` / `plan.md` under `.specs/<slug>/`. Run the loop over
+Source is `spec.md` / `design.md` / `plan.md` under `./.specs/<slug>/`. Run the loop over
 the task table.
 
 If artifacts are missing (direct `/forge execute` on a quick change), do a **quick,
@@ -215,7 +219,7 @@ When the phase is done and green:
 1. Confirm the phase is marked `completed` in `state.md` with the Handoff section
    written.
 2. **Lessons:** if anything non-obvious came up (a hack, a gotcha, a wrong assumption
-   you corrected, a skipped gate), append it to `.specs/<slug>/lessons.md` per
+   you corrected, a skipped gate), append it to `./.specs/<slug>/lessons.md` per
    `references/lessons.md`. Routine success writes nothing.
 3. Summarize what was built, decisions made beyond the artifacts, and any unknowns.
 4. Recommend next: more phases remain → `/forge execute` again for the next phase;

@@ -20,13 +20,13 @@ For a bug you already understand and just want to fix, skip the ceremony and fix
 3. **Reproduce** — run the loop and confirm the failure matches what the user described.
 4. **Hypothesize** — 3–5 ranked, falsifiable hypotheses, each stating a prediction, before testing any.
 5. **Verify** — probe every hypothesis with independent subagents in parallel, then hand the winning cause to a fresh subagent that tries to *refute* it. A cause is confirmed only when refutation fails; refuted hypotheses and dry hypothesis wells loop back to Phase 4 or Phase 2.
-6. **Report and save** — write the report to `.specs/bugs/<bug-name>.md`, summarizing the root cause and the proposed fix for the user to review and apply.
+6. **Report and save** — write the report to `./.specs/bugs/<bug-name>.md` (at the session CWD), summarizing the root cause and the proposed fix for the user to review and apply.
 
 When the bug can't be reproduced or no cause survives, the skill stops and writes a `blocked` report listing every attempt, every hypothesis considered, and what would unblock it.
 
 ## Output
 
-A Markdown file at `.specs/bugs/<bug-name>.md` (from `templates/report.md`) in one of two shapes:
+A Markdown file at `./.specs/bugs/<bug-name>.md` (from `templates/report.md`) at the session CWD, in one of two shapes:
 
 **Confirmed** — root cause with file:line evidence, the reproduction loop, hypotheses tested, how the cause survived refutation, a numbered fix proposal to execute, a regression test plan, and optional prevention.
 

@@ -35,9 +35,9 @@ before acting** — it is the step-by-step playbook for that phase.
 
 | Verb | Read | Produces |
 |------|------|----------|
-| `specify` | `references/specify.md` (+ `references/review.md`) | `.specs/<slug>/spec.md` |
-| `design` | `references/design.md` (+ `references/review.md`) | `.specs/<slug>/design.md` |
-| `plan` | `references/plan.md` | `.specs/<slug>/plan.md` |
+| `specify` | `references/specify.md` (+ `references/review.md`) | `./.specs/<slug>/spec.md` |
+| `design` | `references/design.md` (+ `references/review.md`) | `./.specs/<slug>/design.md` |
+| `plan` | `references/plan.md` | `./.specs/<slug>/plan.md` |
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
 | `fix` | `references/fix.md` | re-aligned artifacts + code |
 
@@ -77,14 +77,32 @@ current size needs or lets you skip.
 
 ## Artifacts and state
 
-All work for a change lives under `.specs/<slug>/` (create it if missing):
+### Artifact root (session CWD)
+
+All `./.specs/*` paths in this skill resolve against the **session CWD** — the
+directory the agent was invoked in — **not** the shell's current directory at
+the moment of the write. Subsequent `cd`s do not move the artifact root.
+
+**At the start of every phase, resolve the artifact root once and reuse it.**
+Capture the session CWD as an absolute path (`pwd` at the very first Bash call
+of the session, or the harness-provided starting directory) and set
+`SPECS_ROOT="<abs>/.specs"`. Every read, write, `mkdir`, and `ls` inside this
+skill must go through `$SPECS_ROOT/...`. Never use a bare `.specs/...` after
+that resolution — a bare path would be interpreted against the current shell
+CWD and drift into a subfolder.
+
+If the resolved root points inside another repo's `.specs/` (e.g. the user
+invoked the skill from a nested package), **stop and confirm** with the user
+before writing.
+
+All work for a change lives under `./.specs/<slug>/` (create it if missing):
 
 ```text
-.specs/<slug>/spec.md       what & why (requirements, acceptance criteria, scope)
-.specs/<slug>/design.md     how (architecture, contracts, verification gates)
-.specs/<slug>/plan.md       tasks grouped into phases (parallel within a phase, AC-traced)
-.specs/<slug>/state.md      size, decisions log, task status, handoff — the source of truth
-.specs/<slug>/lessons.md    what went wrong here and the rule going forward
+./.specs/<slug>/spec.md       what & why (requirements, acceptance criteria, scope)
+./.specs/<slug>/design.md     how (architecture, contracts, verification gates)
+./.specs/<slug>/plan.md       tasks grouped into phases (parallel within a phase, AC-traced)
+./.specs/<slug>/state.md      size, decisions log, task status, handoff — the source of truth
+./.specs/<slug>/lessons.md    what went wrong here and the rule going forward
 ```
 
 Templates for each are in `templates/`. **`state.md` is the single source of truth.**
@@ -96,7 +114,7 @@ Design, plan, and execute reference those IDs; they never restate the criterion 
 
 ## Lessons
 
-Each change keeps its own `.specs/<slug>/lessons.md` with `## Standing Rules` (short
+Each change keeps its own `./.specs/<slug>/lessons.md` with `## Standing Rules` (short
 imperatives, always loaded) and `## Log` (tagged, append-only). Load it at the start of
 every phase. Append **only when something non-obvious was learned**: a hack, a gotcha,
 a corrected wrong assumption, a skipped gate. Routine success writes nothing. See

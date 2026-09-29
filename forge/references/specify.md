@@ -1,7 +1,11 @@
 # Specify
 
+> **Phase prelude:** resolve `SPECS_ROOT` per SKILL.md → *Artifact root
+> (session CWD)* before any read or write. Every `./.specs/...` path below is
+> `$SPECS_ROOT/...`.
+
 **Goal:** reach shared understanding of the problem with the user, then capture what to
-build as testable requirements. Output: `.specs/<slug>/spec.md`.
+build as testable requirements. Output: `./.specs/<slug>/spec.md`.
 
 This is the heaviest phase. Everything downstream inherits its quality. Do not rush it.
 Sizing controls how much you *write*, never whether you bother to *understand*.
@@ -10,7 +14,7 @@ Sizing controls how much you *write*, never whether you bother to *understand*.
 
 1. Derive the kebab-case `<slug>` from the feature name. If no name was given, ask for
    one.
-2. Load `.specs/<slug>/lessons.md` if it exists. Always read Standing Rules. Read Log
+2. Load `./.specs/<slug>/lessons.md` if it exists. Always read Standing Rules. Read Log
    entries tagged to this area.
 
 Specify runs in **two ordered passes** with a gate between them. **Do not mix them.**
@@ -43,7 +47,7 @@ is still unclear.
    - Do not abandon a half-open branch to move on.
 3. **Always offer a recommended answer.** Propose a default the user can accept or
    override, derived from the codebase, prior conversation, or context.
-4. **Codebase first.** If the code, `.specs/`, or git history can answer it, read
+4. **Codebase first.** If the code, `./.specs/`, or git history can answer it, read
    first — do not ask. Save the user's attention for what only they know. The sharpest
    questions come straight from A2's impact trace: a shared contract two callers depend
    on, or an integration boundary the change crosses, is a fork only the user can settle
@@ -81,7 +85,7 @@ the areas the change will touch:
 
 - Existing modules, services, components in the same domain
 - Established patterns: structure, naming, data flow, testing approach
-- Prior decisions in `.specs/` (specs, designs, ADRs, RFCs) that overlap
+- Prior decisions in `./.specs/` (specs, designs, ADRs, RFCs) that overlap
 - Technical debt or known limitations visible in code or comments
 - Integration boundaries: external services, APIs, data stores
 
@@ -252,7 +256,7 @@ for it as a `SPEC-GAP` at execute time.
 
 ## Write the spec and route
 
-Write `.specs/<slug>/spec.md` from `templates/spec.md`, sized per
+Write `./.specs/<slug>/spec.md` from `templates/spec.md`, sized per
 `references/sizing.md` (quick = a few lines; complex = full matrix + dimension sweep +
 prior art). Set or confirm `Size:` in `state.md` and append any decisions made.
 

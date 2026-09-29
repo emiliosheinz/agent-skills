@@ -1,13 +1,17 @@
 # Design
 
+> **Phase prelude:** resolve `SPECS_ROOT` per SKILL.md → *Artifact root
+> (session CWD)* before any read or write. Every `./.specs/...` path below is
+> `$SPECS_ROOT/...`.
+
 **Goal:** define *how* the change is built and *how we will know it is correct.*
-Output: `.specs/<slug>/design.md`. Skipped at `quick` size.
+Output: `./.specs/<slug>/design.md`. Skipped at `quick` size.
 
 Load first:
 
-- `.specs/<slug>/spec.md` — source of truth for requirements, ACs, scope.
-- `.specs/<slug>/state.md` — size and Decisions log.
-- `.specs/<slug>/lessons.md` — apply Standing Rules; read tagged Log entries.
+- `./.specs/<slug>/spec.md` — source of truth for requirements, ACs, scope.
+- `./.specs/<slug>/state.md` — size and Decisions log.
+- `./.specs/<slug>/lessons.md` — apply Standing Rules; read tagged Log entries.
 
 If no spec exists, gather the minimum design context inline (problem, constraints,
 codebase realities). Prefer running `/forge specify` first for anything past `quick`.
@@ -114,7 +118,7 @@ here instead of at execute time.
 
 ## Write and route
 
-Write `.specs/<slug>/design.md` from `templates/design.md`, sized per
+Write `./.specs/<slug>/design.md` from `templates/design.md`, sized per
 `references/sizing.md`. Validate before presenting:
 
 - Every requirement has a verification gate.

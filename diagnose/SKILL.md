@@ -79,7 +79,7 @@ Result: <what the probe observed — file:line, log line, value>
 3 Reproduce   run the loop; confirm it's the user's bug
 4 Hypothesize 3–5 ranked, falsifiable hypotheses, before testing any
 5 Verify      5a probe them in parallel · 5b confirm the winner adversarially
-6 Report      save the proposal to .specs/bugs/<name>.md for review
+6 Report      save the proposal to ./.specs/bugs/<name>.md for review
 ```
 
 Loop back freely: refuted hypotheses feed Phase 4; a dry hypothesis well sends you to
@@ -213,10 +213,31 @@ If the hypothesis well runs dry, return to Phase 2: sharpen the loop or try a di
 strategy. **Loop until you confirm a cause or have genuinely exhausted every strategy.**
 When exhausted, stop and save a `blocked` report — never dress a guess as a finding.
 
+## Artifact root (session CWD)
+
+All `./.specs/*` paths in this skill resolve against the **session CWD** — the
+directory the agent was invoked in — **not** the shell's current directory at
+the moment of the write. Subsequent `cd`s do not move the artifact root.
+
+**At the start of Phase 6, resolve the artifact root once and reuse it.**
+Capture the session CWD as an absolute path (`pwd` at the very first Bash call
+of the session, or the harness-provided starting directory) and set
+`SPECS_ROOT="<abs>/.specs"`. Every read, write, `mkdir`, and `ls` inside this
+skill must go through `$SPECS_ROOT/...`. Never use a bare `.specs/...` after
+that resolution — a bare path would be interpreted against the current shell
+CWD and drift into a subfolder.
+
+If the resolved root points inside another repo's `.specs/` (e.g. the user
+invoked the skill from a nested package), **stop and confirm** with the user
+before writing.
+
 ## Phase 6 — Report and save
 
 1. Derive a kebab-case bug name (e.g. `auth-token-expiry-not-refreshing`).
-2. Target `.specs/bugs/<bug-name>.md`; if it exists, append `-2`, `-3`. Create `.specs/bugs/` if missing.
+2. Resolve `SPECS_ROOT` per **Artifact root** above. Target
+   `$SPECS_ROOT/bugs/<bug-name>.md` (i.e. `./.specs/bugs/<bug-name>.md` at the
+   session CWD); if it exists, append `-2`, `-3`. Create
+   `$SPECS_ROOT/bugs/` if missing.
 3. Write the report from `templates/report.md` — the **confirmed** variant, or **blocked** if you never reproduced or nothing survived 5b.
 4. Remove any `[DEBUG-...]` instrumentation you added (one grep) and delete throwaway harnesses.
 5. Tell the user the file path and summarize the root cause and the proposed fix.

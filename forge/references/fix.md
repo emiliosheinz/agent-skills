@@ -108,7 +108,10 @@ in this same invocation only when ALL hold:**
 - the code delta clears execute's quick-path guardrail (≤~5 atomic steps, no new public
   interface/contract, no schema/API change, no cross-file ordering dependency);
 - no size promotion fires;
-- no AC is deleted and no `critical` AC is touched;
+- the change is **not a one-way door** (`references/specify.md`), and no AC is deleted;
+  a one-way door always stops and recommends the chain, whatever its size — the auto-
+  execute path exists to save a round-trip, and an irreversible effect is not worth
+  saving one over;
 - the affected slice's tasks are all `done`/`pending` — no conflicting uncommitted work.
 
 **Otherwise stop** and recommend the phase chain from the true entry down (e.g. entry =

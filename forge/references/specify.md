@@ -232,8 +232,33 @@ genuinely missing:
 - **IDs:** prefix = feature slug uppercased, shortened to 3–5 chars (`user-onboarding`
   → `ONBD`). Sequential: `ONBD-01`, `ONBD-02`.
 - Priorities: **P0** launch blocker · **P1** high value · **P2** nice to have.
-- Mark an AC **`critical`** when it governs auth, payments, or data integrity.
-  Execute's mutation sensor runs on critical ACs regardless of size.
+- **Classify the change one-way or two-way door, and record the verdict.** Scrutiny is
+  allocated by what a mistake costs, not by how many files the change touches — a
+  two-line change that emails every user deserves more scrutiny than a sixty-file
+  rename. A **one-way door** is a change whose effect cannot be undone by reverting the
+  commit. Triggers, any one of which fires it:
+  - destructive migration, or any irreversible data loss;
+  - bulk delete;
+  - mass communication to real users;
+  - money movement;
+  - an auth or permission boundary;
+  - breaking a contract another consumer already depends on;
+  - any action with **no revert path**.
+
+  Record the verdict **per change**, in `state.md`'s header table, together with the
+  triggers that fired. A two-way door is the normal case and is recorded as such — the
+  field is never blank, because blank is indistinguishable from unconsidered.
+
+  **Retain it per AC too**, wherever a consumer scopes its work to a particular path:
+  append **`[critical]`** to the individual ACs that carry the irreversible outcome. The
+  door verdict says *this change needs more scrutiny*; the per-AC marker says *scope it
+  here*. Execute's mutation sensor needs the second to have a target to aim at, so
+  dropping it would turn a stronger gate into a vaguer one.
+
+  Every consumer of the old marker now keys on the **door verdict** for whether it fires,
+  and on the per-AC marker for what it scopes to. The consumers are enumerated in
+  `references/verification.md`, `references/review.md`, `references/execute.md` and
+  `references/fix.md`.
 - Each requirement carries one or more **acceptance criteria** in WHEN/THEN/SHALL
   form: *WHEN \<condition\>, THEN the system SHALL \<observable outcome\>.* Each AC
   must have a single interpretation and a precise expected outcome.

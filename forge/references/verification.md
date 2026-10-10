@@ -124,8 +124,8 @@ design's gates, the commit/diff under review). They are stateless.
 
 | Size | Verifiers | Override |
 |------|-----------|----------|
-| quick | 1, 2, 4 (conventions-only) | Any `critical` AC also runs 5 |
-| standard | 1, 2, 3, 4 (full) | Any `critical` AC also runs 5 |
+| quick | 1, 2, 4 (conventions-only) | a **one-way door** also runs 3 and 5 |
+| standard | 1, 2, 3, 4 (full) | a **one-way door** also runs 5 |
 | complex | 1, 2, 3, 4 (full), 5 | — |
 
 1 and 2 are cheap and parallel-safe. 3 and 4 are read-only analysis — run in parallel.
@@ -136,10 +136,17 @@ kind, and `quick` is where most changes live. Its conventions-only mode costs on
 read of a section the spec already carries — no design document, no catalogue, no
 subagent — so the floor is real without raising `quick`'s price.
 
-**Criticality overrides the size gate.** Any AC marked `critical` in the spec (auth,
-payments, data integrity) triggers verifier 5 regardless of size, with extra
-mutations (at least 5, covering all branches of the critical path). A standard-sized
-auth change must not ship with zero mutation testing.
+**Reversibility overrides the size gate.** A change classified a **one-way door**
+(`references/specify.md`) triggers verifier 5 regardless of size, with extra mutations
+(at least 5, covering all branches of the irreversible path). A standard-sized auth
+change must not ship with zero mutation testing, and neither must a two-line change that
+deletes rows.
+
+**Which path to aim at.** The door verdict decides *whether* verifier 5 runs; the per-AC
+`[critical]` marker decides *where* it points. Mutate the branches reachable from the ACs
+carrying the irreversible outcome. If the change is a one-way door and no AC carries the
+marker, that is a **gap** — record it and ask the spec which path is the irreversible
+one rather than mutating everything or nothing.
 
 **Optional human UAT** *(P2, conditional)* — for **user-facing** ACs only
 (visual/UX/end-to-end correctness the five automated verifiers cannot see), offer a
@@ -191,6 +198,7 @@ Each verifier returns a compact structured verdict:
 
 The execute phase combines these into one PASS/FAIL and a single gap list ranked by
 severity: Blocker → Major → Minor → Cosmetic. (Severity is the failing verifier
-multiplied by the AC's criticality.) The bounded fix loop in execute, capped at three
+multiplied by the AC's criticality — a failure on a `[critical]` AC of a one-way-door
+change outranks the same failure anywhere else.) The bounded fix loop in execute, capped at three
 cycles, works the list top-down so it spends its retries on blockers before
 cosmetics. See `references/execute.md`.

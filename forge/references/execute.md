@@ -162,8 +162,10 @@ in parallel.
 `references/verification.md` — read it there.** This file used to carry its own copy; a
 duplicated table is a table that goes stale, and the one here did. One table, one home.
 
-**Override:** any AC marked `critical` in the spec runs verifier 5 regardless of size.
-
+**Override:** a change classified a **one-way door** in `state.md` runs verifier 5
+regardless of size, scoped to the branches reachable from its `[critical]` ACs
+(`references/specify.md` for the door test, `references/verification.md` for the
+targeting rule).
 Collect the verifiers' verdicts into an overall PASS/FAIL plus a single
 severity-ranked gap list (Blocker → Major → Minor → Cosmetic).
 

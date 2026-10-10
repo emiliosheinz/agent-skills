@@ -70,7 +70,7 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
    unbounded work, missing indexes), concurrency / idempotency gaps, error-matrix
    omissions, and architectural risks left without a mitigation. Ask: *"what's the first
    thing that fails under load, attack, or partial failure?"* Given: the `design.md` plus
-   the spec's critical and edge-condition requirements.
+   the spec's door verdict, its `[critical]` ACs, and its edge-condition requirements.
 3. **Simplicity / reuse** — over-engineering (an abstraction with one caller, a factory
    for one product, flexibility nothing needs), code reinvented that the spec's codebase
    findings show already exists, and implementation detail leaked into the design. Apply
@@ -120,7 +120,7 @@ or an extension point *is* new scope, and lens 4 never asks for it. See
 | Size | Reviewers | Override |
 |------|-----------|----------|
 | quick | none — closure gate only | a **one-way door** runs design lens 4 |
-| standard | 1, 2, 4 | any `critical` AC also runs 3 |
+| standard | 1, 2, 4 | a **one-way door** also runs 3 |
 | complex | 1, 2, 3, 4 | — |
 
 A `quick` change carries an inline spec of a few lines and no design — the author's
@@ -132,10 +132,11 @@ highest-value lenses plus the under-design lens; complex runs the full panel.
 with no design document — in that case the lens reads the acceptance criteria gathered
 inline. Scrutiny follows what a mistake costs, not how many files it touches.
 
-**Criticality overrides the size gate.** Any AC marked `critical` in the spec (auth,
-payments, data integrity) forces reviewer 3 regardless of size — the same principle as
-execute's mutation-sensor override (`verification.md`). A standard-sized auth change must
-not ship a spec whose scope leaks or a design whose reuse went unchecked.
+**Reversibility overrides the size gate.** A change classified a **one-way door**
+(`references/specify.md`) forces reviewer 3 and design lens 4 regardless of size — the
+same principle as execute's mutation-sensor override (`verification.md`). A standard-sized
+auth change must not ship a spec whose scope leaks or a design whose reuse went unchecked,
+and a two-line change that moves money must not ship unreviewed because it is small.
 
 ## Model tier per reviewer
 

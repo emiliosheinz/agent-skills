@@ -3,7 +3,14 @@
 | Field | Value |
 |-------|-------|
 | Size | quick / standard / complex — <one-line justification> |
+| Door | one-way / two-way door — <the triggers that fired, or "none"> |
 | Created | YYYY-MM-DD |
+
+<!-- Door: set by the first phase to run, per references/specify.md. One-way means
+     reverting the commit does not undo the effect. It overrides the size gate for
+     reviewer 3, design lens 4 and verifier 5. Never blank — blank reads as unconsidered.
+     Like Size it moves one way only: two-way may become one-way, never the reverse
+     without the user's confirmation. -->
 
 <!-- state.md is the single source of truth. Re-read at the start of every phase.
      Write SURGICALLY (see SKILL.md Universal rules for the section write-mode table).

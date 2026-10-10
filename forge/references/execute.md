@@ -149,18 +149,81 @@ For each task:
      task changed.
 3. **Run the task gate.** The deterministic command from the plan. Non-zero = not
    done; fix and re-run. Never proceed on a failing gate.
-4. **Self-check before committing.** Would a senior engineer call this overcomplicated,
+4. **Review the batch structurally, before the commit** *(`standard`+, or a one-way
+   door at any size)*. The gate proves the code behaves. Nothing yet proves it is
+   arranged well, and the implementer cannot prove that about its own work.
+
+   **Once per batch, not once per task.** This file batches tasks **by locality** — tasks
+   touching the same files go to one implementer that returns only when all of them are
+   done — so a per-task working-tree slice does not exist inside a batch: the gate would
+   run against siblings' unfinished code, and an applied fix would be indistinguishable
+   from a batch-mate's pending edit. So the axis runs once **per batch**, with the batch's
+   changed hunks as its subject, and attributes each finding to a task through that task's
+   `files` field. A batch of one task is the ordinary case and needs no special handling.
+
+   Dispatch it per `references/structural-standards.md` — that file holds the checks, the
+   selection rule, the firing discipline and the verdict shape; this file holds only the
+   loop mechanics. It is a **review-time agent**, so its prompt carries the catalogue and
+   any discovered standards file. Tier: standard with high effort, frontier at `complex`;
+   never economy.
+
+   **The reviewer does not edit.** Findings go back to **the batch's own implementer**,
+   which applies them and re-runs the gate. There is no third role: the implementer is
+   already a different agent from the reviewer, which is the property that matters, and a
+   separate applier would have exactly one caller. The fixes land in the **same single
+   task commit** — one task, one commit, unchanged.
+
+   **Snapshot and restore.** Before dispatching, take a **snapshot** of the batch's
+   declared paths (the union of its tasks' `files`). If applying a finding breaks the gate,
+   restore that snapshot **scoped to those paths only**. There is no commit boundary
+   between implement and review, so an unscoped revert would discard the implementation
+   itself.
+
+   **Tamper detection.** Snapshot the **whole tree's** dirty paths around the dispatch and
+   subtract the paths of concurrently in-flight sibling batches. On return:
+   - a delta **inside** the declared set is **reverted** — the reviewer edited what it was
+     reviewing — and its verdict is still used;
+   - a delta **outside** it is **recorded as a gap** in `state.md` and the task is **not
+     committed**. Scoping detection to the declared set alone would make the dangerous
+     edit — a test file, a gate's config, a shared barrel — invisible by construction.
+
+   **Two cycles, and they are their own budget.** Review → apply → re-run the gate, at
+   most **two cycles** per batch. These do **not** consume the phase's three fix cycles
+   below; different loop, different subject.
+
+   **Record each finding's disposition** — `applied`, `rejected(reason)`, or `parked` — in
+   `state.md`. A rejection with **no reason is a gap**, not a judgement call. This is the
+   detector for the failure this step is most likely to have: a finding raised in a verdict
+   that quietly vanishes from the commit because the implementer read it as an unrequested
+   abstraction.
+
+   **A finding that cannot be applied without widening scope** is not an implementer
+   failure. Raise **DESIGN-GAP**, record it against the design element, spend no cycle on
+   it, and route it back to `design.md` — mirroring how `references/verification.md` routes
+   a `SPEC-GAP`.
+
+   **Escalation.** If two cycles do not clear the findings: the task is **not committed**,
+   the tree is left **as-is** (do not revert the implementation), the task's status becomes
+   **`blocked`** in `state.md`, and `state.md` records the remaining findings plus the
+   snapshot reference. Then stop and report — do not start the next task behind a
+   `blocked` one in the same batch. **A re-invocation of `/forge execute` picks a
+   `blocked` task up first**, re-reads its recorded findings rather than reviewing from
+   scratch, and starts its cycle counter at zero; it never silently commits the tree it
+   inherited.
+
+5. **Self-check before committing.** Would a senior engineer call this overcomplicated,
    or badly arranged? **Scope** governs *whether* something is built and **shape** governs
    *how* what is built is arranged, so moving a rule to the unit that owns its data or
    giving a repeated-validation primitive a domain type is **the same scope** — not an
    unrequested abstraction to simplify away — while adding a port, a layer, or a config
    flag is new scope and stays out. Confirm the tests aren't shallow and nothing beyond
    the task crept in.
-5. **Commit atomically.** One task = one commit, only the files in the task
-   definition. Conventional Commits, type matching the change
+6. **Commit atomically.** One task = one commit, only the files in the task
+   definition (its `files` set). Conventional Commits, type matching the change
    (`feat`/`fix`/`refactor`/...), imperative mood, body when the "why" isn't obvious.
    (Skip Claude/AI co-author trailers.)
-6. **Update `state.md`.** Mark the task `done` with evidence (commit sha, test count).
+7. **Update `state.md`.** Mark the task `done` with evidence (commit sha, test count, and
+   each structural finding's disposition).
 
 ### Verify the phase (independent subagents)
 

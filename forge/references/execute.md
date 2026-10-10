@@ -191,16 +191,30 @@ For each task:
    most **two cycles** per batch. These do **not** consume the phase's three fix cycles
    below; different loop, different subject.
 
+   **A gate failure the fix did not cause is not charged to the counter.** Compare the
+   re-run against the gate result from before the review step. Same failure as before, or
+   a failure in a path the applied finding did not touch — a flake, an environment change,
+   a sibling batch's commit — and the cycle is **recorded, not counted**: the cap exists to
+   stop a reviewer and an implementer disagreeing forever, not to spend a task's budget on
+   a flaky test.
+
    **Record each finding's disposition** — `applied`, `rejected(reason)`, or `parked` — in
    `state.md`. A rejection with **no reason is a gap**, not a judgement call. This is the
    detector for the failure this step is most likely to have: a finding raised in a verdict
    that quietly vanishes from the commit because the implementer read it as an unrequested
    abstraction.
 
-   **A finding that cannot be applied without widening scope** is not an implementer
-   failure. Raise **DESIGN-GAP**, record it against the design element, spend no cycle on
-   it, and route it back to `design.md` — mirroring how `references/verification.md` routes
-   a `SPEC-GAP`.
+   **The scope/shape boundary governs what counts as a valid rejection** — step 5 states
+   it, and it binds here too, because this is where a finding is actually accepted or
+   dropped. Relocating a rule or replacing a primitive is **the same scope**, so
+   "unrequested abstraction" is **not** a reason: a rejection resting on it is a rejection
+   with no reason, which is a gap.
+
+   **A finding that cannot be applied without genuinely widening scope** — it needs a new
+   port, layer, second implementation, or extension point — is not an implementer failure.
+   Raise **DESIGN-GAP**, record it against the design element, spend no cycle on it, and
+   route it back to `design.md` — mirroring how `references/verification.md` routes a
+   `SPEC-GAP`.
 
    **Escalation.** If two cycles do not clear the findings: the task is **not committed**,
    the tree is left **as-is** (do not revert the implementation), the task's status becomes

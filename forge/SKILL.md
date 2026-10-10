@@ -122,9 +122,11 @@ Design, plan, and execute reference those IDs; they never restate the criterion 
 
 Each change keeps its own `./.specs/<slug>/lessons.md` with `## Standing Rules` (short
 imperatives, always loaded) and `## Log` (tagged, append-only). Load it at the start of
-every phase. Append **only when something non-obvious was learned**: a hack, a gotcha,
-a corrected wrong assumption, a skipped gate. Routine success writes nothing. See
-`references/lessons.md`.
+every phase — **reading only the content above the `<!-- environment-candidates -->`
+marker**; everything below it is parked and costs context for nothing. Append **only when
+something non-obvious was learned**: a hack, a gotcha, a corrected wrong assumption, a
+skipped gate. Triage it first — mechanical observations become a proposed check rather
+than a sentence. Routine success writes nothing. See `references/lessons.md`.
 
 ## Orchestration (canonical — references should cite, not restate)
 

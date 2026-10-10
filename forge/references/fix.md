@@ -57,7 +57,10 @@ change vs. misunderstanding of existing intent; (b) the true entry layer / is th
 `/forge specify`. Escalate a genuine judgment call (user says "just change the code,"
 reviewer says "spec gap") via `AskUserQuestion`, default to lifting. **Skip the review
 entirely for pure code-cosmetic corrections** (rename, extract, flaky test, formatting) —
-the same way `quick` skips review.
+the same way `quick` skips review. That skip **also skips the structural axis, and records
+a gap** for it in `state.md`. Stated explicitly either way, because "a cosmetic change is
+not reviewed" and "a cosmetic change was reviewed and found clean" are different claims
+and only one of them is true.
 
 ### 2. Cascade — re-align the affected slice, top-down
 
@@ -70,7 +73,12 @@ own discipline on just the delta; do not restate it:
 - plan delta → `references/plan.md`, including its "Validate before presenting" graph
   re-check over the **whole** modified task table (acyclic, deps exist, no `[P]` depends
   on a same-phase task) — not just appended rows
-- code delta → `references/execute.md` per-task loop + verifiers + bounded fix loop
+- code delta → `references/execute.md` per-task loop + verifiers + bounded fix loop,
+  **including its structural axis**. The axis's diff basis during a cascade is **this
+  invocation's hunks**, never the task's full slice: a one-line correction must not
+  re-review the code the task originally shipped, or every small fix escalates on findings
+  it did not cause. A finding in code **this invocation did not touch** goes to the parked
+  backlog in the lessons artifact (`references/lessons.md`), never a fix cycle.
 
 As the cascade reaches already-`completed` work, **reopen it forward-only**: flip the
 affected `done` tasks back to `pending`, and **invalidate stale proof** — a

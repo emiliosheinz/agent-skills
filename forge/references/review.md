@@ -119,7 +119,7 @@ or an extension point *is* new scope, and lens 4 never asks for it. See
 
 | Size | Reviewers | Override |
 |------|-----------|----------|
-| quick | none — closure gate only | a **one-way door** runs design lens 4 |
+| quick | none — closure gate only | a **one-way door** runs 3 and design lens 4 |
 | standard | 1, 2, 4 | a **one-way door** also runs 3 |
 | complex | 1, 2, 3, 4 | — |
 
@@ -127,16 +127,15 @@ A `quick` change carries an inline spec of a few lines and no design — the aut
 closure gate is proportionate; do not dispatch reviewers for it. Standard runs the two
 highest-value lenses plus the under-design lens; complex runs the full panel.
 
-**Reversibility overrides the size gate too.** A change classified a **one-way door**
-(`references/specify.md`) runs design lens 4 regardless of size, including at `quick`
-with no design document — in that case the lens reads the acceptance criteria gathered
-inline. Scrutiny follows what a mistake costs, not how many files it touches.
-
 **Reversibility overrides the size gate.** A change classified a **one-way door**
-(`references/specify.md`) forces reviewer 3 and design lens 4 regardless of size — the
-same principle as execute's mutation-sensor override (`verification.md`). A standard-sized
-auth change must not ship a spec whose scope leaks or a design whose reuse went unchecked,
-and a two-line change that moves money must not ship unreviewed because it is small.
+(`references/specify.md`) forces spec reviewer 3 and design lens 4 **regardless of size**,
+including at `quick` with no design document — there the lens reads the acceptance
+criteria gathered inline. This is the same principle as execute's mutation-sensor override
+(`references/verification.md`), and it replaces the old `critical`-domain override one for
+one: a standard-sized auth change must not ship a spec whose scope leaks or a design whose
+reuse went unchecked, and a two-line change that moves money must not ship unreviewed
+because it is small. Scrutiny follows what a mistake costs, not how many files it
+touches.
 
 ## Model tier per reviewer
 

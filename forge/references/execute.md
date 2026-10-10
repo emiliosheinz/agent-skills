@@ -141,23 +141,13 @@ For each task:
      task changed.
 3. **Run the task gate.** The deterministic command from the plan. Non-zero = not
    done; fix and re-run. Never proceed on a failing gate.
-4. **Self-check before committing.** Two questions, not one — the first was the only one
-   forge ever asked, which is why nothing in it ever argued for better structure:
-   - *Would a senior engineer call this overcomplicated?* If so, simplify.
-   - *Would a senior engineer call this badly arranged?* Is a rule sitting away from the
-     data it governs; does a domain concept travel as a primitive with its validation
-     repeated; does one body mix parsing, policy, and persistence; does a dependency
-     point outward across a boundary the design names?
-
-   **The scope/shape boundary applies to both.** **Scope** governs *whether* something is
-   built; **shape** governs *how* what is built is arranged. Moving a rule to the unit
-   that owns its data, or giving a repeated-validation primitive a domain type, is **the
-   same scope** — not an unrequested abstraction, and not something the first question
-   should delete. Adding a port, a layer, a second implementation, or a config flag *is*
-   new scope: don't. This is stated here, in the implementer's own context, because that
-   is the context any always-on "build less" steering occupies.
-
-   Then confirm the tests aren't shallow and nothing beyond the task crept in.
+4. **Self-check before committing.** Would a senior engineer call this overcomplicated,
+   or badly arranged? **Scope** governs *whether* something is built and **shape** governs
+   *how* what is built is arranged, so moving a rule to the unit that owns its data or
+   giving a repeated-validation primitive a domain type is **the same scope** — not an
+   unrequested abstraction to simplify away — while adding a port, a layer, or a config
+   flag is new scope and stays out. Confirm the tests aren't shallow and nothing beyond
+   the task crept in.
 5. **Commit atomically.** One task = one commit, only the files in the task
    definition. Conventional Commits, type matching the change
    (`feat`/`fix`/`refactor`/...), imperative mood, body when the "why" isn't obvious.

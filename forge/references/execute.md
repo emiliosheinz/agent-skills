@@ -93,8 +93,14 @@ contract emerged). Recommend — do not run it for the user.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
      otherwise use sequential subagent calls.
    - **Set each implementer's model tier and effort** per SKILL.md Model & effort
-     selection: a mechanical task or one with a `reuses` precedent goes to economy/low;
-     reserve standard/frontier for tasks that actually need the reasoning.
+     selection. A mechanical task goes to economy/low; reserve standard/frontier for tasks
+     that actually need the reasoning. Two rules bound the cheap end:
+     - a task that **creates a new file**, or adds an **exported type**, interface, or
+       class, is **never** dispatched at economy tier — that is where structure is
+       decided, and it is decided once;
+     - a `reuses` pointer **alone** no longer qualifies a task for economy; it qualifies
+       only together with creating no new file and no new exported type, interface, or
+       class.
    - The subagent returns a **compact summary**: paths changed, task-gate result
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
      diffs, or test dumps. Anything over ~100 lines goes to a file; the subagent

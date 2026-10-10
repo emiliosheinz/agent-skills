@@ -171,11 +171,21 @@ runtime has no effort dial, fold the intent into tier choice.
 
 | Work | Tier | Effort |
 |------|------|--------|
-| Read-only codebase scouting (specify), mirror-a-precedent implementer with a `reuses` pointer | economy | low |
-| Mechanical `[P]` implementer task with a clear task gate | economy | low–medium |
+| Read-only codebase scouting (specify) | economy | low |
+| Mirror-a-precedent implementer: a `reuses` pointer **and** no new file, exported type, interface, or class | economy | low |
+| Mechanical `[P]` implementer task with a clear task gate, creating no new file or exported type | economy | low–medium |
 | Ordinary implementer task, most single-verifier runs | standard | medium |
+| **Structure-bearing implementer task** — creates a new file, or adds an **exported type**, interface, or class | standard (never economy) | medium |
 | Design/architecture synthesis, plan decomposition for a complex change | frontier | high |
-| Adversarial or cross-cutting verification (the AC-trace / integration verifier) | standard→frontier | high |
+| Adversarial or cross-cutting verification (the AC-trace / integration verifier, the under-design lens) | standard→frontier | high |
+
+**A `reuses` pointer alone no longer buys economy tier.** It qualifies a task only
+*together with* creating no new file and no new exported type, interface, or class. A
+precedent tells an agent what shape to copy; it does not tell it where a responsibility
+belongs, which way a dependency should point, or which value deserves a type — and those
+are decided exactly once, when the file or the type is created. Mirroring a precedent at
+the cheapest tier is how a structural decision gets made by the model least able to make
+it.
 
 **Size interacts with tier.** A `quick` change should almost never dispatch a frontier
 subagent; a `complex` change earns frontier for its design and adversarial gates but

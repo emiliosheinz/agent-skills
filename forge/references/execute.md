@@ -158,14 +158,9 @@ Once all the phase's tasks are committed and the phase gate is green, dispatch t
 applicable verifiers over the phase's changes. Author ≠ verifier; fresh context; run
 in parallel.
 
-Which verifiers run is gated by size (see `references/verification.md` for the
-contract):
-
-| Size | Verifiers |
-|------|-----------|
-| quick | 1, 2 |
-| standard | 1, 2, 3, 4 |
-| complex | 1, 2, 3, 4, 5 |
+**Which verifiers run is gated by size, and the size table lives in
+`references/verification.md` — read it there.** This file used to carry its own copy; a
+duplicated table is a table that goes stale, and the one here did. One table, one home.
 
 **Override:** any AC marked `critical` in the spec runs verifier 5 regardless of size.
 

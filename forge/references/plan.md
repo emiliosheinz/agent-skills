@@ -74,10 +74,11 @@ register form, token storage, API client, route guard.
 | **action** | One line a fresh agent can act on. |
 | **depends-on** | Task IDs that must finish first. Keep minimal. Tasks in the same phase that depend on each other cannot both be `[P]`. |
 | **AC-trace** | The acceptance-criterion ID(s) from `spec.md` this task satisfies. Every task traces to at least one AC. (Enabling work traces to the task it unblocks.) |
+| **files** | The paths this task is allowed to touch. Three mechanisms depend on it and none works without it: the structural axis attributes each finding to a task, the tamper check scopes its revert, and `execute` composes implementer batches by locality. `execute`'s commit step already assumes it ("only the files in the task definition"). A glob is fine; "wherever it needs to" is not. |
 | **tests** | The tests written **within this task**, co-located with the code it creates — never deferred to a later task. Use the highest test level the task's layer requires (unit for logic, e2e for routes/controllers). |
 | **gate** | A deterministic command that returns clean iff the task succeeded. Use the project's real runner (see "learn the project's real test setup" above), not an assumed one. |
 | **done-when** | A pass/fail checklist, each item true or false, ending with "gate passes: `<command>`". |
-| **reuses** *(optional)* | Path of an existing component/pattern this task should mirror, from `design.md`'s code-reuse analysis. Points the fresh implementer subagent at the right precedent. Example: `src/auth/refresh.ts (mirror its token-rotation shape)`. |
+| **reuses** *(required at `standard`+)* | The precedent this task mirrors, from `design.md`'s code-reuse analysis — a `path`, a `path:line`, or the literal sentinel **`no-precedent`** meaning "no precedent exists; this needs a design decision". Example: `src/auth/refresh.ts:40 (mirror its token-rotation shape)`. A **blank or absent** field fails the plan gate: silence cannot be distinguished from "I did not look", and `no-precedent` is the answer that routes the task to the right tier instead of to the cheapest one. Optional at `quick`. |
 
 ## Parallelism assessment (per phase)
 
@@ -125,6 +126,9 @@ batches — `execute` runs it in the main agent. This is exactly what `execute` 
 ## Validate before presenting
 
 - Every task is atomic (one component / function / endpoint / file).
+- Every task declares its **files**.
+- At `standard`+, every task's **reuses** holds a path, a `path:line`, or `no-precedent`
+  — never blank.
 - The dependency graph is acyclic and every `depends-on` ID exists.
 - No `[P]` task depends on another task in the same phase.
 - Every task has co-located tests, a real gate (a project-real command), and an anchor:

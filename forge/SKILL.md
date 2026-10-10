@@ -212,6 +212,13 @@ and let a failed gate promote it — the same ratchet as sizing.
    | `## Validation delta` | clear-on-resolve |
    | `## Verification evidence` | append-on-PASS |
    | `## Handoff` | overwrite |
+   | `Door` header field (`state.md`) | update-in-place (one-way only; a downgrade needs the user) |
+   | `## Conventions observed` (`spec.md`) | overwrite-in-place (regenerated whole on a specify re-run) |
+   | `## Environment candidates` (`lessons.md`) | append-only, never loaded |
+
+   A section with no row here is clobbered by the next surgical write, so adding a
+   section to `state.md`, `spec.md` or the lessons artifact means adding its row in the
+   same change.
 
 ### Honesty
 

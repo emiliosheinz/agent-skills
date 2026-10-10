@@ -40,7 +40,7 @@ and route it. Four routes, and the first is the default:
 | Class | What it looks like | Route |
 |---|---|---|
 | **mechanical** | a deterministic rule a command can check — a forbidden import, a missing flag, a path convention | **A proposed check**, written into the parked backlog as a concrete command or rule. When the repo can host it during this change, it *additionally* becomes a plan task. Prefer the check over the sentence: a check enforces itself |
-| **judgement** | a structural or stylistic call no command can decide — where a responsibility belongs, what a name should describe | **The standards route**: the project's `CODING_STANDARDS.md` if one exists. **If none exists, park it with its intended destination and do NOT create one** (`references/structural-standards.md` — never create) |
+| **judgement** | a structural or stylistic call no command can decide — where a responsibility belongs, what a name should describe | **The standards route**: the project's `CODING_STANDARDS.md` if one exists. **If none exists, park it with its intended destination and do NOT create one** (`references/structural-standards.md` → *Project standards discovery*, **Never create**) |
 | **navigation** | "the thing you were looking for lives here" | **A pointer** — one Standing Rule naming the location. This is the class Standing Rules are actually good at |
 | **process** | an observation about forge itself — "specify earlier", "that phase split was wrong" | **The parked backlog.** Not a Standing Rule, not a repo lesson |
 

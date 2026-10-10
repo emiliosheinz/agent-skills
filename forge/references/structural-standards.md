@@ -235,3 +235,21 @@ it, report this delta:
 Without the evaluated set, a review that silently selected nothing is indistinguishable
 from a healthy clean run — and forge's standing rule is that a skipped check is a
 recorded gap, never green.
+
+### Project standards discovery
+
+A project may extend this file with a `CODING_STANDARDS.md`.
+
+- **Where to look.** The repository root, and each ancestor directory of the changed
+  files. Use the one **nearest** the changed files.
+- **A tie.** Two candidates at equal distance: report the ambiguity and use **neither**.
+- **Never create.** A review-time agent SHALL NOT create, scaffold, or offer to create a
+  standards file. No file found is a normal outcome; the output states it and the run
+  continues.
+- **Unreadable.** Treated as absent, stated in the output; the run does not fail. The
+  format is deliberately unconstrained — any prose is valid, and "unparseable" means
+  unreadable, not malformed.
+- **Precedence.** This file always applies. A discovered standards file **extends** it and
+  **overrides it at the points it names**; it never replaces it.
+- **Conflict.** A project rule that contradicts a recorded convention is reported as a
+  finding for the user. Neither is silently preferred.

@@ -65,6 +65,15 @@ design's gates, the commit/diff under review). They are stateless.
    field. Asserting that a method was *called* (spy/mock/call-count) is never a
    substitute for asserting the resulting state.
 
+   **The three lies, by name.** Reject a test that is **tautological** (the assertion
+   restates the implementation, so it passes for a wrong one), **structure-sensitive**
+   (it asserts that a method was called rather than the resulting state), or
+   **cannot-fail** (no input makes the assertion false). Same three words
+   `references/plan.md` uses when the test is planned, so a rejection is traceable to the
+   rule it broke. Also reject a mock placed anywhere but a system boundary, and an
+   expected value whose expression references a symbol defined in the files the task
+   changed.
+
    **Reverse (necessity).** For each test touched in the phase diff, map it back to an
    AC ID, a **design element**, a spec edge case, or a done-when criterion —
    `file:line + assertion → anchor → keep?`. A design element is a named component, a

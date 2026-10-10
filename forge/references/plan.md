@@ -75,7 +75,7 @@ register form, token storage, API client, route guard.
 | **depends-on** | Task IDs that must finish first. Keep minimal. Tasks in the same phase that depend on each other cannot both be `[P]`. |
 | **AC-trace** | The acceptance-criterion ID(s) from `spec.md` this task satisfies. Every task traces to at least one AC. (Enabling work traces to the task it unblocks.) |
 | **files** | The paths this task is allowed to touch. Three mechanisms depend on it and none works without it: the structural axis attributes each finding to a task, the tamper check scopes its revert, and `execute` composes implementer batches by locality. `execute`'s commit step already assumes it ("only the files in the task definition"). A glob is fine; "wherever it needs to" is not. |
-| **tests** | The tests written **within this task**, co-located with the code it creates — never deferred to a later task. Use the highest test level the task's layer requires (unit for logic, e2e for routes/controllers). |
+| **tests** | The tests written **within this task**, co-located with the code it creates — never deferred to a later task. Use the highest test level the task's layer requires (unit for logic, e2e for routes/controllers). Must not be tautological, structure-sensitive, or cannot-fail — see *How a test lies* below. |
 | **gate** | A deterministic command that returns clean iff the task succeeded. Use the project's real runner (see "learn the project's real test setup" above), not an assumed one. |
 | **done-when** | A pass/fail checklist, each item true or false, ending with "gate passes: `<command>`". |
 | **reuses** *(required at `standard`+)* | The precedent this task mirrors, from `design.md`'s code-reuse analysis — a `path`, a `path:line`, or the literal sentinel **`no-precedent`** meaning "no precedent exists; this needs a design decision". Example: `src/auth/refresh.ts:40 (mirror its token-rotation shape)`. A **blank or absent** field fails the plan gate: silence cannot be distinguished from "I did not look", and `no-precedent` is the answer that routes the task to the right tier instead of to the cheapest one. Optional at `quick`. |
@@ -100,6 +100,38 @@ cites:
 
 - `[P] — per-test in-memory DB, see src/auth/login.test.ts:beforeEach`
 - `seq — integration tests share the test DB, see src/.../user.e2e-spec.ts truncates globally`
+
+## How a test lies
+
+Planning a task's `tests` field is where its strength is decided; by execute it is being
+defended. forge's mutation sensor (verifier 5) catches a weak test, but only at `complex`
+size or on a one-way door, so most weak tests ship unexamined. These three names are the
+cheap brake that runs at every size. `references/verification.md`'s verifier 3 uses the
+same three words, so a planned test and a rejected test are described in one vocabulary.
+
+**Three ways a test lies.** Name them, because an unnamed failure mode is one nobody
+looks for:
+
+- **tautological** — the assertion restates the implementation. It compares the code's
+  output to the code's own expression, or to a constant the code also reads, so it
+  passes for any implementation including a wrong one.
+- **structure-sensitive** — the assertion checks *shape* rather than *outcome*: that a
+  method was called, how many times, in what order, with what internal argument. It
+  breaks on a harmless refactor and survives a behavioural bug, which is exactly
+  backwards.
+- **cannot-fail** — there is no input for which the assertion is false. An empty loop
+  body, a `try` that swallows, `expect(result).toBeDefined()`, a snapshot written from
+  the current output.
+
+**The mocking boundary.** Mock at **system boundaries only** — external services, time,
+randomness, and where unavoidable the datastore and the filesystem. Never mock the
+change's own collaborators: a test that stubs the unit next to the one under test is
+asserting on the stub.
+
+**The independent-expected-value rule.** The expression producing an expected value must
+not reference any symbol **defined in the files the task changed**. Write the number, the
+string, or the literal structure the spec's acceptance criterion names. An expected value
+computed by the code under test cannot disagree with it.
 
 ## Gates
 

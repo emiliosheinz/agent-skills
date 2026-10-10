@@ -126,7 +126,19 @@ For each task:
      no unrequested configurability, no error handling for impossible states.
    - **Quick test-strength check.** If a plausible *wrong* implementation would still
      pass the test, the test is too weak. Strengthen it before moving on. This is the
-     cheap stand-in for verifier 5, which only runs on complex changes.
+     cheap stand-in for verifier 5, which only runs on complex changes or a one-way door.
+     Three named ways it happens — `references/plan.md` carries the long form and
+     verifier 3 uses the same words:
+     - **tautological** — the assertion restates the implementation, so it passes for any
+       implementation including a wrong one;
+     - **structure-sensitive** — it asserts that a method was called rather than what the
+       resulting state is, so it breaks on a refactor and survives a bug;
+     - **cannot-fail** — no input makes the assertion false.
+
+     Mock at **system boundaries only** — external services, time, randomness, and where
+     unavoidable the datastore and filesystem — never the change's own collaborators. And
+     an expected value's expression must not reference a symbol defined in the files the
+     task changed.
 3. **Run the task gate.** The deterministic command from the plan. Non-zero = not
    done; fix and re-run. Never proceed on a failing gate.
 4. **Self-check before committing.** Two questions, not one — the first was the only one

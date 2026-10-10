@@ -225,6 +225,25 @@ For each task:
 7. **Update `state.md`.** Mark the task `done` with evidence (commit sha, test count, and
    each structural finding's disposition).
 
+### When subagents are unavailable (degrade, never fake)
+
+The general rules are in `references/review.md` → *Graceful degradation*; do not restate
+them. What the structural axis adds, because it is the one step whose whole value is the
+dispatch boundary:
+
+- **Run it inline, preceded by a verbatim re-read** of the batch's changed files. Not a
+  recollection of what you wrote — the current bytes.
+- **Edits are forbidden during the review step.** Collect findings first, then apply.
+- **Snapshot the declared paths before the step** and re-run the gate after, exactly as
+  in the dispatched path.
+- **The tamper comparison is `inoperative`**, not weakened: with one context there is no
+  dispatch boundary for a tree delta to straddle, so there is nothing to compare. Say
+  that plainly rather than reporting a passing version of a check that did not run.
+- **The reviewer-is-not-implementer property is gone, not merely unproven.** Record the
+  affected tasks as reviewed **inline** and never as independently reviewed.
+- **A lens skipped for any reason is `recorded as a gap`** in `state.md` — never reported
+  as reviewed, and never counted toward a clean verdict.
+
 ### Verify the phase (independent subagents)
 
 Once all the phase's tasks are committed and the phase gate is green, dispatch the

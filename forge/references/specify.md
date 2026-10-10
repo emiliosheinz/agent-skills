@@ -84,10 +84,42 @@ Everything here is an observation, not a conclusion. `quick` does a light Move 1
 the areas the change will touch:
 
 - Existing modules, services, components in the same domain
-- Established patterns: structure, naming, data flow, testing approach
+- **The conventions the code already shows** — recorded as a named section, see below
 - Prior decisions in `./.specs/` (specs, designs, ADRs, RFCs) that overlap
 - Technical debt or known limitations visible in code or comments
 - Integration boundaries: external services, APIs, data stores
+
+**Conventions observed (every size).** Move 1 writes a `Conventions observed` section
+into `spec.md`. It is the only structural *input* the pipeline has: `design.md` states a
+verdict per record, and execute's conventions check compares the diff against them. Six
+fixed categories, always all six, never more:
+
+| Category | What to record |
+|---|---|
+| structure | how files and modules are arranged and where a new one of this kind goes |
+| naming | the shape names take — casing, suffixes, what a name describes |
+| data flow | how data moves between units, and what carries it |
+| layering | which direction dependencies point, and across what boundary |
+| error handling | how failures are represented, raised, and surfaced |
+| test placement | where a test for this kind of code lives, and at what level |
+
+Rules:
+
+- **Every entry cites a `file:line`.** A convention with no example is an opinion about
+  the codebase, not an observation of it.
+- **A category with nothing observed carries a marker that names where it looked** —
+  "none observed (searched `src/**/*.ts`, `test/`)". Six bare "none observed" markers are
+  otherwise the cheapest green at `quick`, which defeats the record.
+- **At `quick`, one record per category maximum.** The light scan still produces all six
+  rows; it just stops at the first clear example of each.
+- **Regenerated whole on a re-run.** A second `specify` pass on the same slug replaces the
+  section rather than appending to it, so re-running a phase is idempotent.
+- **Record what is, decide nothing.** A convention you think is wrong is still recorded as
+  observed; the argument belongs in `design.md`'s verdict.
+- **A pre-existing spec with no such section** is not a failure. Downstream consumers
+  record "not available (legacy artifact)" and continue — distinct from a section that is
+  present with nothing observed, which is a real, passing observation. See
+  `references/verification.md`, verifier 4.
 
 **Move 2 — Trace the impact (standard+).** Trace outward from the code the change would
 touch, recording where the problem area sits and what already depends on it — never how

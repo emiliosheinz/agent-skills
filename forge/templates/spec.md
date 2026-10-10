@@ -38,6 +38,20 @@ What has been tried/built/considered — internal or external.
 Observations from the existing code relevant to this problem (modules, patterns,
 integration boundaries, prior decisions). Observations only — no conclusions.
 
+### Conventions observed
+<!-- Written by specify Move 1 at EVERY size. All six categories, always. Each entry cites a
+     file:line; a category with nothing observed names where it looked. Regenerated whole on a
+     re-run. See references/specify.md. design.md states a verdict per row. -->
+
+| Category | Convention observed | Example (`file:line`) |
+|---|---|---|
+| structure | | |
+| naming | | |
+| data flow | | |
+| layering | | |
+| error handling | | |
+| test placement | | |
+
 ### Impact / Blast Radius (standard+)
 Observed: where the problem area sits and what already depends on it. Current state only —
 no proposed changes (that is design's job).

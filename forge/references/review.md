@@ -100,6 +100,21 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
    a trigger, and the dispatch record. Given: the drafted `design.md`, the spec's
    `Conventions observed` section, and any discovered project standards file.
 
+### The scope/shape boundary (lenses 3 and 4 both carry it)
+
+Lens 3 argues for less and lens 4 argues for better-arranged. They collide unless both
+briefs carry the same boundary, so both do:
+
+> **Scope** governs *whether* something is built. **Shape** governs *how* what is built
+> is arranged.
+
+Relocating a rule into the unit that owns its data, or replacing a primitive that already
+has validation repeated at call sites with a domain type, is **the same scope** — the rule
+and the validation were already built. It is not an unrequested abstraction, and lens 3
+must not report it as one. Adding a port, a layer, a second implementation, a config flag,
+or an extension point *is* new scope, and lens 4 never asks for it. See
+`references/structural-standards.md` → *Scope versus shape*.
+
 ## What runs when (size-gated)
 
 | Size | Reviewers | Override |

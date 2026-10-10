@@ -75,20 +75,47 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
    for one product, flexibility nothing needs), code reinvented that the spec's codebase
    findings show already exists, and implementation detail leaked into the design. Apply
    the design's own test: *"would this survive a framework swap?"* — if not, it's an
-   implementation detail that doesn't belong. Given: the `design.md` plus the spec's
-   codebase findings.
+   implementation detail that doesn't belong.
+
+   **The deletion test, and a two-sided verdict.** For each abstraction, ask what
+   deleting it would cost, then return one of two values **citing the caller count**:
+   - `pass-through` — deleting it removes code and no caller grows. It earns nothing;
+     say so and recommend the deletion.
+   - `earns-keep` — deleting it duplicates code across two or more callers. It pays for
+     itself; say so and move on.
+
+   A one-sided lens that can only say "too much" is why nothing in forge ever said
+   "not enough". Naming the passing case is what makes the failing case credible.
+   Given: the `design.md` plus the spec's codebase findings.
+4. **Under-design** — the symmetric lens: is what the design *does* build arranged
+   well? Criteria are **not** restated here — read
+   `references/structural-standards.md`, which holds the check set, the selection rule,
+   the firing discipline, the do-not-flag list, and the scope/shape boundary. Subject:
+   the drafted `design.md`. At minimum the verdict covers: one responsibility per
+   component nameable in a sentence without "and"; dependency direction across each
+   named boundary; domain concepts carried by primitives; consistency boundaries; where
+   rules live relative to transport; and units mixing abstraction levels. Report the
+   verdict delta that file defines — the check ids evaluated, the surface facts asserted
+   with evidence for each asserted absence, the count of candidates dropped for want of
+   a trigger, and the dispatch record. Given: the drafted `design.md`, the spec's
+   `Conventions observed` section, and any discovered project standards file.
 
 ## What runs when (size-gated)
 
 | Size | Reviewers | Override |
 |------|-----------|----------|
-| quick | none — closure gate only | — |
-| standard | 1, 2 | any `critical` AC also runs 3 |
-| complex | 1, 2, 3 | — |
+| quick | none — closure gate only | a **one-way door** runs design lens 4 |
+| standard | 1, 2, 4 | any `critical` AC also runs 3 |
+| complex | 1, 2, 3, 4 | — |
 
 A `quick` change carries an inline spec of a few lines and no design — the author's
 closure gate is proportionate; do not dispatch reviewers for it. Standard runs the two
-highest-value lenses; complex runs the full panel.
+highest-value lenses plus the under-design lens; complex runs the full panel.
+
+**Reversibility overrides the size gate too.** A change classified a **one-way door**
+(`references/specify.md`) runs design lens 4 regardless of size, including at `quick`
+with no design document — in that case the lens reads the acceptance criteria gathered
+inline. Scrutiny follows what a mistake costs, not how many files it touches.
 
 **Criticality overrides the size gate.** Any AC marked `critical` in the spec (auth,
 payments, data integrity) forces reviewer 3 regardless of size — the same principle as
@@ -101,7 +128,10 @@ Adversarial review is judgment work, not a mechanical pass/fail — run it at **
 or frontier with high effort for a complex change**, per SKILL.md's Model & effort
 selection (the "adversarial judgment / ambiguous synthesis" row). Never send these lenses
 to the economy tier, and never fan the whole panel to frontier by default: complex earns
-frontier for its reviewers; standard runs them at standard/high. Dispatch the applicable
+frontier for its reviewers; standard runs them at standard/high. Design lens 4 inherits
+exactly that row — **standard tier with high effort, frontier at `complex`** — and is
+never dispatched at economy: a check that needs a judgement about where a responsibility
+belongs is not a mechanical pass/fail. Dispatch the applicable
 reviewers as concurrent subagents per SKILL.md's Orchestration rules — Workflow when the
 runtime supports it, sequential subagent calls otherwise. Reviewers spawn nothing.
 

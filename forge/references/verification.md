@@ -79,8 +79,32 @@ design's gates, the commit/diff under review). They are stateless.
    implementer (unfair) — raise **SPEC-GAP**, record it as a spec defect against that
    AC ID plus a lessons candidate, and route the fix back to `spec.md`.
 4. **Architecture compliance** *(analysis)* — confirm the code follows `design.md`
-   (component boundaries, contracts, decisions). No design → check consistency with
-   the codebase patterns the spec recorded. Report violations by file:line.
+   (component boundaries, contracts, decisions). Report violations by file:line. Two
+   modes:
+
+   **Full mode** (`standard`+, a design exists). As above, plus: for each row of
+   `design.md`'s conventions verdicts, confirm the code matches the verdict. Only the
+   **deviating** rows need re-checking — a conformant row was already settled at design
+   time.
+
+   **Conventions-only mode** (`quick`, or any size with no design document). Compare the
+   diff against the `Conventions observed` section of `spec.md` and nothing else. The
+   mode is defined by three exclusions, and they are what keep `quick` cheap:
+   - it **reads no design document**;
+   - it **loads no structural catalogue** (`references/structural-standards.md` is not an
+     input here);
+   - it **dispatches no subagent** — it runs inline, as an analysis pass over the diff.
+
+   Report each category as conformant, deviating (with the `file:line` that deviates), or
+   **"not available (legacy artifact)"** when the spec carries no such section. A section
+   present with nothing observed is a real observation: conformance passes and says so. A
+   none-observed marker that does not name where it looked is a finding.
+
+   **Verifiers 3 and 4 are conventions-*data* consumers, not review-time agents.** They
+   read the recorded conventions directly. They never carry the structural catalogue or a
+   project standards file — that routing belongs to the three review-time dispatches named
+   in `references/structural-standards.md`. Putting the catalogue behind verifier 4 would
+   drag it into `quick`'s cheap path, which is the one thing this mode exists to avoid.
 5. **Mutation sensor** *(expensive, destructive)* — inject small faults into the
    task's **own new code** and confirm the tests catch them. Concrete examples:
    - flip a boolean condition (`==` → `!=`)
@@ -100,12 +124,17 @@ design's gates, the commit/diff under review). They are stateless.
 
 | Size | Verifiers | Override |
 |------|-----------|----------|
-| quick | 1, 2 | Any `critical` AC also runs 5 |
-| standard | 1, 2, 3, 4 | Any `critical` AC also runs 5 |
-| complex | 1, 2, 3, 4, 5 | — |
+| quick | 1, 2, 4 (conventions-only) | Any `critical` AC also runs 5 |
+| standard | 1, 2, 3, 4 (full) | Any `critical` AC also runs 5 |
+| complex | 1, 2, 3, 4 (full), 5 | — |
 
 1 and 2 are cheap and parallel-safe. 3 and 4 are read-only analysis — run in parallel.
 5 is expensive and destructive — run last, alone, scoped to the task's new code.
+
+**Verifier 4 runs at every size.** Before this, `quick` had no structural check of any
+kind, and `quick` is where most changes live. Its conventions-only mode costs one
+read of a section the spec already carries — no design document, no catalogue, no
+subagent — so the floor is real without raising `quick`'s price.
 
 **Criticality overrides the size gate.** Any AC marked `critical` in the spec (auth,
 payments, data integrity) triggers verifier 5 regardless of size, with extra
@@ -127,7 +156,9 @@ sequential subagent calls. Verifiers spawn nothing.
 have a mechanical pass/fail and run at economy/low: test suite (1) and static analysis
 (2) — typecheck, lint, and format are all mechanical. The analysis verifiers — spec coverage (3) and architecture
 compliance (4) — need judgment; run them at standard, or frontier with high effort for a
-complex change. Don't send all five to the frontier tier by default.
+complex change. Don't send all five to the frontier tier by default. **Verifier 4 in
+conventions-only mode is the exception**: it compares a diff against a recorded list, has
+a clear pass/fail per category, and dispatches nothing — run it inline at economy/low.
 
 ## Graceful degradation (never fake a gate)
 
@@ -136,7 +167,11 @@ complex change. Don't send all five to the frontier tier by default.
   recorded as a gap** in `state.md` plus a lessons candidate ("no test seam here") —
   not silently passed.
 - **No spec / quick direct execute:** verifier 3 traces against the acceptance
-  criteria derived inline at execute time, same structure.
+  criteria derived inline at execute time, same structure. Verifier 4 runs
+  conventions-only against the conventions observed inline during that same scan.
+- **Spec predates the conventions section:** verifier 4 records
+  "not available (legacy artifact)" and does not fail the run — distinct from a section
+  present with nothing observed, which passes and says so.
 - **Missing static-analysis tool:** verifier 2 reports each sub-check independently. A
   tool the project has configured but that can't run is "not configured" / a gap, never
   passed; a tool with no analogue for the language is `N/A`.

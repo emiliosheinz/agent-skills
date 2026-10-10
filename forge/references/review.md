@@ -60,9 +60,11 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
 
 1. **Requirement coverage** — forward: every spec AC ID maps to a verification gate that
    actually *proves* it, not a gate that merely names it. Reverse: every component, data
-   model, and decision traces back to a requirement — an element anchored to nothing is
-   scope creep. No AC orphaned in either direction. Reference AC IDs; never restate the
-   criterion text. Given: the drafted `design.md` plus the spec's AC IDs and gates.
+   model, and decision traces back to a requirement **or to a design element** — a named
+   component, a seam, or a recorded convention. Both are legitimate anchors; an element
+   anchored to **neither** is scope creep. No AC orphaned in either direction. Reference
+   AC IDs; never restate the criterion text. Given: the drafted `design.md` plus the
+   spec's AC IDs and gates.
 2. **Failure-mode / risk** — attack the design where it breaks in production: security
    holes (unvalidated input, auth gaps, exposed secrets), performance cliffs (N+1,
    unbounded work, missing indexes), concurrency / idempotency gaps, error-matrix

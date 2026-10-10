@@ -66,8 +66,11 @@ design's gates, the commit/diff under review). They are stateless.
    substitute for asserting the resulting state.
 
    **Reverse (necessity).** For each test touched in the phase diff, map it back to an
-   AC ID, spec edge case, or done-when criterion — `file:line + assertion → anchor →
-   keep?`. A test anchored to nothing is scope creep → remove. Reject speculative
+   AC ID, a **design element**, a spec edge case, or a done-when criterion —
+   `file:line + assertion → anchor → keep?`. A design element is a named component, a
+   seam, or a recorded convention, and it is a legitimate anchor in its own right:
+   structural work has no AC of its own and must not be deleted for lacking one. An item
+   anchored to **neither** kind is still scope creep → remove. Reject speculative
    what-if tests, tests of framework/library behavior, and cross-layer duplicate
    assertions.
 

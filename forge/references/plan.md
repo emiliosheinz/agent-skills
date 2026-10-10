@@ -127,8 +127,9 @@ batches — `execute` runs it in the main agent. This is exactly what `execute` 
 - Every task is atomic (one component / function / endpoint / file).
 - The dependency graph is acyclic and every `depends-on` ID exists.
 - No `[P]` task depends on another task in the same phase.
-- Every task has co-located tests, an AC trace, and a real gate (a project-real
-  command).
+- Every task has co-located tests, a real gate (a project-real command), and an anchor:
+  an AC ID **or** a **design element** — a named component, a seam, or a recorded
+  convention. A task anchored to neither is scope creep; drop it or find its anchor.
 - Every `[P]` / seq call cites its parallelism evidence.
 - Each phase has a goal and a phase gate.
 

@@ -24,6 +24,9 @@ Populated by `plan`, updated by `execute`. Tasks grouped by phase; phases run in
 order, `[P]` tasks run in parallel within a phase. Task status: pending /
 in-progress / done / blocked. Mark a finished phase `**completed**` below its heading.
 
+The `AC-trace` column holds an AC ID **or** a design element — a named component, a
+seam, or a recorded convention. A task anchored to neither is scope creep.
+
 ### Phase 1 — <goal>
 Phase gate: `<full test + static analysis (typecheck + lint + format)>`
 

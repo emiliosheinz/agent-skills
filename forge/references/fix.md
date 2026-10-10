@@ -80,7 +80,10 @@ history; a correction to shipped code is a new commit or a revert+reapply.
 
 ### 3. Verify the trace invariant
 
-Every affected AC → gate → task → code+test, no orphans in either direction. When the
+Every affected AC → gate → task → code+test, no orphans in either direction. A task whose
+purpose is structural anchors to a **design element** — a named component, a seam, or a
+recorded convention — and that satisfies the invariant exactly as an AC does. Only an item
+anchored to neither kind is an orphan. When the
 cascade reaches code this is **already** verifier 3 inside execute's verify step — don't
 double-run it. Run a standalone trace check only when the correction **stops above code**
 (docs edited, execution deferred).

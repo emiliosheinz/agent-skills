@@ -87,7 +87,15 @@ contract emerged). Recommend — do not run it for the user.
      loading the shared files and setup once). One subagent per task only when the tasks
      are genuinely unrelated *and* each is substantial.
    - Give each subagent everything it needs: file paths, AC IDs, the task gates,
-     constraints.
+     constraints, and its `files` set.
+   - **An implementer's prompt carries neither the catalogue nor a standards file.**
+     `references/structural-standards.md` and any discovered `CODING_STANDARDS.md` reach
+     **review-time agents only**, and exactly three dispatches qualify: `review.md`'s
+     under-design lens, the structural axis in this file's task loop, and `fix.md`'s
+     claim lenses. An implementer's prompt grows by exactly one thing over today's — the
+     scope/shape boundary sentence in the self-check — because a brief an implementer
+     reads while writing code is a brief it will argue with its own instructions about,
+     and the budget for implementer context is the scarcest one forge spends.
    - The subagent returns the files it changed and does **not** commit; you run its
      gates and commit.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;

@@ -41,6 +41,12 @@ before acting** — it is the step-by-step playbook for that phase.
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
 | `fix` | `references/fix.md` | re-aligned artifacts + code |
 
+`references/structural-standards.md` is not a phase. It is the single always-applied
+baseline for what good structure is and how a structural review is conducted, loaded by
+the review-time agents that need it — `review.md`'s under-design lens, `execute.md`'s
+per-batch structural axis, and `fix.md`'s claim lenses. No second structural check set
+exists anywhere in forge.
+
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
 

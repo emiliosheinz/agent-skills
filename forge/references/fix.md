@@ -58,9 +58,8 @@ change vs. misunderstanding of existing intent; (b) the true entry layer / is th
 reviewer says "spec gap") via `AskUserQuestion`, default to lifting. **Skip the review
 entirely for pure code-cosmetic corrections** (rename, extract, flaky test, formatting) —
 the same way `quick` skips review. That skip **also skips the structural axis, and records
-a gap** for it in `state.md`. Stated explicitly either way, because "a cosmetic change is
-not reviewed" and "a cosmetic change was reviewed and found clean" are different claims
-and only one of them is true.
+a gap** for it in `state.md` — stated explicitly, because "not reviewed" and "reviewed and
+clean" are different claims.
 
 ### 2. Cascade — re-align the affected slice, top-down
 
@@ -74,11 +73,11 @@ own discipline on just the delta; do not restate it:
   re-check over the **whole** modified task table (acyclic, deps exist, no `[P]` depends
   on a same-phase task) — not just appended rows
 - code delta → `references/execute.md` per-task loop + verifiers + bounded fix loop,
-  **including its structural axis**. The axis's diff basis during a cascade is **this
-  invocation's hunks**, never the task's full slice: a one-line correction must not
-  re-review the code the task originally shipped, or every small fix escalates on findings
-  it did not cause. A finding in code **this invocation did not touch** goes to the parked
-  backlog in the lessons artifact (`references/lessons.md`), never a fix cycle.
+  **including its structural axis**. During a cascade the axis's diff basis is **this
+  invocation's hunks**, never the task's full slice — otherwise a one-line correction
+  re-reviews what the task originally shipped and escalates on findings it did not cause.
+  A finding in code this invocation did not touch goes to the parked backlog
+  (`references/lessons.md`), never a fix cycle.
 
 As the cascade reaches already-`completed` work, **reopen it forward-only**: flip the
 affected `done` tasks back to `pending`, and **invalidate stale proof** — a
@@ -88,10 +87,10 @@ history; a correction to shipped code is a new commit or a revert+reapply.
 
 ### 3. Verify the trace invariant
 
-Every affected AC → gate → task → code+test, no orphans in either direction. A task whose
-purpose is structural anchors to a **design element** — a named component, a seam, or a
-recorded convention — and that satisfies the invariant exactly as an AC does. Only an item
-anchored to neither kind is an orphan. When the
+Every affected AC → gate → task → code+test, no orphans in either direction. A structural
+task anchors to a **design element** — a named component, a seam, or a recorded convention
+— which satisfies the invariant exactly as an AC does; only an item anchored to neither is
+an orphan. When the
 cascade reaches code this is **already** verifier 3 inside execute's verify step — don't
 double-run it. Run a standalone trace check only when the correction **stops above code**
 (docs edited, execution deferred).
@@ -116,10 +115,8 @@ in this same invocation only when ALL hold:**
 - the code delta clears execute's quick-path guardrail (≤~5 atomic steps, no new public
   interface/contract, no schema/API change, no cross-file ordering dependency);
 - no size promotion fires;
-- the change is **not a one-way door** (`references/specify.md`), and no AC is deleted;
-  a one-way door always stops and recommends the chain, whatever its size — the auto-
-  execute path exists to save a round-trip, and an irreversible effect is not worth
-  saving one over;
+- the change is **not a one-way door** (`references/specify.md`), and no AC is deleted —
+  a one-way door always stops and recommends the chain, whatever its size;
 - the affected slice's tasks are all `done`/`pending` — no conflicting uncommitted work.
 
 **Otherwise stop** and recommend the phase chain from the true entry down (e.g. entry =

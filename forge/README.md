@@ -48,8 +48,8 @@ Size can only increase. A downgrade requires your confirmation. See
 two-way door — one-way meaning reverting the commit does not undo the effect (destructive
 migration, bulk delete, mass communication, money movement, an auth boundary, a broken
 contract, no revert path). A one-way door runs the heavier reviewers and the mutation
-sensor regardless of how small it is, because a two-line change that emails every user
-deserves more scrutiny than a sixty-file rename.
+sensor however small it is: a two-line change that emails every user deserves more
+scrutiny than a sixty-file rename.
 
 ## What you get out of forge
 
@@ -63,17 +63,15 @@ deserves more scrutiny than a sixty-file rename.
   artifact. Catches a vague AC or an orphaned requirement at authoring time instead of at
   execute time.
 - **A structural baseline, not just a simplicity one.** Three of forge's voices argue for
-  less code. The fourth design lens is the symmetric one: it asks whether what *is* being
-  built is arranged well — where a rule lives, which way a dependency points, whether a
-  domain concept is carried by a bare primitive, whether one body mixes abstraction
-  levels. Its criteria live in one place, `references/structural-standards.md`, with every
-  check sourced and rated; a project can extend them with its own `CODING_STANDARDS.md`.
-  It prefers silence: a finding needs a trigger visible in the diff, a named source, and
-  the cheapest fix, or it is dropped.
-- **The conventions your code already shows become an input.** `specify` records them as
-  a named section with a `file:line` per entry, `design` states a verdict per convention,
-  and `execute` checks the diff against them at **every** size — including `quick`, which
-  previously had no structural check at all.
+  less code; the fourth design lens asks whether what *is* built is arranged well — where
+  a rule lives, which way a dependency points, whether a domain concept is a bare
+  primitive, whether one body mixes abstraction levels. Its criteria live in one sourced
+  file, `references/structural-standards.md`, extensible per project via
+  `CODING_STANDARDS.md`. It prefers silence: no trigger in the diff, no finding.
+- **The conventions your code already shows become an input.** `specify` records them with
+  a `file:line` per entry, `design` states a verdict per convention, and `execute` checks
+  the diff against them at **every** size — including `quick`, which previously had no
+  structural check at all.
 - **Phased plan.** `plan` groups small tasks into dependency-ordered phases. Tasks
   within a phase run in parallel when a safety check approves. Each task traces to an
   acceptance criterion.
@@ -82,14 +80,13 @@ deserves more scrutiny than a sixty-file rename.
   tests, static analysis (typecheck + lint + format), spec coverage, architecture, and
   (for complex changes or a one-way door) mutation testing.
   A bounded fix loop addresses what they find.
-- **A structural review inside the task loop, before the commit.** At `standard` and
-  above, each batch of tasks is reviewed for structure after its gate passes and before
-  it is committed, by an agent that is not the one that wrote it. The reviewer never
-  edits; the batch's own implementer applies the findings and re-runs the gate, and the
-  fixes land in the same single task commit. Two cycles, then the task is left
-  uncommitted and marked `blocked` rather than looping. Every finding's disposition —
-  applied, rejected with a reason, or parked — is recorded, so a finding cannot quietly
-  vanish between the verdict and the commit.
+- **A structural review inside the task loop, before the commit.** At `standard`+, each
+  batch is reviewed for structure after its gate passes and before it commits, by an agent
+  that did not write it. The reviewer never edits; the batch's own implementer applies the
+  findings and re-runs the gate, and the fixes land in the same single task commit. Two
+  cycles, then the task is left uncommitted and marked `blocked` rather than looping. Each
+  finding's disposition — applied, rejected with a reason, or parked — is recorded, so a
+  finding cannot quietly vanish between verdict and commit.
 - **Lessons layer.** Each change keeps its own `lessons.md` listing what went wrong and
   the rule for next time. Each phase loads it at start.
 

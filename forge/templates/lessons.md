@@ -19,9 +19,8 @@
 
 <!-- environment-candidates -->
 ## Environment candidates
-<!-- Append-only. NEVER loaded by a phase — every phase reads only ABOVE this marker.
-     Parked observations with their classification and intended destination: proposed
-     mechanical checks, judgement calls with no CODING_STANDARDS.md to hold them, and
-     process observations about forge itself (the one place they are allowed).
-     Format: date · [class → destination] · the observation -->
+<!-- Append-only. NEVER loaded — every phase reads only ABOVE this marker. Parked
+     observations with their classification and intended destination: proposed mechanical
+     checks, judgement calls with no CODING_STANDARDS.md, and process observations (the
+     one place they are allowed). Format: date · [class → destination] · observation -->
 -

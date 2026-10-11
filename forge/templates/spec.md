@@ -93,14 +93,11 @@ distinct from out-of-scope so they aren't lost or allowed to expand scope).
 Functional only (what, not how). One per item. IDs `PREFIX-NN`, priority P0/P1/P2.
 
 **Door verdict:** one-way / two-way — <the triggers that fired, or "none">
-<!-- Per change, and mirrored to state.md's header table. One-way = reverting the commit
-     does not undo the effect. Triggers: destructive migration or data loss, bulk delete,
-     mass communication to real users, money movement, an auth or permission boundary,
-     breaking a contract a consumer depends on, no revert path. Never blank. -->
+<!-- Per change, mirrored to state.md's header. One-way = reverting the commit does not
+     undo the effect. Trigger list: references/specify.md. Never blank. -->
 
-Append `[critical]` to the individual ACs carrying the irreversible outcome, so the
-consumers that scope work to a path have one to aim at (omit the tag otherwise). The door
-verdict decides whether a gate fires; this marker decides where it points.
+Append `[critical]` to the ACs carrying the irreversible outcome (omit otherwise): the
+door verdict decides whether a gate fires, this marker decides where it points.
 
 - **[P0] PREFIX-01** — The system SHALL <observable outcome>.
   - AC: WHEN <condition>, THEN the system SHALL <precise expected outcome>. [critical]

@@ -90,9 +90,9 @@ the areas the change will touch:
 - Integration boundaries: external services, APIs, data stores
 
 **Conventions observed (every size).** Move 1 writes a `Conventions observed` section
-into `spec.md`. It is the only structural *input* the pipeline has: `design.md` states a
-verdict per record, and execute's conventions check compares the diff against them. Six
-fixed categories, always all six, never more:
+into `spec.md` — the pipeline's only structural *input*: `design.md` states a verdict per
+record and execute's conventions check compares the diff against them. Six fixed
+categories, always all six:
 
 | Category | What to record |
 |---|---|
@@ -105,21 +105,18 @@ fixed categories, always all six, never more:
 
 Rules:
 
-- **Every entry cites a `file:line`.** A convention with no example is an opinion about
-  the codebase, not an observation of it.
-- **A category with nothing observed carries a marker that names where it looked** —
-  "none observed (searched `src/**/*.ts`, `test/`)". Six bare "none observed" markers are
-  otherwise the cheapest green at `quick`, which defeats the record.
-- **At `quick`, one record per category maximum.** The light scan still produces all six
-  rows; it just stops at the first clear example of each.
-- **Regenerated whole on a re-run.** A second `specify` pass on the same slug replaces the
-  section rather than appending to it, so re-running a phase is idempotent.
-- **Record what is, decide nothing.** A convention you think is wrong is still recorded as
-  observed; the argument belongs in `design.md`'s verdict.
-- **A pre-existing spec with no such section** is not a failure. Downstream consumers
-  record "not available (legacy artifact)" and continue — distinct from a section that is
-  present with nothing observed, which is a real, passing observation. See
-  `references/verification.md`, verifier 4.
+- **Every entry cites a `file:line`.** Without an example it is an opinion, not an
+  observation.
+- **A category with nothing observed names where it looked** — "none observed (searched
+  `src/**/*.ts`, `test/`)". Six bare markers are otherwise the cheapest green at `quick`.
+- **At `quick`, one record per category maximum** — the light scan still fills all six
+  rows, stopping at the first clear example of each.
+- **Regenerated whole on a re-run**, so re-running a phase is idempotent.
+- **Record what is, decide nothing.** A convention you think wrong is still recorded; the
+  argument belongs in `design.md`'s verdict.
+- **A pre-existing spec with no such section** is not a failure: consumers record "not
+  available (legacy artifact)" and continue — distinct from a section present with
+  nothing observed, which is a real, passing observation.
 
 **Move 2 — Trace the impact (standard+).** Trace outward from the code the change would
 touch, recording where the problem area sits and what already depends on it — never how
@@ -232,11 +229,10 @@ genuinely missing:
 - **IDs:** prefix = feature slug uppercased, shortened to 3–5 chars (`user-onboarding`
   → `ONBD`). Sequential: `ONBD-01`, `ONBD-02`.
 - Priorities: **P0** launch blocker · **P1** high value · **P2** nice to have.
-- **Classify the change one-way or two-way door, and record the verdict.** Scrutiny is
-  allocated by what a mistake costs, not by how many files the change touches — a
-  two-line change that emails every user deserves more scrutiny than a sixty-file
-  rename. A **one-way door** is a change whose effect cannot be undone by reverting the
-  commit. Triggers, any one of which fires it:
+- **Classify the change one-way or two-way door, and record the verdict.** Scrutiny
+  follows what a mistake costs, not how many files it touches. A **one-way door** is a
+  change whose effect cannot be undone by reverting the commit. Triggers, any one firing
+  it:
   - destructive migration, or any irreversible data loss;
   - bulk delete;
   - mass communication to real users;
@@ -245,20 +241,18 @@ genuinely missing:
   - breaking a contract another consumer already depends on;
   - any action with **no revert path**.
 
-  Record the verdict **per change**, in `state.md`'s header table, together with the
-  triggers that fired. A two-way door is the normal case and is recorded as such — the
-  field is never blank, because blank is indistinguishable from unconsidered.
+  Record the verdict **per change** in `state.md`'s header table with the triggers that
+  fired. Two-way is the normal case and is still recorded — the field is never blank,
+  since blank reads as unconsidered.
 
-  **Retain it per AC too**, wherever a consumer scopes its work to a particular path:
-  append **`[critical]`** to the individual ACs that carry the irreversible outcome. The
-  door verdict says *this change needs more scrutiny*; the per-AC marker says *scope it
-  here*. Execute's mutation sensor needs the second to have a target to aim at, so
-  dropping it would turn a stronger gate into a vaguer one.
+  **Retain it per AC too**, wherever a consumer scopes work to a path: append
+  **`[critical]`** to the ACs carrying the irreversible outcome. The door verdict says
+  *this needs more scrutiny*; the per-AC marker says *scope it here*, which is what
+  execute's mutation sensor aims at.
 
-  Every consumer of the old marker now keys on the **door verdict** for whether it fires,
-  and on the per-AC marker for what it scopes to. The consumers are enumerated in
-  `references/verification.md`, `references/review.md`, `references/execute.md` and
-  `references/fix.md`.
+  Consumers key on the door verdict for whether they fire and on the per-AC marker for
+  what they scope to: see `references/verification.md`, `review.md`, `execute.md` and
+  `fix.md`.
 - Each requirement carries one or more **acceptance criteria** in WHEN/THEN/SHALL
   form: *WHEN \<condition\>, THEN the system SHALL \<observable outcome\>.* Each AC
   must have a single interpretation and a precise expected outcome.

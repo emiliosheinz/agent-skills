@@ -66,13 +66,11 @@ design's gates, the commit/diff under review). They are stateless.
    substitute for asserting the resulting state.
 
    **The three lies, by name.** Reject a test that is **tautological** (the assertion
-   restates the implementation, so it passes for a wrong one), **structure-sensitive**
-   (it asserts that a method was called rather than the resulting state), or
-   **cannot-fail** (no input makes the assertion false). Same three words
-   `references/plan.md` uses when the test is planned, so a rejection is traceable to the
-   rule it broke. Also reject a mock placed anywhere but a system boundary, and an
-   expected value whose expression references a symbol defined in the files the task
-   changed.
+   restates the implementation), **structure-sensitive** (asserts a method was called
+   rather than the resulting state), or **cannot-fail** (no input makes it false) — the
+   same words `references/plan.md` uses when the test is planned. Also reject a mock
+   placed anywhere but a system boundary, and an expected value referencing a symbol
+   defined in the files the task changed.
 
    **Reverse (necessity).** For each test touched in the phase diff, map it back to an
    AC ID, a **design element**, a spec edge case, or a done-when criterion —
@@ -96,24 +94,19 @@ design's gates, the commit/diff under review). They are stateless.
    **deviating** rows need re-checking — a conformant row was already settled at design
    time.
 
-   **Conventions-only mode** (`quick`, or any size with no design document). Compare the
-   diff against the `Conventions observed` section of `spec.md` and nothing else. The
-   mode is defined by three exclusions, and they are what keep `quick` cheap:
-   - it **reads no design document**;
-   - it **loads no structural catalogue** (`references/structural-standards.md` is not an
-     input here);
-   - it **dispatches no subagent** — it runs inline, as an analysis pass over the diff.
+   **Conventions-only mode** (`quick`, or any size with no design). Compare the diff
+   against `spec.md`'s `Conventions observed` section and nothing else. Three exclusions
+   define it, and they are what keep `quick` cheap: it **reads no design document**,
+   **loads no structural catalogue**, and **dispatches no subagent** — it runs inline.
 
-   Report each category as conformant, deviating (with the `file:line` that deviates), or
+   Report each category as conformant, deviating (with the deviating `file:line`), or
    **"not available (legacy artifact)"** when the spec carries no such section. A section
-   present with nothing observed is a real observation: conformance passes and says so. A
-   none-observed marker that does not name where it looked is a finding.
+   present with nothing observed passes and says so; a none-observed marker that does not
+   name where it looked is a finding.
 
-   **Verifiers 3 and 4 are conventions-*data* consumers, not review-time agents.** They
-   read the recorded conventions directly. They never carry the structural catalogue or a
-   project standards file — that routing belongs to the three review-time dispatches named
-   in `references/structural-standards.md`. Putting the catalogue behind verifier 4 would
-   drag it into `quick`'s cheap path, which is the one thing this mode exists to avoid.
+   **Verifiers 3 and 4 are conventions-*data* consumers, not review-time agents** — they
+   read the records directly and never carry the catalogue or a standards file, which
+   would drag it into `quick`'s cheap path.
 5. **Mutation sensor** *(expensive, destructive)* — inject small faults into the
    task's **own new code** and confirm the tests catch them. Concrete examples:
    - flip a boolean condition (`==` → `!=`)
@@ -140,22 +133,17 @@ design's gates, the commit/diff under review). They are stateless.
 1 and 2 are cheap and parallel-safe. 3 and 4 are read-only analysis — run in parallel.
 5 is expensive and destructive — run last, alone, scoped to the task's new code.
 
-**Verifier 4 runs at every size.** Before this, `quick` had no structural check of any
-kind, and `quick` is where most changes live. Its conventions-only mode costs one
-read of a section the spec already carries — no design document, no catalogue, no
-subagent — so the floor is real without raising `quick`'s price.
+**Verifier 4 runs at every size.** `quick` previously had no structural check at all, and
+it is where most changes live; conventions-only mode costs one read of a section the spec
+already carries, so the floor is real without raising `quick`'s price.
 
 **Reversibility overrides the size gate.** A change classified a **one-way door**
-(`references/specify.md`) triggers verifier 5 regardless of size, with extra mutations
-(at least 5, covering all branches of the irreversible path). A standard-sized auth
-change must not ship with zero mutation testing, and neither must a two-line change that
-deletes rows.
-
-**Which path to aim at.** The door verdict decides *whether* verifier 5 runs; the per-AC
-`[critical]` marker decides *where* it points. Mutate the branches reachable from the ACs
-carrying the irreversible outcome. If the change is a one-way door and no AC carries the
-marker, that is a **gap** — record it and ask the spec which path is the irreversible
-one rather than mutating everything or nothing.
+(`references/specify.md`) triggers verifier 5 regardless of size, with extra mutations (at
+least 5, covering all branches of the irreversible path). The door verdict decides
+*whether* 5 runs; the per-AC `[critical]` marker decides *where* it points — mutate the
+branches reachable from the ACs carrying the irreversible outcome. A one-way door with no
+marked AC is a **gap**: record it and ask the spec, rather than mutating everything or
+nothing.
 
 **Optional human UAT** *(P2, conditional)* — for **user-facing** ACs only
 (visual/UX/end-to-end correctness the five automated verifiers cannot see), offer a

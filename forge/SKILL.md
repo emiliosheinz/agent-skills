@@ -41,11 +41,10 @@ before acting** — it is the step-by-step playbook for that phase.
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
 | `fix` | `references/fix.md` | re-aligned artifacts + code |
 
-`references/structural-standards.md` is not a phase. It is the single always-applied
-baseline for what good structure is and how a structural review is conducted, loaded by
-the review-time agents that need it — `review.md`'s under-design lens, `execute.md`'s
-per-batch structural axis, and `fix.md`'s claim lenses. No second structural check set
-exists anywhere in forge.
+`references/structural-standards.md` is not a phase: it is the single always-applied
+baseline for what good structure is and how a structural review runs, loaded only by
+`review.md`'s under-design lens, `execute.md`'s per-batch structural axis, and `fix.md`'s
+claim lenses. No second structural check set exists in forge.
 
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
@@ -122,11 +121,11 @@ Design, plan, and execute reference those IDs; they never restate the criterion 
 
 Each change keeps its own `./.specs/<slug>/lessons.md` with `## Standing Rules` (short
 imperatives, always loaded) and `## Log` (tagged, append-only). Load it at the start of
-every phase — **reading only the content above the `<!-- environment-candidates -->`
-marker**; everything below it is parked and costs context for nothing. Append **only when
-something non-obvious was learned**: a hack, a gotcha, a corrected wrong assumption, a
-skipped gate. Triage it first — mechanical observations become a proposed check rather
-than a sentence. Routine success writes nothing. See `references/lessons.md`.
+every phase, **reading only above the `<!-- environment-candidates -->` marker** — below
+it is parked and costs context for nothing. Append **only when something non-obvious was
+learned**: a hack, a gotcha, a corrected wrong assumption, a skipped gate. Triage first —
+a mechanical observation becomes a proposed check, not a sentence. Routine success writes
+nothing. See `references/lessons.md`.
 
 ## Orchestration (canonical — references should cite, not restate)
 
@@ -181,13 +180,10 @@ runtime has no effort dial, fold the intent into tier choice.
 | Design/architecture synthesis, plan decomposition for a complex change | frontier | high |
 | Adversarial or cross-cutting verification (the AC-trace / integration verifier, the under-design lens) | standard→frontier | high |
 
-**A `reuses` pointer alone no longer buys economy tier.** It qualifies a task only
-*together with* creating no new file and no new exported type, interface, or class. A
-precedent tells an agent what shape to copy; it does not tell it where a responsibility
-belongs, which way a dependency should point, or which value deserves a type — and those
-are decided exactly once, when the file or the type is created. Mirroring a precedent at
-the cheapest tier is how a structural decision gets made by the model least able to make
-it.
+**A `reuses` pointer alone no longer buys economy tier** — only together with creating no
+new file and no new exported type, interface, or class. A precedent says what shape to
+copy, not where a responsibility belongs or which value deserves a type, and those are
+decided once, when the file or type is created.
 
 **Size interacts with tier.** A `quick` change should almost never dispatch a frontier
 subagent; a `complex` change earns frontier for its design and adversarial gates but
@@ -216,9 +212,8 @@ and let a failed gate promote it — the same ratchet as sizing.
    | `## Conventions observed` (`spec.md`) | overwrite-in-place (regenerated whole on a specify re-run) |
    | `## Environment candidates` (`lessons.md`) | append-only, never loaded |
 
-   A section with no row here is clobbered by the next surgical write, so adding a
-   section to `state.md`, `spec.md` or the lessons artifact means adding its row in the
-   same change.
+   A section with no row here is clobbered by the next surgical write, so adding one
+   means adding its row in the same change.
 
 ### Honesty
 

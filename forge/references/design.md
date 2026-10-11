@@ -51,15 +51,13 @@ The design must survive an implementation rewrite.
    Stay scoped to the change — do not audit the whole repo.
 3. **Components** — each with purpose, responsibility, interface/contract,
    dependencies. For every **new or modified** component, record four further fields in
-   stable vocabulary, because the words are what later phases check against:
-   - **responsibility** — one sentence, no "and". A sentence that needs an "and" is
-     describing two components.
+   stable vocabulary — later phases check against these words:
+   - **responsibility** — one sentence, no "and" (needing one describes two components);
    - **dependency direction** — which way source dependencies point across each named
-     boundary this component sits on.
-   - **seam** — the place its interface sits: where behaviour can be substituted without
-     editing it there. A seam with no enabling point is not a seam.
-   - **domain concepts that take a type** — which of the values it handles are domain
-     concepts rather than primitives.
+     boundary it sits on;
+   - **seam** — where its interface sits, i.e. where behaviour can be substituted without
+     editing it there (a seam with no enabling point is not a seam);
+   - **domain concepts that take a type** rather than a primitive.
 4. **Data models** — schemas and relationships, if any.
 5. **Error-handling matrix** — failure scenarios → user-facing or system outcome.
 6. **Verification gates (required).** Define what makes the change *done and correct*.
@@ -73,21 +71,16 @@ The design must survive an implementation rewrite.
 ## State a verdict per observed convention
 
 `spec.md`'s `Conventions observed` section is an input, not background reading. Design
-carries **one verdict per listed convention** — all six categories, every row:
-
-- **conformant** — the change follows it. Say so in a line; the row is not optional.
-- **deviating, with a reason** — the change departs from it, and the reason is stated.
-  Execute's structural axis re-checks **only the deviations**; a conformant row costs
-  nothing downstream.
+carries **one verdict per listed convention** — all six rows, never optional: either
+**conformant**, or **deviating with a stated reason**. Execute's structural axis re-checks
+**only the deviations**.
 
 **A deviation with no stated reason is a finding**, not a style choice — it is how a
-convention gets dropped silently. Record the verdicts in the design's own conventions
-table and never restate the convention text; reference the category and its `file:line`
-example.
+convention gets dropped silently. Record verdicts in the design's conventions table by
+category and `file:line`; never restate the convention text.
 
-If the spec has no such section (a legacy artifact), record "not available (legacy
-artifact)" once and continue. That is distinct from a section present with nothing
-observed, which is a real observation and passes.
+A legacy spec with no such section records "not available (legacy artifact)" once and
+continues — distinct from a section present with nothing observed, which passes.
 
 ## Apply active decisions
 

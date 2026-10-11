@@ -29,8 +29,7 @@ How components interact. Mermaid diagram for complex changes.
 - **<Component>** — purpose, responsibility, interface/contract, dependencies.
 
 For each new or modified component also record its responsibility,
-its dependency direction, the seam its interface sits at, and which domain concepts
-take a type:
+its dependency direction, the seam its interface sits at, and the domain concepts typed:
 
 | Component | Responsibility (one sentence, no "and") | Dependency direction | Seam its interface sits at | Domain concepts that take a type |
 |---|---|---|---|---|

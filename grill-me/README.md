@@ -1,4 +1,4 @@
-# grill
+# grill-me
 
 A Claude Code skill that grills you relentlessly about a plan, decision, or idea until you and the agent reach a shared understanding. Adapted from [mattpocock/skills `grilling`](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling), with every question asked through the `AskUserQuestion` tool and no emojis.
 
@@ -20,13 +20,13 @@ A Claude Code skill that grills you relentlessly about a plan, decision, or idea
 Install to the current project:
 
 ```bash
-npx skills add emiliosheinz/agent-skills --skill grill
+npx skills add emiliosheinz/agent-skills --skill grill-me
 ```
 
 Install globally (available across all projects):
 
 ```bash
-npx skills add emiliosheinz/agent-skills --skill grill --global
+npx skills add emiliosheinz/agent-skills --skill grill-me --global
 ```
 
 See the [root README](../README.md) for installing all skills at once.
@@ -34,5 +34,5 @@ See the [root README](../README.md) for installing all skills at once.
 ## Usage
 
 ```
-/grill <plan, decision, or idea>
+/grill-me <plan, decision, or idea>
 ```

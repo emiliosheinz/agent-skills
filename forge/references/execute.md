@@ -87,14 +87,19 @@ contract emerged). Recommend — do not run it for the user.
      loading the shared files and setup once). One subagent per task only when the tasks
      are genuinely unrelated *and* each is substantial.
    - Give each subagent everything it needs: file paths, AC IDs, the task gates,
-     constraints.
+     constraints, and its `files` set.
+   - **An implementer's prompt carries neither the catalogue nor a standards file.**
+     `references/structural-standards.md` and any discovered `CODING_STANDARDS.md` go to
+     **review-time agents only** (the three dispatches that file names). The only
+     structural text an implementer's prompt carries is the scope/shape boundary in
+     step 5.
    - The subagent returns the files it changed and does **not** commit; you run its
      gates and commit.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
      otherwise use sequential subagent calls.
    - **Set each implementer's model tier and effort** per SKILL.md Model & effort
-     selection: a mechanical task or one with a `reuses` precedent goes to economy/low;
-     reserve standard/frontier for tasks that actually need the reasoning.
+     selection, which bounds the cheap end: economy needs a `reuses` pointer **and** a
+     task that creates no new file and no new **exported type**, interface, or class.
    - The subagent returns a **compact summary**: paths changed, task-gate result
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
      diffs, or test dumps. Anything over ~100 lines goes to a file; the subagent
@@ -120,17 +125,97 @@ For each task:
      no unrequested configurability, no error handling for impossible states.
    - **Quick test-strength check.** If a plausible *wrong* implementation would still
      pass the test, the test is too weak. Strengthen it before moving on. This is the
-     cheap stand-in for verifier 5, which only runs on complex changes.
+     cheap stand-in for verifier 5, which only runs on complex changes or a one-way door.
+     The three ways it happens are **tautological**, **structure-sensitive** and
+     **cannot-fail** — `references/plan.md` defines them and verifier 3 uses the same
+     words. Mock at **system boundaries only**; never mock the change's own
+     collaborators. An expected value must not reference a symbol **defined in the files
+     the task changed**.
 3. **Run the task gate.** The deterministic command from the plan. Non-zero = not
    done; fix and re-run. Never proceed on a failing gate.
-4. **Self-check before committing.** Would a senior engineer call this overcomplicated?
-   If so, simplify. Confirm the tests aren't shallow and nothing beyond the task crept
-   in.
-5. **Commit atomically.** One task = one commit, only the files in the task
-   definition. Conventional Commits, type matching the change
+4. **Review the batch structurally, before the commit** *(`standard`+, or a one-way door
+   at any size)*. The gate proves the code behaves; nothing yet proves it is arranged
+   well, and the implementer cannot prove that about its own work.
+
+   **Once per batch.** Batching is by locality, so a per-task working-tree slice does
+   not exist inside a batch. The axis runs once **per batch**, with the batch's changed
+   hunks as its subject. Attribute each finding to a task through that task's `files`. A
+   batch of one task is the ordinary case.
+
+   Dispatch it per `references/structural-standards.md`, which holds the checks, the
+   selection rule, the firing discipline and the verdict shape; this file holds only the
+   loop mechanics. It is a **review-time agent**, so its prompt carries the catalogue and
+   any discovered standards file. Tier: standard/high, frontier at `complex`, never
+   economy.
+
+   **The reviewer does not edit.** Findings go back to **the batch's own implementer**,
+   which applies them and re-runs the gate — already a different agent, so no third role
+   is needed — and the fixes land in the **same single task commit**.
+
+   **Snapshot and restore.** Before dispatching, **snapshot** the batch's declared paths
+   (the union of its tasks' `files`). If applying a finding breaks the gate, restore that
+   snapshot **scoped to those paths only** — there is no commit boundary between implement
+   and review, so an unscoped revert would discard the implementation.
+
+   **Tamper detection.** Snapshot the **whole tree's** dirty paths around the dispatch,
+   excluding the paths of concurrently in-flight sibling tasks. The declared set alone
+   would miss the dangerous edits: a test file, a gate's config, a shared barrel. Revert a
+   delta **inside** the declared set and still use the verdict. Record a delta **outside**
+   it as a gap, and do **not** commit the task.
+
+   **Two cycles, their own budget.** Review → apply → re-run the gate, at most **two
+   cycles** per batch. These cycles are separate from the phase's three fix cycles below.
+   Record a gate failure the fix did not cause — the same failure as before the review
+   step, or one in a path the finding never touched — and do **not** count it against the
+   two.
+
+   **Record each finding's disposition** — `applied`, `rejected(reason)`, or `parked` — in
+   `state.md`. A rejection with **no reason is a gap**. This is the detector for a finding
+   that is raised in a verdict and then vanishes from the commit.
+
+   **The scope/shape boundary governs a valid rejection** — step 5 states it, and it binds
+   here, where a finding is accepted or dropped. Relocating a rule or replacing a
+   primitive is **the same scope**, so a rejection may not cite "unrequested
+   abstraction". A rejection that cites it carries no reason, and a rejection with no
+   reason is a gap. A finding that genuinely cannot be applied without new scope — a port,
+   layer, second implementation or extension point — is a **DESIGN-GAP** instead. Record
+   it against the design element, spend no cycle on it, and route it back to `design.md`
+   the way `references/verification.md` routes a `SPEC-GAP`.
+
+   **Escalation.** If two cycles do not clear the findings: the task is **not committed**,
+   the tree is left as-is, its status becomes **`blocked`**, and `state.md` records the
+   remaining findings plus the snapshot reference. Stop and report; do not start the next
+   task behind a `blocked` one. **A re-invocation picks a `blocked` task up first.** It
+   re-reads the recorded findings instead of reviewing from scratch, and restarts the
+   cycle counter.
+
+5. **Self-check before committing.** Would a senior engineer call this overcomplicated,
+   or badly arranged? **Scope** governs *whether* something is built. **Shape** governs
+   *how* what is built is arranged. Moving a rule to the unit that owns its data, or
+   giving a repeated-validation primitive a domain type, is **the same scope**: keep it.
+   Adding a port, a layer, or a config flag is **new scope**: leave it out. Confirm the
+   tests aren't shallow and nothing beyond the task crept in.
+6. **Commit atomically.** One task = one commit, only the files in the task
+   definition (its `files` set). Conventional Commits, type matching the change
    (`feat`/`fix`/`refactor`/...), imperative mood, body when the "why" isn't obvious.
    (Skip Claude/AI co-author trailers.)
-6. **Update `state.md`.** Mark the task `done` with evidence (commit sha, test count).
+7. **Update `state.md`.** Mark the task `done` with evidence (commit sha, test count, and
+   each structural finding's disposition).
+
+### When subagents are unavailable (degrade, never fake)
+
+General rules: `references/review.md` → *Graceful degradation*. The structural axis adds
+these, because its value comes from the dispatch boundary:
+
+- **Run it inline after a verbatim re-read** of the batch's changed files. Read the
+  current bytes from disk.
+- **Edits are forbidden during the review step.** Collect findings, then apply them.
+- **Snapshot the declared paths before the step** and re-run the gate after, as above.
+- **Report the tamper comparison as `inoperative`.** One context gives a tree delta no
+  boundary to straddle, so the comparison cannot run at all.
+- **The reviewer and the implementer are now the same agent.** Record those tasks as
+  reviewed **inline**; never as independently reviewed.
+- **A lens skipped for any reason is `recorded as a gap`**, never reported as reviewed.
 
 ### Verify the phase (independent subagents)
 
@@ -138,16 +223,13 @@ Once all the phase's tasks are committed and the phase gate is green, dispatch t
 applicable verifiers over the phase's changes. Author ≠ verifier; fresh context; run
 in parallel.
 
-Which verifiers run is gated by size (see `references/verification.md` for the
-contract):
+**Which verifiers run is gated by size, and the size table lives in
+`references/verification.md` — read it there.**
 
-| Size | Verifiers |
-|------|-----------|
-| quick | 1, 2 |
-| standard | 1, 2, 3, 4 |
-| complex | 1, 2, 3, 4, 5 |
-
-**Override:** any AC marked `critical` in the spec runs verifier 5 regardless of size.
+**Override:** a change classified a **one-way door** in `state.md` runs verifier 5
+regardless of size, scoped to the branches reachable from its `[critical]` ACs
+(`references/specify.md` for the door test, `references/verification.md` for the
+targeting rule).
 
 Collect the verifiers' verdicts into an overall PASS/FAIL plus a single
 severity-ranked gap list (Blocker → Major → Minor → Cosmetic).

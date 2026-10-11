@@ -3,7 +3,12 @@
 | Field | Value |
 |-------|-------|
 | Size | quick / standard / complex — <one-line justification> |
+| Door | one-way / two-way door — <the triggers that fired, or "none"> |
 | Created | YYYY-MM-DD |
+
+<!-- Door: set by the first phase to run, per references/specify.md. Overrides the size
+     gate for reviewer 3, design lens 4 and verifier 5. Never blank. Like Size it moves one
+     way only; a downgrade needs the user's confirmation. -->
 
 <!-- state.md is the single source of truth. Re-read at the start of every phase.
      Write SURGICALLY (see SKILL.md Universal rules for the section write-mode table).
@@ -23,6 +28,9 @@ Append-only: to reverse a decision, add a new row and mark the prior one
 Populated by `plan`, updated by `execute`. Tasks grouped by phase; phases run in
 order, `[P]` tasks run in parallel within a phase. Task status: pending /
 in-progress / done / blocked. Mark a finished phase `**completed**` below its heading.
+
+The `AC-trace` column holds an AC ID **or** a design element — a named component, a
+seam, or a recorded convention. A task with neither anchor is scope creep.
 
 ### Phase 1 — <goal>
 Phase gate: `<full test + static analysis (typecheck + lint + format)>`

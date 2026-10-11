@@ -50,7 +50,14 @@ The design must survive an implementation rewrite.
    Each concern needs a location and a mitigation, recorded under Architectural risks.
    Stay scoped to the change — do not audit the whole repo.
 3. **Components** — each with purpose, responsibility, interface/contract,
-   dependencies.
+   dependencies. For every **new or modified** component, record four further fields in
+   stable vocabulary — later phases check against these words:
+   - **responsibility** — one sentence, no "and" (needing one describes two components);
+   - **dependency direction** — which way source dependencies point across each named
+     boundary it sits on;
+   - **seam** — where its interface sits, i.e. where behaviour can be substituted without
+     editing it there (a seam with no enabling point is not a seam);
+   - **domain concepts that take a type** rather than a primitive.
 4. **Data models** — schemas and relationships, if any.
 5. **Error-handling matrix** — failure scenarios → user-facing or system outcome.
 6. **Verification gates (required).** Define what makes the change *done and correct*.
@@ -60,6 +67,16 @@ The design must survive an implementation rewrite.
    enforce. Reference AC IDs; never restate the criterion text.
 7. **Architectural risks** — with impact, probability, and mitigation. Execution and
    sequencing risks belong in `plan`, not here.
+
+## State a verdict per observed convention
+
+`spec.md`'s `Conventions observed` section is an input. Design carries **one verdict per
+listed convention** — all six rows, always: either **conformant**, or **deviating with a
+stated reason**. Execute's structural axis re-checks **only the deviations**.
+
+**A deviation with no stated reason is a finding.** It is how a convention gets dropped
+silently. Record verdicts in the design's conventions table by
+category and `file:line`; never restate the convention text.
 
 ## Apply active decisions
 
@@ -111,10 +128,11 @@ plausible fabrication that propagates design → plan → execute.
 The validation checklist below is your own self-check — and an agent grades its own work
 generously. Before writing the final design, draft it and hand the draft to independent
 reviewer subagents that attack it from lenses you're blind to: requirement coverage,
-failure-mode/risk, and simplicity/reuse. Run the review per `references/review.md`
-(size-gated), fold the ranked delta back into the draft, and escalate any genuine
-architecture decision to the user. This catches an orphaned AC or an over-built component
-here instead of at execute time.
+failure-mode/risk, simplicity/reuse, and **under-design**. Run the review per
+`references/review.md` (size-gated), fold the ranked delta back into the draft, and
+escalate any genuine architecture decision to the user. This catches an orphaned AC, an
+over-built component, **or a weak arrangement** at design time. A structural finding here
+costs a document edit. The same defect found after the code is written costs a rewrite.
 
 ## Write and route
 

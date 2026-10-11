@@ -38,6 +38,20 @@ What has been tried/built/considered — internal or external.
 Observations from the existing code relevant to this problem (modules, patterns,
 integration boundaries, prior decisions). Observations only — no conclusions.
 
+### Conventions observed
+<!-- Written by specify Move 1 at EVERY size. All six categories, always. Each entry cites a
+     file:line; a category with nothing observed names where it looked. Regenerated whole on a
+     re-run. See references/specify.md. design.md states a verdict per row. -->
+
+| Category | Convention observed | Example (`file:line`) |
+|---|---|---|
+| structure | | |
+| naming | | |
+| data flow | | |
+| layering | | |
+| error handling | | |
+| test placement | | |
+
 ### Impact / Blast Radius (standard+)
 Observed: where the problem area sits and what already depends on it. Current state only —
 no proposed changes (that is design's job).
@@ -77,8 +91,13 @@ distinct from out-of-scope so they aren't lost or allowed to expand scope).
 
 ### Requirements & Acceptance Criteria
 Functional only (what, not how). One per item. IDs `PREFIX-NN`, priority P0/P1/P2.
-Append `[critical]` to an AC when it governs auth, payments, or data integrity (omit
-the tag when not critical).
+
+**Door verdict:** one-way / two-way — <the triggers that fired, or "none">
+<!-- Per change, mirrored to state.md's header. One-way = reverting the commit does not
+     undo the effect. Trigger list: references/specify.md. Never blank. -->
+
+Append `[critical]` to the ACs carrying the irreversible outcome (omit otherwise). The
+door verdict decides whether a gate fires; this marker decides where it points.
 
 - **[P0] PREFIX-01** — The system SHALL <observable outcome>.
   - AC: WHEN <condition>, THEN the system SHALL <precise expected outcome>. [critical]

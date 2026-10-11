@@ -74,10 +74,11 @@ register form, token storage, API client, route guard.
 | **action** | One line a fresh agent can act on. |
 | **depends-on** | Task IDs that must finish first. Keep minimal. Tasks in the same phase that depend on each other cannot both be `[P]`. |
 | **AC-trace** | The acceptance-criterion ID(s) from `spec.md` this task satisfies. Every task traces to at least one AC. (Enabling work traces to the task it unblocks.) |
-| **tests** | The tests written **within this task**, co-located with the code it creates — never deferred to a later task. Use the highest test level the task's layer requires (unit for logic, e2e for routes/controllers). |
+| **files** | The paths this task is allowed to touch. Three mechanisms need it: the structural axis attributes findings per task, the tamper check scopes its revert, and `execute` batches by locality (its commit step already assumes it). A glob is fine; a scope like "wherever it needs to" fails the plan gate. |
+| **tests** | The tests written **within this task**, co-located with the code it creates — never deferred to a later task. Use the highest test level the task's layer requires (unit for logic, e2e for routes/controllers). Must not be tautological, structure-sensitive, or cannot-fail — see *How a test lies* below. |
 | **gate** | A deterministic command that returns clean iff the task succeeded. Use the project's real runner (see "learn the project's real test setup" above), not an assumed one. |
 | **done-when** | A pass/fail checklist, each item true or false, ending with "gate passes: `<command>`". |
-| **reuses** *(optional)* | Path of an existing component/pattern this task should mirror, from `design.md`'s code-reuse analysis. Points the fresh implementer subagent at the right precedent. Example: `src/auth/refresh.ts (mirror its token-rotation shape)`. |
+| **reuses** *(required at `standard`+, optional at `quick`)* | The precedent this task mirrors, from `design.md`'s code-reuse analysis — a `path`, a `path:line`, or the literal sentinel **`no-precedent`** ("none exists; needs a design decision"). Example: `src/auth/refresh.ts:40 (mirror its token-rotation shape)`. A **blank or absent** field fails the plan gate, since silence is indistinguishable from "I did not look". |
 
 ## Parallelism assessment (per phase)
 
@@ -99,6 +100,30 @@ cites:
 
 - `[P] — per-test in-memory DB, see src/auth/login.test.ts:beforeEach`
 - `seq — integration tests share the test DB, see src/.../user.e2e-spec.ts truncates globally`
+
+## How a test lies
+
+A task's `tests` field is where its strength is decided. Verifier 5 catches a weak test
+but runs only at `complex` or on a one-way door, so these three names are the brake that
+runs at every size; verifier 3 uses the same words, so a planned and a rejected test share
+one vocabulary.
+
+- **tautological** — the assertion restates the implementation, comparing the code's
+  output to its own expression or to a constant the code also reads, so it passes for any
+  implementation including a wrong one.
+- **structure-sensitive** — it checks *shape* rather than *outcome*: that a method was
+  called, how often, in what order. A harmless refactor breaks it; a behavioural bug does
+  not.
+- **cannot-fail** — no input makes the assertion false: an empty loop body, a `try` that
+  swallows, `expect(result).toBeDefined()`, a snapshot written from current output.
+
+**The mocking boundary.** Mock at **system boundaries only** — external services, time,
+randomness, and where unavoidable the datastore and filesystem. Never the change's own
+collaborators: a test stubbing the unit next to the one under test asserts on the stub.
+
+**The independent-expected-value rule.** An expected value's expression must not reference
+any symbol **defined in the files the task changed** — write the value the acceptance
+criterion names. A value computed by the code under test cannot disagree with it.
 
 ## Gates
 
@@ -125,10 +150,14 @@ batches — `execute` runs it in the main agent. This is exactly what `execute` 
 ## Validate before presenting
 
 - Every task is atomic (one component / function / endpoint / file).
+- Every task declares its **files**.
+- At `standard`+, every task's **reuses** holds a path, a `path:line`, or `no-precedent`
+  — never blank.
 - The dependency graph is acyclic and every `depends-on` ID exists.
 - No `[P]` task depends on another task in the same phase.
-- Every task has co-located tests, an AC trace, and a real gate (a project-real
-  command).
+- Every task has co-located tests, a real gate (a project-real command), and an anchor:
+  an AC ID **or** a **design element** — a named component, a seam, or a recorded
+  convention. A task with neither anchor is scope creep; drop it or find its anchor.
 - Every `[P]` / seq call cites its parallelism evidence.
 - Each phase has a goal and a phase gate.
 

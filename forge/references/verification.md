@@ -65,9 +65,19 @@ design's gates, the commit/diff under review). They are stateless.
    field. Asserting that a method was *called* (spy/mock/call-count) is never a
    substitute for asserting the resulting state.
 
+   **The three lies, by name.** Reject a test that is **tautological** (the assertion
+   restates the implementation), **structure-sensitive** (asserts a method was called
+   rather than the resulting state), or **cannot-fail** (no input makes it false) — the
+   same words `references/plan.md` uses when the test is planned. Also reject a mock
+   placed anywhere but a system boundary, and an expected value referencing a symbol
+   defined in the files the task changed.
+
    **Reverse (necessity).** For each test touched in the phase diff, map it back to an
-   AC ID, spec edge case, or done-when criterion — `file:line + assertion → anchor →
-   keep?`. A test anchored to nothing is scope creep → remove. Reject speculative
+   AC ID, a **design element**, a spec edge case, or a done-when criterion —
+   `file:line + assertion → anchor → keep?`. A design element is a named component, a
+   seam, or a recorded convention, and it is a legitimate anchor in its own right:
+   structural work has no AC of its own and must not be deleted for lacking one. An item
+   with **neither** anchor is still scope creep → remove. Reject speculative
    what-if tests, tests of framework/library behavior, and cross-layer duplicate
    assertions.
 
@@ -76,8 +86,26 @@ design's gates, the commit/diff under review). They are stateless.
    implementer (unfair) — raise **SPEC-GAP**, record it as a spec defect against that
    AC ID plus a lessons candidate, and route the fix back to `spec.md`.
 4. **Architecture compliance** *(analysis)* — confirm the code follows `design.md`
-   (component boundaries, contracts, decisions). No design → check consistency with
-   the codebase patterns the spec recorded. Report violations by file:line.
+   (component boundaries, contracts, decisions). Report violations by file:line. Two
+   modes:
+
+   **Full mode** (`standard`+, a design exists). As above, plus: for each row of
+   `design.md`'s conventions verdicts, confirm the code matches the verdict. Only the
+   **deviating** rows need re-checking — a conformant row was already settled at design
+   time.
+
+   **Conventions-only mode** (`quick`, or any size with no design). Compare the diff
+   against `spec.md`'s `Conventions observed` section and nothing else. It **reads no
+   design document**, **loads no structural catalogue**, and **dispatches no subagent**:
+   it runs inline. Those three exclusions keep `quick` cheap.
+
+   Report each category as conformant or deviating, with the deviating `file:line`. A
+   section present with nothing observed passes and says so; a none-observed marker that
+   does not name where it looked is a finding.
+
+   **Verifiers 3 and 4 read the conventions records directly, as data.** They never
+   carry the catalogue or a standards file: that would drag it into `quick`'s cheap
+   path.
 5. **Mutation sensor** *(expensive, destructive)* — inject small faults into the
    task's **own new code** and confirm the tests catch them. Concrete examples:
    - flip a boolean condition (`==` → `!=`)
@@ -97,17 +125,24 @@ design's gates, the commit/diff under review). They are stateless.
 
 | Size | Verifiers | Override |
 |------|-----------|----------|
-| quick | 1, 2 | Any `critical` AC also runs 5 |
-| standard | 1, 2, 3, 4 | Any `critical` AC also runs 5 |
-| complex | 1, 2, 3, 4, 5 | — |
+| quick | 1, 2, 4 (conventions-only) | a **one-way door** also runs 3 and 5 |
+| standard | 1, 2, 3, 4 (full) | a **one-way door** also runs 5 |
+| complex | 1, 2, 3, 4 (full), 5 | — |
 
 1 and 2 are cheap and parallel-safe. 3 and 4 are read-only analysis — run in parallel.
 5 is expensive and destructive — run last, alone, scoped to the task's new code.
 
-**Criticality overrides the size gate.** Any AC marked `critical` in the spec (auth,
-payments, data integrity) triggers verifier 5 regardless of size, with extra
-mutations (at least 5, covering all branches of the critical path). A standard-sized
-auth change must not ship with zero mutation testing.
+**Verifier 4 runs at every size.** `quick` is where most changes live, and
+conventions-only mode costs one read of a section the spec already carries. `quick` gets a
+structural check and stays cheap.
+
+**Reversibility overrides the size gate.** A change classified a **one-way door**
+(`references/specify.md`) triggers verifier 5 regardless of size, with extra mutations (at
+least 5, covering all branches of the irreversible path). The door verdict decides
+*whether* 5 runs; the per-AC `[critical]` marker decides *where* it points — mutate the
+branches reachable from the ACs carrying the irreversible outcome. A one-way door with no
+marked AC is a **gap**: record it and ask the spec, rather than mutating everything or
+nothing.
 
 **Optional human UAT** *(P2, conditional)* — for **user-facing** ACs only
 (visual/UX/end-to-end correctness the five automated verifiers cannot see), offer a
@@ -124,7 +159,9 @@ sequential subagent calls. Verifiers spawn nothing.
 have a mechanical pass/fail and run at economy/low: test suite (1) and static analysis
 (2) — typecheck, lint, and format are all mechanical. The analysis verifiers — spec coverage (3) and architecture
 compliance (4) — need judgment; run them at standard, or frontier with high effort for a
-complex change. Don't send all five to the frontier tier by default.
+complex change. Don't send all five to the frontier tier by default. **Verifier 4 in
+conventions-only mode is the exception**: it compares a diff against a recorded list, has
+a clear pass/fail per category, and dispatches nothing — run it inline at economy/low.
 
 ## Graceful degradation (never fake a gate)
 
@@ -133,7 +170,8 @@ complex change. Don't send all five to the frontier tier by default.
   recorded as a gap** in `state.md` plus a lessons candidate ("no test seam here") —
   not silently passed.
 - **No spec / quick direct execute:** verifier 3 traces against the acceptance
-  criteria derived inline at execute time, same structure.
+  criteria derived inline at execute time, same structure. Verifier 4 runs
+  conventions-only against the conventions observed inline during that same scan.
 - **Missing static-analysis tool:** verifier 2 reports each sub-check independently. A
   tool the project has configured but that can't run is "not configured" / a gap, never
   passed; a tool with no analogue for the language is `N/A`.
@@ -153,6 +191,7 @@ Each verifier returns a compact structured verdict:
 
 The execute phase combines these into one PASS/FAIL and a single gap list ranked by
 severity: Blocker → Major → Minor → Cosmetic. (Severity is the failing verifier
-multiplied by the AC's criticality.) The bounded fix loop in execute, capped at three
+multiplied by the AC's criticality — a failure on a `[critical]` AC of a one-way-door
+change outranks the same failure anywhere else.) The bounded fix loop in execute, capped at three
 cycles, works the list top-down so it spends its retries on blockers before
 cosmetics. See `references/execute.md`.

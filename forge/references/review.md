@@ -60,38 +60,70 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
 
 1. **Requirement coverage** — forward: every spec AC ID maps to a verification gate that
    actually *proves* it, not a gate that merely names it. Reverse: every component, data
-   model, and decision traces back to a requirement — an element anchored to nothing is
-   scope creep. No AC orphaned in either direction. Reference AC IDs; never restate the
-   criterion text. Given: the drafted `design.md` plus the spec's AC IDs and gates.
+   model, and decision traces back to a requirement **or to a design element** — a named
+   component, a seam, or a recorded convention. Both are legitimate anchors; an element
+   with **neither** is scope creep. No AC orphaned in either direction. Reference
+   AC IDs; never restate the criterion text. Given: the drafted `design.md` plus the
+   spec's AC IDs and gates.
 2. **Failure-mode / risk** — attack the design where it breaks in production: security
    holes (unvalidated input, auth gaps, exposed secrets), performance cliffs (N+1,
    unbounded work, missing indexes), concurrency / idempotency gaps, error-matrix
    omissions, and architectural risks left without a mitigation. Ask: *"what's the first
    thing that fails under load, attack, or partial failure?"* Given: the `design.md` plus
-   the spec's critical and edge-condition requirements.
+   the spec's door verdict, its `[critical]` ACs, and its edge-condition requirements.
 3. **Simplicity / reuse** — over-engineering (an abstraction with one caller, a factory
    for one product, flexibility nothing needs), code reinvented that the spec's codebase
    findings show already exists, and implementation detail leaked into the design. Apply
    the design's own test: *"would this survive a framework swap?"* — if not, it's an
-   implementation detail that doesn't belong. Given: the `design.md` plus the spec's
-   codebase findings.
+   implementation detail that doesn't belong.
+
+   **The deletion test, and a two-sided verdict.** For each abstraction, ask what deleting
+   it would cost and return one of two values **citing the caller count**: `pass-through`
+   (deleting removes code, no caller grows — recommend the deletion) or `earns-keep`
+   (deleting duplicates code across two or more callers — say so and move on).
+   Given: the `design.md` plus the spec's codebase findings.
+4. **Under-design** — the symmetric lens: is what the design *does* build arranged well?
+   Read `references/structural-standards.md` for the checks, selection, firing discipline,
+   do-not-flag list and scope/shape boundary, and report the verdict delta it defines.
+   That file holds the criteria; this one never repeats them. At minimum the verdict
+   covers: one responsibility per component nameable without "and"; dependency direction
+   across each named boundary; domain concepts carried by primitives; consistency
+   boundaries; where rules live relative to transport; and units mixing abstraction
+   levels. Given: the drafted
+   `design.md`, the spec's `Conventions observed` section, and any discovered standards
+   file.
+
+### The scope/shape boundary (lenses 3 and 4 both carry it)
+
+Lens 3 argues for less code; lens 4 argues for better-arranged code. Both carry this
+boundary, so their findings cannot contradict each other:
+
+> **Scope** governs *whether* something is built. **Shape** governs *how* what is built
+> is arranged.
+
+Relocating a rule into the unit that owns its data, or giving a primitive whose validation
+is already repeated a domain type, is **the same scope** — lens 3 must not report it as an
+unrequested abstraction. Adding a port, layer, second implementation, flag or extension
+point *is* new scope, and lens 4 never asks for it. Full statement:
+`references/structural-standards.md` → *Scope versus shape*.
 
 ## What runs when (size-gated)
 
 | Size | Reviewers | Override |
 |------|-----------|----------|
-| quick | none — closure gate only | — |
-| standard | 1, 2 | any `critical` AC also runs 3 |
-| complex | 1, 2, 3 | — |
+| quick | none — closure gate only | a **one-way door** runs 3 and design lens 4 |
+| standard | 1, 2, 4 | a **one-way door** also runs 3 |
+| complex | 1, 2, 3, 4 | — |
 
 A `quick` change carries an inline spec of a few lines and no design — the author's
 closure gate is proportionate; do not dispatch reviewers for it. Standard runs the two
-highest-value lenses; complex runs the full panel.
+highest-value lenses plus the under-design lens; complex runs the full panel.
 
-**Criticality overrides the size gate.** Any AC marked `critical` in the spec (auth,
-payments, data integrity) forces reviewer 3 regardless of size — the same principle as
-execute's mutation-sensor override (`verification.md`). A standard-sized auth change must
-not ship a spec whose scope leaks or a design whose reuse went unchecked.
+**Reversibility overrides the size gate.** A change classified a **one-way door**
+(`references/specify.md`) forces spec reviewer 3 and design lens 4 **regardless of size**,
+including at `quick` with no design — there the lens reads the acceptance criteria
+gathered inline. Same principle as execute's mutation-sensor override: a two-line change
+that moves money must not ship unreviewed because it is small.
 
 ## Model tier per reviewer
 
@@ -99,7 +131,8 @@ Adversarial review is judgment work, not a mechanical pass/fail — run it at **
 or frontier with high effort for a complex change**, per SKILL.md's Model & effort
 selection (the "adversarial judgment / ambiguous synthesis" row). Never send these lenses
 to the economy tier, and never fan the whole panel to frontier by default: complex earns
-frontier for its reviewers; standard runs them at standard/high. Dispatch the applicable
+frontier for its reviewers; standard runs them at standard/high. Design lens 4 inherits
+that row — **standard/high, frontier at `complex`** — and is never economy. Dispatch the applicable
 reviewers as concurrent subagents per SKILL.md's Orchestration rules — Workflow when the
 runtime supports it, sequential subagent calls otherwise. Reviewers spawn nothing.
 

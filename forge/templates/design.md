@@ -16,8 +16,22 @@ How components interact. Mermaid diagram for complex changes.
 | Existing component / utility | Location | Reuse / extend |
 |---|---|---|
 
+## Conventions observed — verdicts
+<!-- One row per category in spec.md's Conventions observed section, all six, always.
+     A deviation with no stated reason is a finding. Execute's structural axis re-checks
+     only the deviating rows. See references/design.md. -->
+
+| Category | Verdict (conformant / deviating) | Reason, if deviating |
+|---|---|---|
+
 ## Components
 - **<Component>** — purpose, responsibility, interface/contract, dependencies.
+
+For each new or modified component also record its responsibility,
+its dependency direction, the seam its interface sits at, and the domain concepts typed:
+
+| Component | Responsibility (one sentence, no "and") | Dependency direction | Seam its interface sits at | Domain concepts that take a type |
+|---|---|---|---|---|
 
 ## Data Models
 Schemas and relationships, if any.

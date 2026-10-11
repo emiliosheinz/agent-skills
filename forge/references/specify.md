@@ -84,10 +84,36 @@ Everything here is an observation, not a conclusion. `quick` does a light Move 1
 the areas the change will touch:
 
 - Existing modules, services, components in the same domain
-- Established patterns: structure, naming, data flow, testing approach
+- **The conventions the code already shows** — recorded as a named section, see below
 - Prior decisions in `./.specs/` (specs, designs, ADRs, RFCs) that overlap
 - Technical debt or known limitations visible in code or comments
 - Integration boundaries: external services, APIs, data stores
+
+**Conventions observed (every size).** Move 1 writes a `Conventions observed` section
+into `spec.md` — the pipeline's only structural *input*: `design.md` states a verdict per
+record and execute's conventions check compares the diff against them. Six fixed
+categories, always all six:
+
+| Category | What to record |
+|---|---|
+| structure | how files and modules are arranged and where a new one of this kind goes |
+| naming | the shape names take — casing, suffixes, what a name describes |
+| data flow | how data moves between units, and what carries it |
+| layering | which direction dependencies point, and across what boundary |
+| error handling | how failures are represented, raised, and surfaced |
+| test placement | where a test for this kind of code lives, and at what level |
+
+Rules:
+
+- **Every entry cites a `file:line`.** Without an example the entry is an opinion.
+- **A category with nothing observed names where it looked** — "none observed (searched
+  `src/**/*.ts`, `test/`)". Otherwise a `quick` run can mark all six categories empty
+  without searching.
+- **At `quick`, one record per category maximum** — the light scan still fills all six
+  rows, stopping at the first clear example of each.
+- **Regenerated whole on a re-run**, so re-running a phase is idempotent.
+- **Record what is, decide nothing.** A convention you think wrong is still recorded; the
+  argument belongs in `design.md`'s verdict.
 
 **Move 2 — Trace the impact (standard+).** Trace outward from the code the change would
 touch, recording where the problem area sits and what already depends on it — never how
@@ -200,8 +226,28 @@ genuinely missing:
 - **IDs:** prefix = feature slug uppercased, shortened to 3–5 chars (`user-onboarding`
   → `ONBD`). Sequential: `ONBD-01`, `ONBD-02`.
 - Priorities: **P0** launch blocker · **P1** high value · **P2** nice to have.
-- Mark an AC **`critical`** when it governs auth, payments, or data integrity.
-  Execute's mutation sensor runs on critical ACs regardless of size.
+- **Classify the change one-way or two-way door, and record the verdict.** Scrutiny
+  follows what a mistake costs. A **one-way door** is a change whose effect cannot be
+  undone by reverting the commit. Any one of these triggers fires it:
+  - destructive migration, or any irreversible data loss;
+  - bulk delete;
+  - mass communication to real users;
+  - money movement;
+  - an auth or permission boundary;
+  - breaking a contract another consumer already depends on;
+  - any action with **no revert path**.
+
+  Record the verdict **per change** in `state.md`'s header table with the triggers that
+  fired. Two-way is the normal case and is still recorded: the field is never blank,
+  because a blank field reads as unconsidered.
+
+  **Mark the ACs as well.** Append **`[critical]`** to the ACs carrying the irreversible
+  outcome. The door verdict says *this needs more scrutiny*; the per-AC marker says *scope
+  it here*, which is where execute's mutation sensor aims.
+
+  Consumers key on the door verdict for whether they fire and on the per-AC marker for
+  what they scope to: see `references/verification.md`, `review.md`, `execute.md` and
+  `fix.md`.
 - Each requirement carries one or more **acceptance criteria** in WHEN/THEN/SHALL
   form: *WHEN \<condition\>, THEN the system SHALL \<observable outcome\>.* Each AC
   must have a single interpretation and a precise expected outcome.

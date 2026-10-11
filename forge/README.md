@@ -37,12 +37,19 @@ tells you which later phases you still need.
 
 | Size | Example | What you get |
 |------|---------|--------------|
-| **quick** | one-file fix, no new interface | inline spec, skip design and plan, go straight to execute (verifiers 1–2) |
-| **standard** | one component, a few files | full spec, light design, phased plan, execute with verifiers 1–4 |
+| **quick** | one-file fix, no new interface | inline spec, skip design and plan, go straight to execute (verifiers 1–2, plus the conventions check) |
+| **standard** | one component, a few files | full spec, light design, phased plan, execute with verifiers 1–4 and a structural review inside the task loop |
 | **complex** | crosses components or repos, new subsystem | full pipeline plus the dimension sweep, alternatives, and verifier 5 |
 
 Size can only increase. A downgrade requires your confirmation. See
 `references/sizing.md` for the full rubric.
+
+**Reversibility overrides size.** Every change is also classified a **one-way door** or a
+two-way door — one-way meaning reverting the commit does not undo the effect (destructive
+migration, bulk delete, mass communication, money movement, an auth boundary, a broken
+contract, no revert path). A one-way door runs the heavier reviewers and the mutation
+sensor at any size: a two-line change that emails every user deserves more scrutiny than a
+sixty-file rename.
 
 ## What you get out of forge
 
@@ -52,16 +59,33 @@ Size can only increase. A downgrade requires your confirmation. See
 - **Adversarial review of the spec and design.** Before finalizing, `specify` and
   `design` hand their draft to independent reviewer subagents that attack it from lenses
   the author is blind to — completeness, testability, scope leak; coverage, failure
-  modes, over-engineering. Size-gated, and the fixes land in the artifact. Catches a
-  vague AC or an orphaned requirement at authoring time instead of at execute time.
+  modes, over-engineering, **under-design**. Size-gated, and the fixes land in the
+  artifact. Catches a vague AC or an orphaned requirement at authoring time instead of at
+  execute time.
+- **A structural baseline.** Three of forge's voices argue for less code; a fourth design
+  lens asks whether what *is* built is arranged well — where
+  a rule lives, which way a dependency points, whether a domain concept is a bare
+  primitive, whether one body mixes abstraction levels. Its criteria live in one sourced
+  file, `references/structural-standards.md`, extensible per project via
+  `CODING_STANDARDS.md`. It prefers silence: no trigger in the diff, no finding.
+- **The conventions your code already shows become an input.** `specify` records them with
+  a `file:line` per entry, `design` states a verdict per convention, and `execute` checks
+  the diff against them at **every** size, `quick` included.
 - **Phased plan.** `plan` groups small tasks into dependency-ordered phases. Tasks
   within a phase run in parallel when a safety check approves. Each task traces to an
   acceptance criterion.
 - **Independent verifiers.** `execute` implements a phase, then dispatches verifier
   subagents written by a different agent than the one that wrote the code. They check
   tests, static analysis (typecheck + lint + format), spec coverage, architecture, and
-  (for complex changes) mutation testing.
+  (for complex changes or a one-way door) mutation testing.
   A bounded fix loop addresses what they find.
+- **A structural review inside the task loop, before the commit.** At `standard`+, each
+  batch is reviewed for structure after its gate passes and before it commits, by an agent
+  that did not write it. The reviewer never edits; the batch's own implementer applies the
+  findings and re-runs the gate, and the fixes land in the same single task commit. Two
+  cycles, then the task is left uncommitted and marked `blocked` rather than looping. Each
+  finding's disposition — applied, rejected with a reason, or parked — is recorded, so a
+  finding cannot quietly vanish between verdict and commit.
 - **Lessons layer.** Each change keeps its own `lessons.md` listing what went wrong and
   the rule for next time. Each phase loads it at start.
 

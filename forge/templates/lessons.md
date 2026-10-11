@@ -16,3 +16,11 @@
 ## Retired
 <!-- Standing Rules struck after they proved wrong (~~rule~~ (date, reason)); never loaded. -->
 -
+
+<!-- environment-candidates -->
+## Environment candidates
+<!-- Append-only. NEVER loaded — every phase reads only ABOVE this marker. Parked
+     observations with their classification and intended destination: proposed mechanical
+     checks, judgement calls with no CODING_STANDARDS.md, and process observations (the
+     one place they are allowed). Format: date · [class → destination] · observation -->
+-

@@ -17,11 +17,18 @@ Load this before writing any PR body.
 The reader is a teammate who already knows the codebase and is about to review
 the diff. They need what the diff cannot tell them.
 
-Two rules the body never breaks:
+Three rules the body never breaks:
 
 - **Never claim confidence.** No "fully tested", "verified", "production
   ready", "safe to merge". That verdict is the reviewer's.
 - **Never inventory the tests.** CI reports what passed.
+- **Never cite a planning identifier.** An acceptance-criterion or decision ID,
+  a spec slug, a `./.specs/...` path: the reviewer's checkout may not contain
+  that directory, so the reference resolves to nothing for the one person the
+  body is written for. Read those artifacts for their content, then say the
+  thing itself — "a revoked token could still resolve a session", not
+  "satisfies AUTH-02". An issue or ticket number is the exception: it resolves
+  for everyone.
 
 ## The three questions
 

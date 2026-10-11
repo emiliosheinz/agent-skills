@@ -72,6 +72,13 @@ which defines the five test rules it rejects against). They are stateless.
    `references/plan.md` for all five definitions — the same words it uses when the test
    is planned.
 
+   **No forge identifier in the diff.** Scan the phase's changed files for an AC ID, a
+   task or decision ID, a slug, a `./.specs/...` path, or a verdict name — in source, a
+   comment, a test name or description, or a fixture. Each hit is a finding at its
+   `file:line`, cleared by restating the rule or the behaviour in its own terms;
+   `references/execute.md` → step 2 holds the rule and the reason. The trace belongs in
+   the evidence rows, which is why the code does not carry it.
+
    **Reverse (necessity).** For each test touched in the phase diff, map it back to an
    AC ID, a **design element**, a spec edge case, or a done-when criterion —
    `file:line + assertion → anchor → keep?`. A design element is a named component, a

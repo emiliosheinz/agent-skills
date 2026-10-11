@@ -9,7 +9,7 @@ description: >
   commit".
 metadata:
   author: emiliosheinz
-  version: 2.0.0
+  version: 3.0.0
 compatibility: >
   Works in any git repository. No project-specific setup, config, or scope
   list — scopes and groups are derived from the actual diff each time.
@@ -18,7 +18,7 @@ compatibility: >
 # Commit Message Generator
 
 Turn the current git state into one or more well-formed Conventional Commit
-messages, each confirmed by the user before the commit lands. Never guess
+messages and land them. Never guess
 what changed — `scripts/analyze-diff.py` is the single source of truth.
 
 ## Hard rules
@@ -32,9 +32,8 @@ what changed — `scripts/analyze-diff.py` is the single source of truth.
   what they meant to stage.
 - **If the script exits non-zero** (nothing to commit), stop and tell the
   user.
-- **Never commit without explicit user confirmation.** Print the message,
-  wait for a yes/edit/no response, then act. Never pass `--no-verify`,
-  never amend, never `git push`.
+- **Commit without asking.** Print the message, then commit. Never pass
+  `--no-verify`, never amend, never `git push`.
 - **Never add co-author trailers** unless the user explicitly asks.
 - **Never `git add -A` / `git add .`.** Stage exactly the paths for the
   current group and nothing else.
@@ -63,21 +62,14 @@ below. Then:
 - **1 group** → stage all files with `git add -- <paths>` and go to
   **Step 3**. Show the user the single-group plan first only if there is
   visible ambiguity; otherwise stage silently and move on.
-- **2+ groups** → print a numbered proposal like:
+- **2+ groups** → print the plan, then iterate the groups in order (see
+  **Sequential loop**). Do not wait for a reply.
 
   ```
-  Proposed 2 commits:
+  Committing 2 groups:
     [1] feat(api): <files...>
     [2] docs: README.md, CHANGELOG.md
-  Confirm? (yes / edit / merge / cancel)
   ```
-
-  Responses:
-  - `yes` / `lgtm` → iterate groups in order (see **Sequential loop**).
-  - `edit` (or free-form feedback like "move X to group 2", "split group 1")
-    → revise the proposal, re-print, re-prompt.
-  - `merge` → treat everything as one group; stage all, go to **Step 3**.
-  - `cancel` / `no` → stop. Do not stage anything.
 
 - **More than 4 groups** → do not propose. Print the file list grouped by
   top-level folder and ask the user to narrow scope before rerunning.
@@ -117,22 +109,19 @@ what is actually staged now. Then:
 5. **Footers.** Branch name matches `[A-Z]{2,}-\d+` → add `Refs: KEY-123`.
    Breaking / revert / closes → see the reference file.
 
-### Step 4 — Confirmation loop
+### Step 4 — Commit
 
-Print the message inside one fenced code block and ask
-`Commit this? (yes / edit / no)`.
+Print the message inside one fenced code block, then run `git commit -F -`
+with the message on stdin. Report the resulting hash + subject on one line.
 
-- `yes` / `lgtm` / `ship it` / `commit` → run `git commit -F -` with the
-  message on stdin. Report the resulting hash + subject on one line.
-- Feedback (any edit, reword, scope change, "shorter", etc.) → revise and
-  loop back to the start of this step. Do not commit until confirmed.
-- `no` / `cancel` / `abort` → **cancel semantics** (below).
+The user corrects a landed message the normal way, with their own
+`git commit --amend`. This skill never amends.
 
 ### Step 5 — Sequential loop (multi-group runs only)
 
 After each commit, print `[N/M] committed <hash> <subject>` and start the
 next group at **Step 2 → staging** for that group. Re-run the analyzer
-between groups. Stop when all groups are committed or the user cancels.
+between groups. Stop when all groups are committed.
 
 ## Grouping heuristics
 
@@ -151,16 +140,14 @@ between groups. Stop when all groups are committed or the user cancels.
   their own `chore` group unless intertwined with a feature change.
 - Cap: max 4 groups per run.
 
-## Cancel semantics
+## Interrupted mid-run
 
-If the user cancels a message confirmation mid-run:
+If a commit fails or the run is interrupted between groups:
 
-- Commits already made in this run stay committed — they were confirmed.
-- The current group's staged files are unstaged with
-  `git reset HEAD -- <paths>`. File contents on disk are never modified.
-- Remaining groups are not started.
-- Print a one-line summary: `Committed N of M groups; group K unstaged and
-  skipped.`
+- Commits already made stay committed.
+- The current group's staged files are left staged, so the run can be
+  resumed. File contents on disk are never modified.
+- Print a one-line summary: `Committed N of M groups; group K left staged.`
 
 ## Message format
 
@@ -190,11 +177,10 @@ only via the reference file.
 ## Output
 
 Single-group / already-staged run: one fenced code block with the message,
-one confirmation line. On confirmation, one line with hash + subject.
+then one line with hash + subject.
 
-Multi-group run: the numbered group proposal, then per-group
-message-confirmation-commit cycles, with a `[N/M] committed ...` line after
-each. On cancel, the one-line summary described in *Cancel semantics*.
+Multi-group run: the group plan, then per-group message-commit cycles, with
+a `[N/M] committed ...` line after each.
 
 Nothing else. No essays, no explanations of what changed — the log and the
 diff already say it.

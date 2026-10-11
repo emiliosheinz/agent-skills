@@ -30,7 +30,9 @@ solutions, sketch architecture, prioritize, or set scope here. Capture the world
 is.
 
 Three activities run together and interleave. None of them is "done" until you have
-shared understanding. Pursue all three until they are done.
+shared understanding. Pursue all three until they are done. Each states its own size
+calibration inline — A2's Move 2 and A3's outward search both narrow at `quick`. Size
+changes how far an activity reaches, never whether it runs.
 
 ### A1. Interview to shared understanding
 
@@ -154,6 +156,19 @@ false "prior art" from dependencies.
 
 Actively look outward, not just at URLs the user mentioned. The point is to avoid
 rebuilding something that already exists or repeating a known mistake.
+
+**Size calibration — this is the only statement of it; `references/sizing.md` points
+here rather than restating it.** How far you reach outward follows what the change
+risks:
+
+| Size | How far A3 reaches |
+|---|---|
+| `quick` | Follow the sources the user named, and stop. Run no search of your own: a ≤2-file change inside an established seam has no room for a competing approach to change. A named source still gets fetched and recorded under the rules below. |
+| `standard` | Search only for what is **directly applicable to the touched surface** — an established approach to this exact problem, or a standard that governs it. Stop at the first two applicable sources per category; the breadth list below is complex's job. |
+| `complex` | The full pass: every category in the list below. |
+
+A size that finds nothing to reach for records that, per the rules below. **An absent
+A3 section is a gap; an empty one with its grounds stated is complete.**
 
 When web tools are available (`WebSearch` + `WebFetch`), search for and **read**:
 

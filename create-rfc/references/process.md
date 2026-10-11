@@ -26,8 +26,9 @@ drafting.
 
 - **Title** — clear, action-oriented, specific
 - **Background** — current state + why this matters now + cost of inaction
-- **Driver** — who is proposing / responsible for the decision
-- **Approver(s)** — who needs to approve
+- **RACI** — Driver, Approver(s), Contributors, Informed all
+  identified
+  (Driver proposes and owns the decision; Approver(s) must approve it.)
 - **Impact level** — HIGH / MEDIUM / LOW
 - **At least 1 explicit assumption** with confidence level
 - **At least 2 decision criteria**, with weights, stated **before** the

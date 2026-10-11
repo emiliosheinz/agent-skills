@@ -180,10 +180,10 @@ runtime has no effort dial, fold the intent into tier choice.
 | Design/architecture synthesis, plan decomposition for a complex change | frontier | high |
 | Adversarial or cross-cutting verification (the AC-trace / integration verifier, the under-design lens) | standard→frontier | high |
 
-**A `reuses` pointer alone does not buy economy tier** — only together with creating no
-new file and no new exported type, interface, or class. A precedent says what shape to
-copy, not where a responsibility belongs or which value deserves a type, and those are
-decided once, when the file or type is created.
+**Economy tier needs both conditions** — a `reuses` pointer *and* no new file, exported
+type, interface, or class. A precedent says what shape to copy, not where a
+responsibility belongs or which value deserves a type, and those are decided once, when
+the file or type is created.
 
 **Size interacts with tier.** A `quick` change should almost never dispatch a frontier
 subagent; a `complex` change earns frontier for its design and adversarial gates but

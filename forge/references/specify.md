@@ -114,9 +114,6 @@ Rules:
 - **Regenerated whole on a re-run**, so re-running a phase is idempotent.
 - **Record what is, decide nothing.** A convention you think wrong is still recorded; the
   argument belongs in `design.md`'s verdict.
-- **A pre-existing spec with no such section** is not a failure: consumers record "not
-  available (legacy artifact)" and continue — distinct from a section present with
-  nothing observed, which is a real, passing observation.
 
 **Move 2 — Trace the impact (standard+).** Trace outward from the code the change would
 touch, recording where the problem area sits and what already depends on it — never how

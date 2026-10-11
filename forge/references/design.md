@@ -79,9 +79,6 @@ carries **one verdict per listed convention** — all six rows, never optional: 
 convention gets dropped silently. Record verdicts in the design's conventions table by
 category and `file:line`; never restate the convention text.
 
-A legacy spec with no such section records "not available (legacy artifact)" once and
-continues — distinct from a section present with nothing observed, which passes.
-
 ## Apply active decisions
 
 Read the Decisions log in `state.md`. Every active decision must be either applied or

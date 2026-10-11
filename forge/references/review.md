@@ -80,8 +80,7 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
    **The deletion test, and a two-sided verdict.** For each abstraction, ask what deleting
    it would cost and return one of two values **citing the caller count**: `pass-through`
    (deleting removes code, no caller grows — recommend the deletion) or `earns-keep`
-   (deleting duplicates code across two or more callers — say so and move on). Naming the
-   passing case is what makes the failing case credible.
+   (deleting duplicates code across two or more callers — say so and move on).
    Given: the `design.md` plus the spec's codebase findings.
 4. **Under-design** — the symmetric lens: is what the design *does* build arranged well?
    Criteria are **not** restated here — read `references/structural-standards.md` for the

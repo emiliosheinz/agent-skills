@@ -99,10 +99,9 @@ design's gates, the commit/diff under review). They are stateless.
    define it, and they are what keep `quick` cheap: it **reads no design document**,
    **loads no structural catalogue**, and **dispatches no subagent** — it runs inline.
 
-   Report each category as conformant, deviating (with the deviating `file:line`), or
-   **"not available (legacy artifact)"** when the spec carries no such section. A section
-   present with nothing observed passes and says so; a none-observed marker that does not
-   name where it looked is a finding.
+   Report each category as conformant or deviating, with the deviating `file:line`. A
+   section present with nothing observed passes and says so; a none-observed marker that
+   does not name where it looked is a finding.
 
    **Verifiers 3 and 4 are conventions-*data* consumers, not review-time agents** — they
    read the records directly and never carry the catalogue or a standards file, which
@@ -173,9 +172,6 @@ a clear pass/fail per category, and dispatches nothing — run it inline at econ
 - **No spec / quick direct execute:** verifier 3 traces against the acceptance
   criteria derived inline at execute time, same structure. Verifier 4 runs
   conventions-only against the conventions observed inline during that same scan.
-- **Spec predates the conventions section:** verifier 4 records
-  "not available (legacy artifact)" and does not fail the run — distinct from a section
-  present with nothing observed, which passes and says so.
 - **Missing static-analysis tool:** verifier 2 reports each sub-check independently. A
   tool the project has configured but that can't run is "not configured" / a gap, never
   passed; a tool with no analogue for the language is `N/A`.

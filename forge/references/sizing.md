@@ -38,8 +38,7 @@ quick/standard split from being purely subjective; the qualitative triggers deci
 | **execute** | implement + the verifier set for this size | per phase: + the verifier set for this size, + a structural review inside the task loop | per phase: as standard, with this size's deeper verifier set |
 
 **The verifier set per size lives in `references/verification.md`, and only there.** This
-table says how deep each phase goes, not which verifiers run — a second copy of that
-table is a copy that goes stale.
+table says how deep each phase goes, not which verifiers run.
 
 Even at `quick`, specify still runs its interview/scan loop — it just reaches shared
 understanding fast and writes little. Sizing controls how much you *write*, never

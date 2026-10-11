@@ -19,8 +19,7 @@ How components interact. Mermaid diagram for complex changes.
 ## Conventions observed — verdicts
 <!-- One row per category in spec.md's Conventions observed section, all six, always.
      A deviation with no stated reason is a finding. Execute's structural axis re-checks
-     only the deviating rows. "not available (legacy artifact)" if the spec predates the
-     section. See references/design.md. -->
+     only the deviating rows. See references/design.md. -->
 
 | Category | Verdict (conformant / deviating) | Reason, if deviating |
 |---|---|---|

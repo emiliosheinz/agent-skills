@@ -98,9 +98,8 @@ contract emerged). Recommend — do not run it for the user.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
      otherwise use sequential subagent calls.
    - **Set each implementer's model tier and effort** per SKILL.md Model & effort
-     selection, which bounds the cheap end: a task that creates a new file or an
-     **exported type**, interface, or class is never economy, and a `reuses` pointer
-     alone does not qualify a task for economy.
+     selection, which bounds the cheap end: economy needs a `reuses` pointer **and** a
+     task that creates no new file and no new **exported type**, interface, or class.
    - The subagent returns a **compact summary**: paths changed, task-gate result
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
      diffs, or test dumps. Anything over ~100 lines goes to a file; the subagent
@@ -224,8 +223,7 @@ applicable verifiers over the phase's changes. Author ≠ verifier; fresh contex
 in parallel.
 
 **Which verifiers run is gated by size, and the size table lives in
-`references/verification.md` — read it there.** Do not copy it here; a second copy of
-that table goes stale.
+`references/verification.md` — read it there.**
 
 **Override:** a change classified a **one-way door** in `state.md` runs verifier 5
 regardless of size, scoped to the branches reachable from its `[critical]` ACs

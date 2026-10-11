@@ -120,7 +120,7 @@ fix cycle spent, the routing `verification.md` gives a `SPEC-GAP`.
 | Input | Shape | When absent |
 |---|---|---|
 | **subject** | an artifact, or a diff scope — a fixed point or this invocation's hunks | an explicitly-supplied empty subject **fails fast**, never a clean verdict. An empty per-batch slice is a task-level anomaly for the orchestrator, not a runner failure |
-| **conventions** | `spec.md`'s `Conventions observed` records with their `file:line` examples, or the legacy-absent marker | recorded as not available; the run continues |
+| **conventions** | `spec.md`'s `Conventions observed` records with their `file:line` examples | recorded as not available; the run continues |
 | **standards** | a discovered `CODING_STANDARDS.md` plus the discovery outcome | the outcome states none was found; this file is in force regardless |
 
 This file is the reviewer's own dependency, not an input; surface facts are **derived**

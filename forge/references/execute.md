@@ -97,13 +97,11 @@ contract emerged). Recommend — do not run it for the user.
      gates and commit.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
      otherwise use sequential subagent calls.
-   - **Set each implementer's model tier and effort** per SKILL.md Model & effort
-     selection, which bounds the cheap end: economy needs a `reuses` pointer **and** a
-     task that creates no new file and no new **exported type**, interface, or class.
+   - **Set each implementer's model tier and effort.** See `SKILL.md` → *Model & effort
+     selection*, which bounds the cheap end.
    - The subagent returns a **compact summary**: paths changed, task-gate result
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
-     diffs, or test dumps. Anything over ~100 lines goes to a file; the subagent
-     returns the path.
+     diffs, or test dumps. See `SKILL.md` → *Orchestration* for the output-size rule.
 4. Each task follows the **per-task loop** below.
 5. **Run the phase gate** once every task in the phase is green — the broader check
    (full test suite + static analysis: typecheck + lint + format) that confirms the

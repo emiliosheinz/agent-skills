@@ -177,8 +177,9 @@ For each task:
    here, where a finding is accepted or dropped. Relocating a rule or replacing a
    primitive is **the same scope**, so a rejection may not cite "unrequested
    abstraction". A rejection that cites it carries no reason, and a rejection with no
-   reason is a gap. A finding that genuinely cannot be applied without new scope — a port,
-   layer, second implementation or extension point — is a **DESIGN-GAP** instead. Record
+   reason is a gap. A finding that genuinely cannot be applied without new scope —
+   a port, a layer, a second implementation, a flag or an extension point — is a
+   **DESIGN-GAP** instead. Record
    it against the design element, spend no cycle on it, and route it back to `design.md`
    the way `references/verification.md` routes a `SPEC-GAP`.
 
@@ -193,7 +194,8 @@ For each task:
    or badly arranged? **Scope** governs *whether* something is built. **Shape** governs
    *how* what is built is arranged. Moving a rule to the unit that owns its data, or
    giving a repeated-validation primitive a domain type, is **the same scope**: keep it.
-   Adding a port, a layer, or a config flag is **new scope**: leave it out. Confirm the
+   Adding a port, a layer, a second implementation, a flag or an extension point is
+   **new scope**: leave it out. Confirm the
    tests aren't shallow and nothing beyond the task crept in.
 6. **Commit atomically.** One task = one commit, only the files in the task
    definition (its `files` set). Conventional Commits, type matching the change

@@ -56,7 +56,8 @@ Length is earned by two things and nothing else:
   and reversible. A migration that drops a column is narrow and one-way. The
   second one gets the paragraphs.
 
-**After drafting**, run test 1 literally: re-read only the first sentence of
+**After drafting**, run **the scan test** (test 1) literally: re-read only the
+first sentence of
 each paragraph, the bolded words, and the views. If that alone does not answer
 what changed and why — and, where it fires, where to look carefully — cut until
 it does.

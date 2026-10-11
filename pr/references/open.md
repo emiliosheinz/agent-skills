@@ -132,9 +132,8 @@ Run both checks in [writing-the-body.md](writing-the-body.md):
 
 1. **The thirteen patterns.** Walk the table row by row against the draft. Name
    the ones that fire. If any fire, rewrite and walk it again.
-2. **The scan test.** Re-read only the first sentence of each paragraph, the
-   bolded words and the views, and confirm that alone answers what changed and
-   why.
+2. **The scan test.** Run it per [writing-the-body.md](writing-the-body.md) →
+   *Length*, which holds its mechanics.
 
 A draft that has not been through both does not get pushed.
 

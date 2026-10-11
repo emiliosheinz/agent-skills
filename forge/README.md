@@ -63,15 +63,14 @@ scrutiny than a sixty-file rename.
   artifact. Catches a vague AC or an orphaned requirement at authoring time instead of at
   execute time.
 - **A structural baseline, not just a simplicity one.** Three of forge's voices argue for
-  less code; the fourth design lens asks whether what *is* built is arranged well — where
+  less code; a fourth design lens asks whether what *is* built is arranged well — where
   a rule lives, which way a dependency points, whether a domain concept is a bare
   primitive, whether one body mixes abstraction levels. Its criteria live in one sourced
   file, `references/structural-standards.md`, extensible per project via
   `CODING_STANDARDS.md`. It prefers silence: no trigger in the diff, no finding.
 - **The conventions your code already shows become an input.** `specify` records them with
   a `file:line` per entry, `design` states a verdict per convention, and `execute` checks
-  the diff against them at **every** size — including `quick`, which previously had no
-  structural check at all.
+  the diff against them at **every** size, `quick` included.
 - **Phased plan.** `plan` groups small tasks into dependency-ordered phases. Tasks
   within a phase run in parallel when a safety check approves. Each task traces to an
   acceptance criterion.

@@ -133,9 +133,9 @@ design's gates, the commit/diff under review). They are stateless.
 1 and 2 are cheap and parallel-safe. 3 and 4 are read-only analysis — run in parallel.
 5 is expensive and destructive — run last, alone, scoped to the task's new code.
 
-**Verifier 4 runs at every size.** `quick` previously had no structural check at all, and
-it is where most changes live; conventions-only mode costs one read of a section the spec
-already carries, so the floor is real without raising `quick`'s price.
+**Verifier 4 runs at every size.** `quick` is where most changes live, and
+conventions-only mode costs one read of a section the spec already carries — a real
+structural floor without raising `quick`'s price.
 
 **Reversibility overrides the size gate.** A change classified a **one-way door**
 (`references/specify.md`) triggers verifier 5 regardless of size, with extra mutations (at

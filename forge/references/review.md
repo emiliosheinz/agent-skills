@@ -121,9 +121,8 @@ highest-value lenses plus the under-design lens; complex runs the full panel.
 **Reversibility overrides the size gate.** A change classified a **one-way door**
 (`references/specify.md`) forces spec reviewer 3 and design lens 4 **regardless of size**,
 including at `quick` with no design — there the lens reads the acceptance criteria
-gathered inline. Same principle as execute's mutation-sensor override, replacing the old
-`critical`-domain override one for one: a two-line change that moves money must not ship
-unreviewed because it is small.
+gathered inline. Same principle as execute's mutation-sensor override: a two-line change
+that moves money must not ship unreviewed because it is small.
 
 ## Model tier per reviewer
 

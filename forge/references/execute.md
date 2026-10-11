@@ -90,8 +90,9 @@ contract emerged). Recommend — do not run it for the user.
      constraints, and its `files` set.
    - **An implementer's prompt carries neither the catalogue nor a standards file.**
      `references/structural-standards.md` and any discovered `CODING_STANDARDS.md` go to
-     **review-time agents only** (the three dispatches that file names). The only thing an
-     implementer's prompt gains over today's is the scope/shape boundary in step 5.
+     **review-time agents only** (the three dispatches that file names). The only
+     structural text an implementer's prompt carries is the scope/shape boundary in
+     step 5.
    - The subagent returns the files it changed and does **not** commit; you run its
      gates and commit.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
@@ -99,7 +100,7 @@ contract emerged). Recommend — do not run it for the user.
    - **Set each implementer's model tier and effort** per SKILL.md Model & effort
      selection, which bounds the cheap end: a task that creates a new file or an
      **exported type**, interface, or class is never economy, and a `reuses` pointer
-     alone no longer qualifies a task for economy.
+     alone does not qualify a task for economy.
    - The subagent returns a **compact summary**: paths changed, task-gate result
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
      diffs, or test dumps. Anything over ~100 lines goes to a file; the subagent
@@ -223,13 +224,14 @@ applicable verifiers over the phase's changes. Author ≠ verifier; fresh contex
 in parallel.
 
 **Which verifiers run is gated by size, and the size table lives in
-`references/verification.md` — read it there.** This file used to carry its own copy; a
-duplicated table is a table that goes stale, and the one here did. One table, one home.
+`references/verification.md` — read it there.** Do not copy it here; a second copy of
+that table goes stale.
 
 **Override:** a change classified a **one-way door** in `state.md` runs verifier 5
 regardless of size, scoped to the branches reachable from its `[critical]` ACs
 (`references/specify.md` for the door test, `references/verification.md` for the
 targeting rule).
+
 Collect the verifiers' verdicts into an overall PASS/FAIL plus a single
 severity-ranked gap list (Blocker → Major → Minor → Cosmetic).
 

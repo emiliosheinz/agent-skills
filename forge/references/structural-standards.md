@@ -152,10 +152,12 @@ rejected and the check runs. A run evaluating **only** the universal checks is a
 
 ### Firing discipline
 
-Review-time checks lose developers' trust above **10% effective false positives**
-([SWE at Google ch. 20](https://abseil.io/resources/swe-book/html/ch20.html)) and LLM
-reviewers measure far worse (~15% precision,
-[SWR-Bench](https://arxiv.org/abs/2509.01494)). So **prefer silence.** Every finding
+Google ships a review-time analyzer only below **10% effective false positives**,
+because noise costs developer trust
+([SWE at Google ch. 20](https://abseil.io/resources/swe-book/html/ch20.html)); LLM
+reviewers measure far worse — most automated review techniques score under 10% precision,
+the best an F1 of 19.4%
+([SWR-Bench](https://arxiv.org/abs/2509.01494)). So **prefer silence.** Every finding
 carries three things or it is not emitted:
 
 1. a **trigger** — a `file:line` inside a hunk of the subject;

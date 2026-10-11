@@ -180,7 +180,7 @@ runtime has no effort dial, fold the intent into tier choice.
 | Design/architecture synthesis, plan decomposition for a complex change | frontier | high |
 | Adversarial or cross-cutting verification (the AC-trace / integration verifier, the under-design lens) | standard→frontier | high |
 
-**A `reuses` pointer alone no longer buys economy tier** — only together with creating no
+**A `reuses` pointer alone does not buy economy tier** — only together with creating no
 new file and no new exported type, interface, or class. A precedent says what shape to
 copy, not where a responsibility belongs or which value deserves a type, and those are
 decided once, when the file or type is created.

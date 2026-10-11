@@ -31,32 +31,29 @@ Invoke this skill when you want to:
    `docs`, `chore`), derives a scope from the top-level folders touched,
    writes a subject and — only when the diff is non-trivial — a 2–5
    bullet body.
-3. **Unstaged path:** proposes 1–4 logical commit groups from the file
-   list. On your confirmation, iterates the groups sequentially:
-   `git add -- <paths>` → generate message → confirm → commit → next
-   group.
+3. **Unstaged path:** derives 1–4 logical commit groups from the file
+   list, prints the plan, then iterates the groups sequentially:
+   `git add -- <paths>` → generate message → commit → next group.
 4. Adds a `Refs: KEY-123` footer if the branch name contains a ticket key
    matching `[A-Z]{2,}-\d+` (e.g. `feature/JIRA-1234-foo` →
    `Refs: JIRA-1234`).
 5. For edge cases (breaking changes, reverts, merges, multi-scope diffs)
    consults `references/conventional-commits.md` instead of improvising.
 
-Every commit requires an explicit confirmation. Reply `yes` (also `lgtm`,
-`ship it`, `commit`) to commit, reply with feedback (e.g. "shorter",
-"change scope to auth", "drop the body") to revise, or reply `no` (also
-`cancel`, `abort`) to stop. On cancel mid-run, already-confirmed commits
-stay; the current group is unstaged; remaining groups are skipped.
+Commits land without asking. To reword one afterwards, amend it yourself —
+this skill never amends. If a run is interrupted between groups, the
+commits already made stay and the current group is left staged so the run
+can be resumed.
 
 ## Guarantees
 
-- Never runs `git commit` without your confirmation.
 - Never runs `git push`.
 - Never passes `--no-verify` — pre-commit hooks always run.
 - Never amends an existing commit.
 - Never uses `git add -A` / `git add .` — only the exact paths for the
   current group.
 - Never touches staged files when the skill starts with a staged state.
-- Never modifies file contents on disk — cancels only unstage.
+- Never modifies file contents on disk.
 - Never adds a `Co-Authored-By` trailer unless you ask.
 
 ## Special cases handled automatically
@@ -98,7 +95,7 @@ feat(auth): refresh access tokens before expiry
 Refs: PROJ-482
 ```
 
-In a multi-group run, each group is confirmed and committed in turn, with
+In a multi-group run, each group is committed in turn, with
 `[N/M] committed <hash> <subject>` printed after each.
 
 ## Installation
@@ -127,10 +124,10 @@ agent:
 ```
 
 - If files are already staged, the skill works with them exactly as
-  before: proposes a message, confirms, commits.
+  before: writes a message and commits.
 - If nothing is staged, the skill inspects tracked changes + untracked
-  files, proposes commit groups, confirms the plan with you, then
-  stages + confirms + commits each group in sequence.
+  files, groups them, prints the plan, then stages and commits each group
+  in sequence.
 
 Prefer to stage manually? Do it — the skill will respect your staged
 selection and skip the grouping step.

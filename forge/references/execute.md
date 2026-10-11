@@ -204,8 +204,9 @@ For each task:
 
 ### When subagents are unavailable (degrade, never fake)
 
-General rules: `references/review.md` → *Graceful degradation*. The structural axis adds
-these, because its value comes from the dispatch boundary:
+Run the general degradation rules per `references/review.md` → *Graceful degradation*,
+which holds the skipped-lens rule. The structural axis adds these, because its value
+comes from the dispatch boundary:
 
 - **Run it inline after a verbatim re-read** of the batch's changed files. Read the
   current bytes from disk.
@@ -215,7 +216,6 @@ these, because its value comes from the dispatch boundary:
   boundary to straddle, so the comparison cannot run at all.
 - **The reviewer and the implementer are now the same agent.** Record those tasks as
   reviewed **inline**; never as independently reviewed.
-- **A lens skipped for any reason is `recorded as a gap`**, never reported as reviewed.
 
 ### Verify the phase (independent subagents)
 

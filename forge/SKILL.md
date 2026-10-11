@@ -44,6 +44,10 @@ structure is and how a structural review runs. Three dispatches load it: `review
 under-design lens, `execute.md`'s per-batch structural axis, and `fix.md`'s claim lenses.
 It is the only structural check set in forge.
 
+`references/glossary.md` indexes forge's load-bearing terms — the door verdict, blast
+radius, a seam, the three lies — and names where each one is defined. No phase dispatches
+it; read it when a pointer uses a term you cannot place.
+
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
 

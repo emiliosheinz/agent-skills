@@ -1,0 +1,16 @@
+name: Check Pointers
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify reference and glossary pointers resolve
+        run: node .github/scripts/check-pointers.js

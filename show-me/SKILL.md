@@ -203,7 +203,8 @@ Each view must add information rather than repeat the prose. A view that
 restates the sentence above it is noise with syntax highlighting.
 
 You may use one of these, you may use several, you will rarely use all of
-them. Use your judgement and do not overwhelm the reader.
+them. Keep the views whose information the prose does not already carry, and
+drop the rest.
 
 ## Credits
 

@@ -34,7 +34,7 @@ A gate command must run; you cannot invent it. Before writing gates:
 4. Fall back to defaults only when no project standard exists (domain logic 1:1 to
    ACs; routes cover happy + edge + error).
 
-Never assume a command.
+Every gate command comes from one of those four sources, and the plan says which.
 
 ## Phases
 

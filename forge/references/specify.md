@@ -45,8 +45,8 @@ is still unclear.
 2. **Walk the tree.**
    - Each answer either closes a branch or opens new ones.
    - When an answer surfaces something you did not know, follow that branch to
-     resolution before returning to the parent.
-   - Do not abandon a half-open branch to move on.
+     resolution before returning to the parent — a half-open branch is finished
+     or recorded as an open question, never simply left behind.
 3. **Always offer a recommended answer.** Propose a default the user can accept or
    override, derived from the codebase, prior conversation, or context.
 4. **Codebase first.** If the code, `./.specs/`, or git history can answer it, read

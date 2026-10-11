@@ -22,9 +22,9 @@ compatibility: >
 
 Produce one RFC per invocation. An RFC proposes a decision that has *not*
 yet been made and drives stakeholder alignment; if the decision is already
-made, use `/create-adr` to record it. Follow the five-step process — do not
-skip Step 2 (validate mandatory fields) or draft before every mandatory
-field is present.
+made, use `/create-adr` to record it. Follow the five-step process in
+order: Step 2 validates the mandatory fields, and drafting starts once every
+one of them is present.
 
 ## Hard rules
 
@@ -37,8 +37,8 @@ field is present.
 - **Include "do nothing" as an explicit option** for any significant change —
   Universal rule 2 defines which changes those are.
 - **Never skip trade-offs.** Every option needs honest cons alongside pros.
-- **Never write in a language other than the user's.** Match the language
-  the user is using in this session.
+- **Write in the user's language** — the one they are using in this session,
+  every section of the document included.
 
 ## Dispatch
 
@@ -83,8 +83,7 @@ Pure markdown scaffold. Load only when writing:
 4. **RFCs are for decisions, not implementation.** Once decided, hand off
    to `/create-adr` (record) and `/forge` (build).
 5. **Date everything** and record the impact level up front.
-6. **Language adaptation.** Always write the RFC in the user's language.
-7. **Confirm before writing.** Suggest the file path in Step 5; write only
+6. **Confirm before writing.** Suggest the file path in Step 5; write only
    after the user confirms placement.
 
 ## Sibling skills

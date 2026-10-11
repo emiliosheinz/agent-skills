@@ -21,8 +21,8 @@ compatibility: >
 
 Produce one ADR per invocation. An ADR records a decision that has already
 been made; if the decision is still open, use `/create-rfc`. Follow the
-five-step process — do not skip Step 2 (validate mandatory fields) or draft
-before every mandatory field is present.
+five-step process in order: Step 2 validates the mandatory fields, and
+drafting starts once every one of them is present.
 
 ## Hard rules
 
@@ -32,8 +32,8 @@ before every mandatory field is present.
   ADR and link back. ADRs are historical records.
 - **Never skip trade-offs.** Consequences must be honest — include what
   becomes harder, not just what becomes easier.
-- **Never write in a language other than the user's.** Match the language
-  the user is using in this session.
+- **Write in the user's language** — the one they are using in this session,
+  every section of the document included.
 
 ## Dispatch
 
@@ -72,8 +72,7 @@ Pure markdown scaffolds; load only the one for the chosen format:
 3. **Short is better.** 200–500 words is ideal. If longer, move detail to a
    linked design doc or RFC.
 4. **Date everything.** What seems obvious now will not be in three years.
-5. **Language adaptation.** Always write the ADR in the user's language.
-6. **Confirm before writing.** Suggest the file path in Step 5; write only
+5. **Confirm before writing.** Suggest the file path in Step 5; write only
    after the user confirms placement.
 
 ## Sibling skills

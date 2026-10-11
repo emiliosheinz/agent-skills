@@ -1,6 +1,6 @@
 # Process — Creating an RFC
 
-Five sequential steps. Do not skip. Do not draft the document before every
+Five sequential steps, each run in order. Drafting starts once every
 mandatory field is present.
 
 ## Step 1 — Gather context

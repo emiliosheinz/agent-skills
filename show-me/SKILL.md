@@ -103,6 +103,26 @@ function expandSkill(command: string): string {
 }
 ```
 
+**An endpoint's request/response, or a table's columns — the contract:**
+
+```text
+POST /sessions
+  → { email, password }
+  ← 201 { sessionId, expiresAt }
+  ← 401 { error: "invalid_credentials" }
+```
+
+**A key type or data structure that changed shape — diff the type:**
+
+```diff
+ type Session = {
+   id: string
+-  legacyToken: string
++  idpSub: string
++  expiresAt: Date
+ }
+```
+
 ## Diffing a shape
 
 Use `diff` when the point is what changes and the surrounding shape already

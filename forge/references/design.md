@@ -50,14 +50,14 @@ The design must survive an implementation rewrite.
    Each concern needs a location and a mitigation, recorded under Architectural risks.
    Stay scoped to the change — do not audit the whole repo.
 3. **Components** — each with purpose, responsibility, interface/contract,
-   dependencies. For every **new or modified** component, record four further fields in
+   dependencies. For every new or modified component, record four further fields in
    stable vocabulary — later phases check against these words:
-   - **responsibility** — one sentence, no "and" (needing one describes two components);
+   - responsibility — one sentence, no "and" (needing one describes two components);
    - **dependency direction** — which way source dependencies point across each named
      boundary it sits on;
-   - **seam** — where its interface sits, i.e. where behaviour can be substituted without
+   - seam — where its interface sits, i.e. where behaviour can be substituted without
      editing it there (a seam with no enabling point is not a seam);
-   - **domain concepts that take a type** rather than a primitive.
+   - domain concepts that take a type rather than a primitive.
 4. **Data models** — schemas and relationships, if any.
 5. **Error-handling matrix** — failure scenarios → user-facing or system outcome.
 6. **Verification gates (required).** Define what makes the change *done and correct*.
@@ -71,11 +71,11 @@ The design must survive an implementation rewrite.
 ## State a verdict per observed convention
 
 `spec.md`'s `Conventions observed` section is an input, not background reading. Design
-carries **one verdict per listed convention** — all six rows, never optional: either
+carries one verdict per listed convention — all six rows, never optional: either
 **conformant**, or **deviating with a stated reason**. Execute's structural axis re-checks
-**only the deviations**.
+only the deviations.
 
-**A deviation with no stated reason is a finding**, not a style choice — it is how a
+A deviation with no stated reason is a finding, not a style choice — it is how a
 convention gets dropped silently. Record verdicts in the design's conventions table by
 category and `file:line`; never restate the convention text.
 
@@ -132,10 +132,10 @@ plausible fabrication that propagates design → plan → execute.
 The validation checklist below is your own self-check — and an agent grades its own work
 generously. Before writing the final design, draft it and hand the draft to independent
 reviewer subagents that attack it from lenses you're blind to: requirement coverage,
-failure-mode/risk, simplicity/reuse, and **under-design**. Run the review per
+failure-mode/risk, simplicity/reuse, and under-design. Run the review per
 `references/review.md` (size-gated), fold the ranked delta back into the draft, and
 escalate any genuine architecture decision to the user. This catches an orphaned AC, an
-over-built component, **or a weak arrangement** here instead of at execute time — and a
+over-built component, or a weak arrangement here instead of at execute time — and a
 structural finding raised here is a document edit, where the same defect found after the
 code is written is a rewrite.
 

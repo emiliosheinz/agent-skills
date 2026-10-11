@@ -73,11 +73,11 @@ design's gates, the commit/diff under review). They are stateless.
    defined in the files the task changed.
 
    **Reverse (necessity).** For each test touched in the phase diff, map it back to an
-   AC ID, a **design element**, a spec edge case, or a done-when criterion —
+   AC ID, a design element, a spec edge case, or a done-when criterion —
    `file:line + assertion → anchor → keep?`. A design element is a named component, a
    seam, or a recorded convention, and it is a legitimate anchor in its own right:
    structural work has no AC of its own and must not be deleted for lacking one. An item
-   anchored to **neither** kind is still scope creep → remove. Reject speculative
+   anchored to neither kind is still scope creep → remove. Reject speculative
    what-if tests, tests of framework/library behavior, and cross-layer duplicate
    assertions.
 
@@ -91,16 +91,16 @@ design's gates, the commit/diff under review). They are stateless.
 
    **Full mode** (`standard`+, a design exists). As above, plus: for each row of
    `design.md`'s conventions verdicts, confirm the code matches the verdict. Only the
-   **deviating** rows need re-checking — a conformant row was already settled at design
+   deviating rows need re-checking — a conformant row was already settled at design
    time.
 
    **Conventions-only mode** (`quick`, or any size with no design). Compare the diff
    against `spec.md`'s `Conventions observed` section and nothing else. Three exclusions
-   define it, and they are what keep `quick` cheap: it **reads no design document**,
-   **loads no structural catalogue**, and **dispatches no subagent** — it runs inline.
+   define it, and they are what keep `quick` cheap: it reads no design document,
+   loads no structural catalogue, and dispatches no subagent — it runs inline.
 
    Report each category as conformant, deviating (with the deviating `file:line`), or
-   **"not available (legacy artifact)"** when the spec carries no such section. A section
+   "not available (legacy artifact)" when the spec carries no such section. A section
    present with nothing observed passes and says so; a none-observed marker that does not
    name where it looked is a finding.
 
@@ -142,7 +142,7 @@ already carries, so the floor is real without raising `quick`'s price.
 least 5, covering all branches of the irreversible path). The door verdict decides
 *whether* 5 runs; the per-AC `[critical]` marker decides *where* it points — mutate the
 branches reachable from the ACs carrying the irreversible outcome. A one-way door with no
-marked AC is a **gap**: record it and ask the spec, rather than mutating everything or
+marked AC is a gap: record it and ask the spec, rather than mutating everything or
 nothing.
 
 **Optional human UAT** *(P2, conditional)* — for **user-facing** ACs only

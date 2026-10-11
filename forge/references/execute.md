@@ -88,7 +88,7 @@ contract emerged). Recommend — do not run it for the user.
      are genuinely unrelated *and* each is substantial.
    - Give each subagent everything it needs: file paths, AC IDs, the task gates,
      constraints, and its `files` set.
-   - **An implementer's prompt carries neither the catalogue nor a standards file.**
+   - An implementer's prompt carries neither the catalogue nor a standards file.
      `references/structural-standards.md` and any discovered `CODING_STANDARDS.md` go to
      **review-time agents only** (the three dispatches that file names). The only thing an
      implementer's prompt gains over today's is the scope/shape boundary in step 5.
@@ -98,7 +98,7 @@ contract emerged). Recommend — do not run it for the user.
      otherwise use sequential subagent calls.
    - **Set each implementer's model tier and effort** per SKILL.md Model & effort
      selection, which bounds the cheap end: a task that creates a new file or an
-     **exported type**, interface, or class is never economy, and a `reuses` pointer
+     exported type, interface, or class is never economy, and a `reuses` pointer
      alone no longer qualifies a task for economy.
    - The subagent returns a **compact summary**: paths changed, task-gate result
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
@@ -133,7 +133,7 @@ For each task:
      changed**.
 3. **Run the task gate.** The deterministic command from the plan. Non-zero = not
    done; fix and re-run. Never proceed on a failing gate.
-4. **Review the batch structurally, before the commit** *(`standard`+, or a one-way door
+4. Review the batch structurally, before the commit *(`standard`+, or a one-way door
    at any size)*. The gate proves the code behaves; nothing yet proves it is arranged
    well, and the implementer cannot prove that about its own work.
 
@@ -144,44 +144,44 @@ For each task:
 
    Dispatch it per `references/structural-standards.md`, which holds the checks, the
    selection rule, the firing discipline and the verdict shape; this file holds only the
-   loop mechanics. It is a **review-time agent**, so its prompt carries the catalogue and
+   loop mechanics. It is a review-time agent, so its prompt carries the catalogue and
    any discovered standards file. Tier: standard/high, frontier at `complex`, never
    economy.
 
-   **The reviewer does not edit.** Findings go back to **the batch's own implementer**,
+   **The reviewer does not edit.** Findings go back to the batch's own implementer,
    which applies them and re-runs the gate — already a different agent, so no third role
-   is needed — and the fixes land in the **same single task commit**.
+   is needed — and the fixes land in the same single task commit.
 
-   **Snapshot and restore.** Before dispatching, **snapshot** the batch's declared paths
+   **Snapshot and restore.** Before dispatching, snapshot the batch's declared paths
    (the union of its tasks' `files`). If applying a finding breaks the gate, restore that
-   snapshot **scoped to those paths only** — there is no commit boundary between implement
+   snapshot scoped to those paths only — there is no commit boundary between implement
    and review, so an unscoped revert would discard the implementation.
 
-   **Tamper detection.** Snapshot the **whole tree's** dirty paths around the dispatch,
+   **Tamper detection.** Snapshot the whole tree's dirty paths around the dispatch,
    minus concurrently in-flight siblings — scoping detection to the declared set would hide
-   the dangerous edit (a test file, a gate's config, a shared barrel). A delta **inside**
-   the declared set is **reverted** and the verdict still used; one **outside** it is
-   **recorded as a gap** and the task is **not committed**.
+   the dangerous edit (a test file, a gate's config, a shared barrel). A delta inside
+   the declared set is reverted and the verdict still used; one outside it is
+   recorded as a gap and the task is not committed.
 
    **Two cycles, their own budget.** Review → apply → re-run the gate, at most **two
    cycles** per batch, not drawn from the phase's three fix cycles below. A gate failure
    the fix did not cause — the same failure as before the review step, or one in a path
-   the finding never touched — is recorded, **not counted**.
+   the finding never touched — is recorded, not counted.
 
    **Record each finding's disposition** — `applied`, `rejected(reason)`, or `parked` — in
-   `state.md`. A rejection with **no reason is a gap**. This is the detector for a finding
+   `state.md`. A rejection with no reason is a gap. This is the detector for a finding
    that is raised in a verdict and then vanishes from the commit.
 
    **The scope/shape boundary governs a valid rejection** — step 5 states it, and it binds
    here, where a finding is accepted or dropped. Relocating a rule or replacing a
-   primitive is **the same scope**, so "unrequested abstraction" is not a reason: a
+   primitive is the same scope, so "unrequested abstraction" is not a reason: a
    rejection resting on it is one with no reason, which is a gap. A finding that genuinely
    cannot be applied without new scope — a port, layer, second implementation or extension
    point — is **DESIGN-GAP** instead: recorded against the design element, no cycle spent,
    routed back to `design.md` as `references/verification.md` routes a `SPEC-GAP`.
 
-   **Escalation.** If two cycles do not clear the findings: the task is **not committed**,
-   the tree is left as-is, its status becomes **`blocked`**, and `state.md` records the
+   **Escalation.** If two cycles do not clear the findings: the task is not committed,
+   the tree is left as-is, its status becomes `blocked`, and `state.md` records the
    remaining findings plus the snapshot reference. Stop and report; do not start the next
    task behind a `blocked` one. **A re-invocation picks a `blocked` task up first**,
    re-reads its recorded findings rather than reviewing from scratch, and restarts its
@@ -190,7 +190,7 @@ For each task:
 5. **Self-check before committing.** Would a senior engineer call this overcomplicated,
    or badly arranged? **Scope** governs *whether* something is built and **shape** governs
    *how* what is built is arranged, so moving a rule to the unit that owns its data or
-   giving a repeated-validation primitive a domain type is **the same scope** — not an
+   giving a repeated-validation primitive a domain type is the same scope — not an
    unrequested abstraction to simplify away — while adding a port, a layer, or a config
    flag is new scope and stays out. Confirm the tests aren't shallow and nothing beyond
    the task crept in.

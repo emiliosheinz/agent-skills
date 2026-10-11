@@ -13,10 +13,9 @@ Commit, push, and open a draft PR.
 - Step 6 — Report
 - Failure handling
 
-`open` has no approval gate of its own, and the draft status is the gate on
+`open` runs start to finish without asking. The draft status is the gate on
 merge, not on history: the commits and the push land before anyone sees the
-rendered body. Step 2 delegates commits to a skill that does confirm each one
-with the user — those prompts pass through.
+rendered body.
 
 Never run the project's checks. CI is the check.
 
@@ -76,9 +75,9 @@ If anything is uncommitted:
 
 1. **Invoke the `commit-message-generator` skill** with the Skill tool. It
    writes conventional commits and groups unstaged work into a sequence, which
-   beats one commit of everything. It confirms each message with the user
-   before committing, and refuses outright above 4 groups — in that case follow
-   its instruction to re-group rather than working around it.
+   beats one commit of everything, and commits without asking. It refuses
+   outright above 4 groups — in that case follow its instruction to re-group
+   rather than working around it.
 2. **If the Skill tool reports it is not installed**, fall back: stage
    everything, make one commit with a conventional-commit subject, and **say in
    the final report that the fallback ran** so the user knows grouping did not

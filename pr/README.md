@@ -29,9 +29,7 @@ and no PR.
 ## How it works
 
 `open` runs the whole chain — preconditions, commits, body, screenshots, push,
-draft PR. It has no approval gate of its own; the one interruption is the
-commit confirmation, which belongs to `commit-message-generator` and passes
-through. Project checks are not run; CI is the check.
+draft PR — without asking. Project checks are not run; CI is the check.
 
 The draft status is the gate on **merge**, not on history: the commits and the
 push land before anyone sees the rendered body. Full procedure in

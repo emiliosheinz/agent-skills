@@ -97,13 +97,11 @@ contract emerged). Recommend — do not run it for the user.
      gates and commit.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
      otherwise use sequential subagent calls.
-   - **Set each implementer's model tier and effort** per SKILL.md Model & effort
-     selection, which bounds the cheap end: economy needs a `reuses` pointer **and** a
-     task that creates no new file and no new **exported type**, interface, or class.
+   - **Set each implementer's model tier and effort.** See `SKILL.md` → *Model & effort
+     selection*, which bounds the cheap end.
    - The subagent returns a **compact summary**: paths changed, task-gate result
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
-     diffs, or test dumps. Anything over ~100 lines goes to a file; the subagent
-     returns the path.
+     diffs, or test dumps. See `SKILL.md` → *Orchestration* for the output-size rule.
 4. Each task follows the **per-task loop** below.
 5. **Run the phase gate** once every task in the phase is green — the broader check
    (full test suite + static analysis: typecheck + lint + format) that confirms the
@@ -177,8 +175,9 @@ For each task:
    here, where a finding is accepted or dropped. Relocating a rule or replacing a
    primitive is **the same scope**, so a rejection may not cite "unrequested
    abstraction". A rejection that cites it carries no reason, and a rejection with no
-   reason is a gap. A finding that genuinely cannot be applied without new scope — a port,
-   layer, second implementation or extension point — is a **DESIGN-GAP** instead. Record
+   reason is a gap. A finding that genuinely cannot be applied without new scope —
+   a port, a layer, a second implementation, a flag or an extension point — is a
+   **DESIGN-GAP** instead. Record
    it against the design element, spend no cycle on it, and route it back to `design.md`
    the way `references/verification.md` routes a `SPEC-GAP`.
 
@@ -193,7 +192,8 @@ For each task:
    or badly arranged? **Scope** governs *whether* something is built. **Shape** governs
    *how* what is built is arranged. Moving a rule to the unit that owns its data, or
    giving a repeated-validation primitive a domain type, is **the same scope**: keep it.
-   Adding a port, a layer, or a config flag is **new scope**: leave it out. Confirm the
+   Adding a port, a layer, a second implementation, a flag or an extension point is
+   **new scope**: leave it out. Confirm the
    tests aren't shallow and nothing beyond the task crept in.
 6. **Commit atomically.** One task = one commit, only the files in the task
    definition (its `files` set). Conventional Commits, type matching the change
@@ -204,8 +204,9 @@ For each task:
 
 ### When subagents are unavailable (degrade, never fake)
 
-General rules: `references/review.md` → *Graceful degradation*. The structural axis adds
-these, because its value comes from the dispatch boundary:
+Run the general degradation rules per `references/review.md` → *Graceful degradation*,
+which holds the skipped-lens rule. The structural axis adds these, because its value
+comes from the dispatch boundary:
 
 - **Run it inline after a verbatim re-read** of the batch's changed files. Read the
   current bytes from disk.
@@ -215,7 +216,6 @@ these, because its value comes from the dispatch boundary:
   boundary to straddle, so the comparison cannot run at all.
 - **The reviewer and the implementer are now the same agent.** Record those tasks as
   reviewed **inline**; never as independently reviewed.
-- **A lens skipped for any reason is `recorded as a gap`**, never reported as reviewed.
 
 ### Verify the phase (independent subagents)
 
@@ -224,12 +224,8 @@ applicable verifiers over the phase's changes. Author ≠ verifier; fresh contex
 in parallel.
 
 **Which verifiers run is gated by size, and the size table lives in
-`references/verification.md` — read it there.**
-
-**Override:** a change classified a **one-way door** in `state.md` runs verifier 5
-regardless of size, scoped to the branches reachable from its `[critical]` ACs
-(`references/specify.md` for the door test, `references/verification.md` for the
-targeting rule).
+`references/verification.md` — read it there, including the reversibility override a
+one-way door in `state.md` triggers and what the `[critical]` marker scopes it to.**
 
 Collect the verifiers' verdicts into an overall PASS/FAIL plus a single
 severity-ranked gap list (Blocker → Major → Minor → Cosmetic).
@@ -248,8 +244,8 @@ If any verifier FAILs:
 escalate to the user with the delta and what was tried. Never loop forever or weaken
 a check.
 
-A `SPEC-GAP` verdict is not an implementer failure: record it against the AC ID and
-route it back to `spec.md` rather than spending a fix cycle on it.
+A `SPEC-GAP` verdict is not an implementer failure. See `references/verification.md`,
+which holds the `SPEC-GAP` verdict and routes its fix to `spec.md` instead of a fix cycle.
 
 **On PASS**, append a compact **Verification evidence** subsection in `state.md` —
 one row per AC (`AC ID → file:line → spec-defined expected value → covered`) plus the

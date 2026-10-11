@@ -93,7 +93,8 @@ Rules of thumb:
 - 1 scope: normal case.
 - 2–3 scopes: acceptable when the change is one logical unit that touches
   each area (a shared type used in api + ui, a rename that spans both).
-- 4+ scopes: split the commit. A commit that touches four scopes is almost
+- 4+ scopes: do not force a scope. Print the scope list and
+  suggest re-grouping. A commit that touches four scopes is almost
   always four commits pretending to be one, and reverting or bisecting it
   later is painful.
 

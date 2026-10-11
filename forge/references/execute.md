@@ -119,6 +119,21 @@ For each task:
    - Write the code and its co-located tests.
    - Test-first is encouraged. Derive tests from the spec's acceptance criteria (the
      expected *values*), not from the implementation.
+   - **Forge's own identifiers stay out of everything durable.** This is the only
+     statement of the rule; `plan.md` and `verification.md` point here. An AC ID
+     (`ONBD-03`), a task ID, a decision ID (`AD-07`), a slug, a `./.specs/...` path, or a
+     verdict name like `SPEC-GAP` belongs in no source file, comment, test name or
+     description, fixture, or commit message. `.specs/` is a working directory the
+     repository need not carry, so a reader a year from now has the code and nothing to
+     resolve the reference against: the comment points at nothing and the test name names
+     nothing.
+
+     State the thing itself instead. `// A declared pair cannot change the verdict, so
+     holding these in a contributor-editable file would be a knob that does nothing`,
+     rather than `// EVAL-04 forbids declared pairs from changing the verdict`. A test
+     says what behaviour it pins — `it("rejects a session whose IdP token was revoked")`,
+     rather than `it("AUTH-02")`. **The trace lives in `state.md`'s evidence rows**
+     (`AC ID → file:line`), which is precisely why the code does not have to carry it.
    - Write only what the task needs: no anticipatory code, no single-use abstractions,
      no unrequested configurability, no error handling for impossible states.
    - **Quick test-strength check.** If a plausible *wrong* implementation would still

@@ -32,13 +32,18 @@ quick/standard split from being purely subjective; the qualitative triggers deci
 
 | Phase | quick | standard | complex |
 |-------|-------|----------|---------|
-| **specify** | inline spec: problem + 1–3 acceptance criteria, a few lines (light domain map, no impact trace) | full spec + impact trace (observed dependents, integration, in-domain prior art), no dimension sweep | full spec + impact trace with cross-repo/service ripples + implicit-requirement dimension sweep + prior-art / external-reference pass |
+| **specify** | inline spec: problem + 1–3 acceptance criteria, a few lines (light domain map, no impact trace) | full spec + impact trace (observed dependents, integration, in-domain prior art), no dimension sweep | full spec + impact trace with cross-repo/service ripples + implicit-requirement dimension sweep |
 | **design** | skip | interfaces + error matrix + verification gates | + architecture diagram, data models, alternatives, risk register |
 | **plan** | skip (execute works the change as one task inline) | 1–2 phases of tasks with a parallelism assessment | several dependency-ordered phases, sequencing, execution risks |
 | **execute** | implement + the verifier set for this size | per phase: + the verifier set for this size, + a structural review inside the task loop | per phase: as standard, with the verifier set for `complex` |
 
 **The verifier set per size lives in `references/verification.md`, and only there.** This
 table says how deep each phase goes, not which verifiers run.
+
+**How far specify's outward search (A3) reaches per size lives in
+`references/specify.md` → *A3. Surface external references*, and only there.** Every
+size reaches outward; the size sets how far. Reading an absent cell above as "no
+outward pass" is what this note exists to prevent.
 
 Even at `quick`, specify still runs its interview/scan loop — it just reaches shared
 understanding fast and writes little. Sizing controls how much you *write*, never

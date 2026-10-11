@@ -30,7 +30,9 @@ solutions, sketch architecture, prioritize, or set scope here. Capture the world
 is.
 
 Three activities run together and interleave. None of them is "done" until you have
-shared understanding. Pursue all three until they are done.
+shared understanding. Pursue all three until they are done. Each states its own size
+calibration inline — A2's Move 2 and A3's outward search both narrow at `quick`. Size
+changes how far an activity reaches, never whether it runs.
 
 ### A1. Interview to shared understanding
 
@@ -43,8 +45,8 @@ is still unclear.
 2. **Walk the tree.**
    - Each answer either closes a branch or opens new ones.
    - When an answer surfaces something you did not know, follow that branch to
-     resolution before returning to the parent.
-   - Do not abandon a half-open branch to move on.
+     resolution before returning to the parent — a half-open branch is finished
+     or recorded as an open question, never simply left behind.
 3. **Always offer a recommended answer.** Propose a default the user can accept or
    override, derived from the codebase, prior conversation, or context.
 4. **Codebase first.** If the code, `./.specs/`, or git history can answer it, read
@@ -143,17 +145,36 @@ Investigate before deciding: note the conventions the code already shows rather 
 invent new ones. Ground every claim in something you actually read or ran. **What the
 code answers is not a question for the user — it feeds A1.**
 
-**Scan thoroughly** — the reuse analysis in `design.md` depends on it. Use the best
-search the toolchain offers. Prefer a syntax-aware/structural search when one is
-available, since a plain text/regex search misses how symbols are actually declared
-(arrow functions, methods, exported consts, decorators). Fall back to text search
-otherwise. Exclude generated, vendored, and build output so the scan does not surface
-false "prior art" from dependencies.
+**The scan is done when every bullet of Move 1 — and, at standard+, every heading of
+Move 2 — either holds an entry citing `file:line`, or names the search that came back
+empty (the pattern you ran and the paths you ran it over).** A heading left blank is a
+gap; "looked and found nothing here" is a finding. This is the stop condition: not a
+feeling of thoroughness, and not a line count.
+
+Search quality decides what that sweep can find, and the reuse analysis in `design.md`
+inherits it. Use the best search the toolchain offers. Prefer a syntax-aware/structural
+search when one is available, since a plain text/regex search misses how symbols are
+actually declared (arrow functions, methods, exported consts, decorators). Fall back to
+text search otherwise. Exclude generated, vendored, and build output so the scan does not
+surface false "prior art" from dependencies.
 
 ### A3. Surface external references
 
 Actively look outward, not just at URLs the user mentioned. The point is to avoid
 rebuilding something that already exists or repeating a known mistake.
+
+**Size calibration — this is the only statement of it; `references/sizing.md` points
+here rather than restating it.** How far you reach outward follows what the change
+risks:
+
+| Size | How far A3 reaches |
+|---|---|
+| `quick` | Follow the sources the user named, and stop. Run no search of your own: a ≤2-file change inside an established seam has no room for a competing approach to change. A named source still gets fetched and recorded under the rules below. |
+| `standard` | Search only for what is **directly applicable to the touched surface** — an established approach to this exact problem, or a standard that governs it. Stop at the first two applicable sources per category; the breadth list below is complex's job. |
+| `complex` | The full pass: every category in the list below. |
+
+A size that finds nothing to reach for records that, per the rules below. **An absent
+A3 section is a gap; an empty one with its grounds stated is complete.**
 
 When web tools are available (`WebSearch` + `WebFetch`), search for and **read**:
 

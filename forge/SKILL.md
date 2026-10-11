@@ -1,10 +1,8 @@
 ---
 name: forge
 description: >
-  Spec-driven development workflow that takes a change from problem to shipped, verified
-  code in four phases: specify, design, plan, execute — plus a `fix` command to correct
-  course mid-stream. Auto-sizes from one-line fixes to multi-repo refactors. Invoke with
-  `/forge specify|design|plan|execute|fix`.
+  Spec-driven development from problem to shipped, verified code in four phases:
+  `/forge specify|design|plan|execute`, plus `/forge fix` to correct course mid-stream.
   TRIGGER when: the user asks to ship/build/implement a feature, write a PRD or spec or
   requirements, design architecture, write a technical design, break work into tasks or
   an implementation plan, run TDD or write acceptance criteria, or correct/adjust an
@@ -45,6 +43,10 @@ before acting** — it is the step-by-step playbook for that phase.
 structure is and how a structural review runs. Three dispatches load it: `review.md`'s
 under-design lens, `execute.md`'s per-batch structural axis, and `fix.md`'s claim lenses.
 It is the only structural check set in forge.
+
+`references/glossary.md` indexes forge's load-bearing terms — the door verdict, blast
+radius, a seam, the three lies — and names where each one is defined. No phase dispatches
+it; read it when a pointer uses a term you cannot place.
 
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
@@ -228,7 +230,10 @@ and let a failed gate promote it — the same ratchet as sizing.
    next phase. The one documented exception is `fix`: for a *contained* correction it
    re-aligns the artifacts and runs the code delta end-to-end in the same invocation
    (see `references/fix.md`); a larger correction still only recommends the phase chain.
-6. `/create-rfc` and `/create-adr` are separate skills. Use `/create-rfc` when a
-   significant decision needs stakeholder alignment; use `/create-adr` when an
-   architectural choice deserves a standalone record. Reach for either at any point in
-   the flow.
+6. `/create-rfc` and `/create-adr` are separate skills. Use `/create-rfc` when a decision
+   is **still open and binds someone outside this change** — a one-way door per
+   `state.md`'s verdict, a contract another consumer already depends on, or an assumption
+   `spec.md` flagged as spec-invalidating if wrong. Use `/create-adr` once such a decision
+   is **settled**, so the next reader finds the reasoning instead of re-deriving it. A
+   decision this change can settle on its own belongs in `state.md`'s Decisions. Reach for
+   either at any point in the flow.

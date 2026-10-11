@@ -118,6 +118,12 @@ Use the file-writing tool, not a heredoc:
 /tmp/pr-body-<branch>.md
 ```
 
+**One line per paragraph, no hard wrapping.** A comment field on GitHub renders a
+single newline as a line break, so a body wrapped at 80 columns arrives as ragged
+short lines instead of justified prose. Let each paragraph, and each list item, run
+as one long line and separate them with a blank line. This applies to the body file
+only — every other file this skill touches wraps normally.
+
 **The title** is written fresh from the change, as a short sentence a person
 would say. Not the conventional-commit subject — `feat(auth): add token
 refresh` is a good commit subject and a poor PR title, and a multi-commit PR has

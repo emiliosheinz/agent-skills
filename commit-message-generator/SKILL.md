@@ -95,7 +95,8 @@ what is actually staged now. Then:
    - 1 scope → use it as-is (lowercase, short noun).
    - 2 scopes touching one logical change → comma-separated
      (`fix(api,ui):`).
-   - **>3 scopes** → do not force a scope. See *Gotchas* below.
+   - **>3 scopes** → print the scope list and suggest re-grouping, rather
+     than forcing one scope. See *Gotchas* below.
    - Root-only files → omit scope.
    - Generic top-level folder (`src`, `lib`, `app`) → look one level deeper
      in the file list for a meaningful scope (e.g. `src/api/...` → `api`).

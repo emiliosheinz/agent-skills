@@ -1,9 +1,8 @@
 ---
 name: pr
 description: >
-  Opens a pull request whose body a reviewer can scan in under a minute — the
-  problem, how it was solved, why that way, with visuals carrying the
-  explanation instead of walls of prose. Commits, pushes, and opens a draft PR.
+  Commits, pushes, and opens a draft pull request whose body a reviewer can scan
+  in under a minute: the problem, how it was solved, why that way.
   TRIGGER when: the user asks to open a PR, raise a pull request, submit work
   for review, write a PR body for work that has no PR yet, or says "open a pr",
   "pr this", "ship this for review". SKIP for: reviewing a PR's code or diff,

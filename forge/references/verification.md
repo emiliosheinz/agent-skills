@@ -26,7 +26,8 @@ execute → spawn N verifiers in parallel (size-gated)
 ## The five verifiers
 
 Run by independent subagents. Give each only what it needs (paths, AC IDs, the
-design's gates, the commit/diff under review). They are stateless.
+design's gates, the commit/diff under review, and `references/plan.md` for verifier 3,
+which defines the five test rules it rejects against). They are stateless.
 
 1. **Test suite + regression guard** *(automated)* — run the full suite. All pass, or
    report each failure by test name + file:line. Then inspect the task's own diff and
@@ -65,12 +66,11 @@ design's gates, the commit/diff under review). They are stateless.
    field. Asserting that a method was *called* (spy/mock/call-count) is never a
    substitute for asserting the resulting state.
 
-   **The three lies, by name.** Reject a test that is **tautological** (the assertion
-   restates the implementation), **structure-sensitive** (asserts a method was called
-   rather than the resulting state), or **cannot-fail** (no input makes it false) — the
-   same words `references/plan.md` uses when the test is planned. Also reject a mock
-   placed anywhere but a system boundary, and an expected value referencing a symbol
-   defined in the files the task changed.
+   **The three lies, by name.** Reject a test that is **tautological**,
+   **structure-sensitive** or **cannot-fail**, and reject a test that breaks **the
+   mocking boundary** or **the independent-expected-value rule**. Read
+   `references/plan.md` for all five definitions — the same words it uses when the test
+   is planned.
 
    **Reverse (necessity).** For each test touched in the phase diff, map it back to an
    AC ID, a **design element**, a spec edge case, or a done-when criterion —

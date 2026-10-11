@@ -72,17 +72,7 @@ Read what is available; none is required.
 
 ## Step 2 — Commits
 
-If anything is uncommitted:
-
-1. **Invoke the `commit-message-generator` skill** with the Skill tool. It
-   writes conventional commits and groups unstaged work into a sequence, which
-   beats one commit of everything, and commits without asking. It refuses
-   outright above 4 groups — in that case follow its instruction to re-group
-   rather than working around it.
-2. **If the Skill tool reports it is not installed**, fall back: stage
-   everything, make one commit with a conventional-commit subject, and **say in
-   the final report that the fallback ran** so the user knows grouping did not
-   happen.
+If anything is uncommitted, commit it, without asking.
 
 Never amend an existing commit. Never rewrite history on the branch.
 

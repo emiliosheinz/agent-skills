@@ -137,8 +137,9 @@ conventions-only mode costs one read of a section the spec already carries. `qui
 structural check and stays cheap.
 
 **Reversibility overrides the size gate.** A change classified a **one-way door**
-(`references/specify.md`) triggers verifier 5 regardless of size, with extra mutations (at
-least 5, covering all branches of the irreversible path). The door verdict decides
+(`references/specify.md`) forces verifiers 3 and 5 regardless of size — at `quick` the
+override adds both; at `standard` only 5, since 3 already runs there — with extra
+mutations for 5 (at least 5, covering all branches of the irreversible path). The door verdict decides
 *whether* 5 runs; the per-AC `[critical]` marker decides *where* it points — mutate the
 branches reachable from the ACs carrying the irreversible outcome. A one-way door with no
 marked AC is a **gap**: record it and ask the spec, rather than mutating everything or

@@ -224,12 +224,8 @@ applicable verifiers over the phase's changes. Author ≠ verifier; fresh contex
 in parallel.
 
 **Which verifiers run is gated by size, and the size table lives in
-`references/verification.md` — read it there.**
-
-**Override:** a change classified a **one-way door** in `state.md` runs verifier 5
-regardless of size, scoped to the branches reachable from its `[critical]` ACs
-(`references/specify.md` for the door test, `references/verification.md` for the
-targeting rule).
+`references/verification.md` — read it there, including the reversibility override a
+one-way door in `state.md` triggers and what the `[critical]` marker scopes it to.**
 
 Collect the verifiers' verdicts into an overall PASS/FAIL plus a single
 severity-ranked gap list (Blocker → Major → Minor → Cosmetic).

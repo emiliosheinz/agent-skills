@@ -12,9 +12,6 @@ Invoke this skill when you want to:
 - Get a body written that a reviewer can actually use.
 - Commit, push and open a draft in one step.
 
-Reach for **`/commit-message-generator`** instead when you only want commits
-and no PR.
-
 ## Requirements
 
 - `git`, and `gh` authenticated against the remote.

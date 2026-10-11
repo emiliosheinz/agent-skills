@@ -7,8 +7,8 @@ description: >
   for review, write a PR body for work that has no PR yet, or says "open a pr",
   "pr this", "ship this for review". SKIP for: reviewing a PR's code or diff,
   updating or re-describing a PR that already exists, addressing review
-  comments on a PR, writing a commit message alone (use
-  `/commit-message-generator`), or pushing a branch without opening a PR.
+  comments on a PR, writing a commit message alone, or pushing a branch without
+  opening a PR.
 metadata:
   author: emiliosheinz
   version: 1.1.0

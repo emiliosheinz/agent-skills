@@ -244,8 +244,8 @@ If any verifier FAILs:
 escalate to the user with the delta and what was tried. Never loop forever or weaken
 a check.
 
-A `SPEC-GAP` verdict is not an implementer failure: record it against the AC ID and
-route it back to `spec.md` rather than spending a fix cycle on it.
+A `SPEC-GAP` verdict is not an implementer failure. See `references/verification.md`,
+which holds the `SPEC-GAP` verdict and routes its fix to `spec.md` instead of a fix cycle.
 
 **On PASS**, append a compact **Verification evidence** subsection in `state.md` —
 one row per AC (`AC ID → file:line → spec-defined expected value → covered`) plus the

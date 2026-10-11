@@ -9,8 +9,9 @@ Commit, push, and open a draft PR.
 - Step 2 — Commits
 - Step 3 — Capability and screenshots
 - Step 4 — Write the body
-- Step 5 — Push and open
-- Step 6 — Report
+- Step 5 — Check the draft
+- Step 6 — Push and open
+- Step 7 — Report
 - Failure handling
 
 `open` runs start to finish without asking. The draft status is the gate on
@@ -122,7 +123,22 @@ would say. Not the conventional-commit subject — `feat(auth): add token
 refresh` is a good commit subject and a poor PR title, and a multi-commit PR has
 no single subject to borrow. Same register as the body.
 
-## Step 5 — Push and open
+## Step 5 — Check the draft
+
+Do not skip this. Writing the body and judging it are different jobs, and the
+second one is the one that gets dropped under pressure.
+
+Run both checks in [writing-the-body.md](writing-the-body.md):
+
+1. **The thirteen patterns.** Walk the table row by row against the draft. Name
+   the ones that fire. If any fire, rewrite and walk it again.
+2. **The scan test.** Re-read only the first sentence of each paragraph, the
+   bolded words and the views, and confirm that alone answers what changed and
+   why.
+
+A draft that has not been through both does not get pushed.
+
+## Step 6 — Push and open
 
 ```bash
 git push -u origin "$BRANCH"
@@ -143,7 +159,7 @@ the absolute path `show-me` returned:
 
 Always `--draft`. Delete the body file once `gh` has succeeded.
 
-## Step 6 — Report
+## Step 7 — Report
 
 1. The PR URL.
 2. Whether the commit fallback ran, if it did.

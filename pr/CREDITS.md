@@ -17,8 +17,9 @@ live in `show-me`'s catalogue with the rest.
 
 ## AI slop patterns
 
-The twelve patterns in `references/writing-the-body.md` are selected from a
-larger catalogue of writing-quality failures, itself synthesized from:
+Twelve of the thirteen patterns in `references/writing-the-body.md` are
+selected from a larger catalogue of writing-quality failures, itself
+synthesized from:
 
 - Shaib et al., *Measuring AI "Slop" in Text* (2025 preprint)
 - Pew Research Center's 2026 analysis of writing-pattern shifts across 490,000
@@ -27,3 +28,8 @@ larger catalogue of writing-quality failures, itself synthesized from:
 
 Only the patterns that can fire in a pull request description were kept. The
 rest concern essays, citations and creative writing.
+
+The thirteenth, *Narrating the process*, is not from that research. It was
+added after this skill wrote a body that spent a paragraph on how the change
+had been reviewed — a failure mode specific to a PR written by an agent, which
+a catalogue drawn from human prose does not cover.

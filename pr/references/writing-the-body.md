@@ -92,7 +92,7 @@ Four bans:
 
 ## Patterns that read as machine-written
 
-Check the draft against these twelve. If any fire, rewrite and re-check; only
+Check the draft against these thirteen. If any fire, rewrite and re-check; only
 then open the PR.
 
 | Pattern | What it looks like | Instead |
@@ -103,7 +103,8 @@ then open the PR.
 | Formulaic headings | "Overview", "Key Changes", "Benefits", "Next Steps". | Headings that state the actual finding, or none. |
 | Empty intensifiers | "significantly faster", "greatly simplifies". | The number, or nothing. |
 | Corporate cheerleading | "unlocks", "empowers", "drives", "delivers value". | The concrete result. |
-| Padding through paraphrase | Each sentence restates the last with different words. | Keep the clearest version. |
+| Padding through paraphrase | The same point appears twice anywhere in the body — adjacent sentences, or a paragraph and a bullet. | Keep the clearest version; delete the other. |
+| Narrating the process | How the change was made: what was reviewed, how many passes, what tooling ran. | Cut it. The reviewer is reviewing the change, not the method. |
 | Interchangeable content | A paragraph that would fit almost any PR in any repo. | The specific constraint, number or decision. |
 | Over-signposting | "First", "Second", "Finally", "Let's look at". | Let the content carry the order. |
 | Redundant summary | A closing paragraph repeating the body. | End on the implication. |
@@ -173,6 +174,11 @@ genuinely qualify, each one a consequence.
 Each entry names a consequence, not a request. "The retry path can
 double-submit if the first request succeeded but timed out" is the section
 working. "Please review carefully" is not.
+
+Test every entry against the criterion above before keeping it: if being wrong
+there would cost no more than a revert, it is not a sensitive part. A known
+gap, a follow-up, or a note about the change's own authorship belongs in the
+prose or nowhere.
 
 When the change ran through `forge`, `state.md`'s door verdict and `spec.md`'s
 blast radius already carry this. Read them rather than re-deriving.

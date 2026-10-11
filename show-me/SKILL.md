@@ -1,10 +1,9 @@
 ---
 name: show-me
 description: >
-  Produces a compact visual representation of a topic — pseudocode, call tree,
-  component tree, file tree, Mermaid diagram, a diff of any of those shapes, or
-  a screenshot of a running app — so a reader sees the shape instead of reading
-  a wall of prose. TRIGGER when: the user says "show me", asks to visualize or
+  Produces a compact visual of a topic — pseudocode, call tree, component tree,
+  file tree, Mermaid diagram, a diff of any of those shapes, or a screenshot of
+  a running app. TRIGGER when: the user says "show me", asks to visualize or
   diagram something, asks what the shape or structure or flow of something is,
   or asks for a screenshot of the app; and when another skill needs a visual
   for a document it is writing. SKIP for: prose explanations the user asked for

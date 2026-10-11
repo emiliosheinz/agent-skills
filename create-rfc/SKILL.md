@@ -1,9 +1,9 @@
 ---
 name: create-rfc
 description: >
-  Creates structured Request for Comments (RFC) documents that propose a change,
-  compare alternatives against explicit decision criteria, and drive aligned
-  decisions across teams. TRIGGER when: the user asks to create or write an RFC,
+  Writes a Request for Comments (RFC): proposes a change, compares alternatives
+  against explicit decision criteria, and drives a decision across teams.
+  TRIGGER when: the user asks to create or write an RFC,
   draft a proposal, compare options, align stakeholders, get approval for a
   significant change, or propose a technical/process/product/vendor/policy
   change before deciding. SKIP for: decisions that have already been made (use

@@ -1,9 +1,8 @@
 ---
 name: create-adr
 description: >
-  Creates Architecture Decision Records (ADRs) — concise, durable documents that
-  capture the context, decision, and consequences of significant architectural
-  choices so future team members understand *why* things are the way they are.
+  Writes an Architecture Decision Record (ADR) for a choice already made: its
+  context, the decision, and the consequences.
   TRIGGER when: the user asks to create or write an ADR, document a decision,
   record why something was chosen, capture an architectural decision, or preserve
   the reasoning behind a finalized technical choice. SKIP for: decisions that

@@ -1,6 +1,13 @@
 ---
 name: grill-me
-description: Grill the user relentlessly about a plan, decision, or idea through structured AskUserQuestion rounds. Use when the user wants to stress-test their thinking, or uses any 'grill' or 'grill me' trigger phrases.
+description: >
+  Grills the user about a plan, decision, or idea through structured
+  AskUserQuestion rounds, until every branch of it is settled.
+  TRIGGER when: the user says "grill me" or "grill", asks to stress-test or
+  poke holes in their thinking, asks to be challenged on a plan or decision,
+  or asks what they have not thought of. SKIP for: questions the codebase or
+  the web can answer, capturing requirements for a change (use
+  `/forge specify`), and a decision already made (use `/create-adr`).
 ---
 
 Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.

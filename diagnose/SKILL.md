@@ -1,12 +1,10 @@
 ---
 name: diagnose
 description: >
-  Root-causes complex bugs through a structured loop and saves a verified fix proposal —
-  it diagnoses, it never fixes. Builds a fast deterministic feedback loop, reproduces,
-  then probes ranked falsifiable hypotheses with parallel subagents and confirms the
-  cause adversarially before writing the report. Use when a bug, error, crash, exception,
-  failing or flaky test, regression, or unexplained behavior needs root-causing —
-  especially when it is intermittent, subtle, cross-system, or resisted a first fix.
+  Root-causes a bug and saves a verified fix proposal — it diagnoses, it never fixes.
+  Use when a bug, error, crash, exception, failing or flaky test, regression, or
+  unexplained behavior needs root-causing — especially when it is intermittent, subtle,
+  cross-system, or resisted a first fix.
 ---
 
 # Diagnose

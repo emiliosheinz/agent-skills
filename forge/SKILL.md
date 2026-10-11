@@ -1,10 +1,8 @@
 ---
 name: forge
 description: >
-  Spec-driven development workflow that takes a change from problem to shipped, verified
-  code in four phases: specify, design, plan, execute — plus a `fix` command to correct
-  course mid-stream. Auto-sizes from one-line fixes to multi-repo refactors. Invoke with
-  `/forge specify|design|plan|execute|fix`.
+  Spec-driven development from problem to shipped, verified code in four phases:
+  `/forge specify|design|plan|execute`, plus `/forge fix` to correct course mid-stream.
   TRIGGER when: the user asks to ship/build/implement a feature, write a PRD or spec or
   requirements, design architecture, write a technical design, break work into tasks or
   an implementation plan, run TDD or write acceptance criteria, or correct/adjust an

@@ -20,7 +20,7 @@ What is being built and the execution approach. Links: spec.md, design.md.
 ### PREFIX-P1-01 — <one-line action> `[P]` <!-- [P] — per-test in-memory DB, see <test file> -->
 - **depends-on:** none
 - **AC-trace:** PREFIX-01 <!-- an AC ID, or a design element: component / seam / recorded convention -->
-- **files:** <the paths this task may touch; globs ok, "wherever needed" is not>
+- **files:** <the exact paths this task may touch; globs ok>
 - **tests:** <co-located tests; unit for logic, e2e for routes>
 - **reuses:** <required at standard+ — a path, a path:line, or the literal `no-precedent`; blank fails the plan gate>
 - **gate:** `<deterministic command, project's real runner, clean iff the task succeeded>`

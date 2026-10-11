@@ -74,7 +74,7 @@ register form, token storage, API client, route guard.
 | **action** | One line a fresh agent can act on. |
 | **depends-on** | Task IDs that must finish first. Keep minimal. Tasks in the same phase that depend on each other cannot both be `[P]`. |
 | **AC-trace** | The acceptance-criterion ID(s) from `spec.md` this task satisfies. Every task traces to at least one AC. (Enabling work traces to the task it unblocks.) |
-| **files** | The paths this task is allowed to touch. Three mechanisms need it: the structural axis attributes findings per task, the tamper check scopes its revert, and `execute` batches by locality (its commit step already assumes it). A glob is fine; "wherever it needs to" is not. |
+| **files** | The paths this task is allowed to touch. Three mechanisms need it: the structural axis attributes findings per task, the tamper check scopes its revert, and `execute` batches by locality (its commit step already assumes it). A glob is fine; a scope like "wherever it needs to" fails the plan gate. |
 | **tests** | The tests written **within this task**, co-located with the code it creates — never deferred to a later task. Use the highest test level the task's layer requires (unit for logic, e2e for routes/controllers). Must not be tautological, structure-sensitive, or cannot-fail — see *How a test lies* below. |
 | **gate** | A deterministic command that returns clean iff the task succeeded. Use the project's real runner (see "learn the project's real test setup" above), not an assumed one. |
 | **done-when** | A pass/fail checklist, each item true or false, ending with "gate passes: `<command>`". |
@@ -112,8 +112,8 @@ one vocabulary.
   output to its own expression or to a constant the code also reads, so it passes for any
   implementation including a wrong one.
 - **structure-sensitive** — it checks *shape* rather than *outcome*: that a method was
-  called, how often, in what order. It breaks on a harmless refactor and survives a
-  behavioural bug, which is backwards.
+  called, how often, in what order. A harmless refactor breaks it; a behavioural bug does
+  not.
 - **cannot-fail** — no input makes the assertion false: an empty loop body, a `try` that
   swallows, `expect(result).toBeDefined()`, a snapshot written from current output.
 
@@ -157,7 +157,7 @@ batches — `execute` runs it in the main agent. This is exactly what `execute` 
 - No `[P]` task depends on another task in the same phase.
 - Every task has co-located tests, a real gate (a project-real command), and an anchor:
   an AC ID **or** a **design element** — a named component, a seam, or a recorded
-  convention. A task anchored to neither is scope creep; drop it or find its anchor.
+  convention. A task with neither anchor is scope creep; drop it or find its anchor.
 - Every `[P]` / seq call cites its parallelism evidence.
 - Each phase has a goal and a phase gate.
 

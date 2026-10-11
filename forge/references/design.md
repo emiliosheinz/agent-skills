@@ -70,13 +70,12 @@ The design must survive an implementation rewrite.
 
 ## State a verdict per observed convention
 
-`spec.md`'s `Conventions observed` section is an input, not background reading. Design
-carries **one verdict per listed convention** — all six rows, never optional: either
-**conformant**, or **deviating with a stated reason**. Execute's structural axis re-checks
-**only the deviations**.
+`spec.md`'s `Conventions observed` section is an input. Design carries **one verdict per
+listed convention** — all six rows, always: either **conformant**, or **deviating with a
+stated reason**. Execute's structural axis re-checks **only the deviations**.
 
-**A deviation with no stated reason is a finding**, not a style choice — it is how a
-convention gets dropped silently. Record verdicts in the design's conventions table by
+**A deviation with no stated reason is a finding.** It is how a convention gets dropped
+silently. Record verdicts in the design's conventions table by
 category and `file:line`; never restate the convention text.
 
 ## Apply active decisions
@@ -132,9 +131,8 @@ reviewer subagents that attack it from lenses you're blind to: requirement cover
 failure-mode/risk, simplicity/reuse, and **under-design**. Run the review per
 `references/review.md` (size-gated), fold the ranked delta back into the draft, and
 escalate any genuine architecture decision to the user. This catches an orphaned AC, an
-over-built component, **or a weak arrangement** here instead of at execute time — and a
-structural finding raised here is a document edit, where the same defect found after the
-code is written is a rewrite.
+over-built component, **or a weak arrangement** at design time. A structural finding here
+costs a document edit. The same defect found after the code is written costs a rewrite.
 
 ## Write and route
 

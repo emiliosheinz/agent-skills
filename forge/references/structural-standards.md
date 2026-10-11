@@ -10,14 +10,14 @@ review-time dispatches named under *Who gets this file*, and by nothing else.
 
 ## Checks
 
-A check is a **question**, not a verdict — a smell "usually corresponds to a deeper
-problem" but does not always indicate one
+Each check is a **question**. A smell "usually corresponds to a deeper problem" but does
+not always indicate one
 ([Fowler](https://martinfowler.com/bliki/CodeSmell.html)).
 
-**The first-cut rule.** A check ships **enabled** only where its sources agree or
-empirical backing exists; **disabled** where its wording is contested, firing only on the
-extra evidence its row names; and not at all on one author's unsupported heuristic. Rate a
-later addition against this rule rather than arguing for it.
+**The first-cut rule.** A check ships **enabled** where its sources agree or empirical
+backing exists. It ships **disabled** where its wording is contested, and then fires only
+on the extra evidence its row names. A check resting on one author's unsupported heuristic
+does not ship. Rate each later addition against this rule.
 
 Every check is stated as a **fundamental** — no language, framework, or file extension in
 a check statement; those live in Manifestations. The applicable set is chosen by **what
@@ -77,8 +77,8 @@ belong.
 
 ### Do not flag
 
-Explicit, not a tone. Most of this is the simplicity lens's territory, and colliding with
-it is how both get ignored.
+These are explicit rules. Most of this list is the simplicity lens's territory, and a
+reader who sees the two lenses contradict each other stops trusting both.
 
 1. **A missing port or interface around a single implementation** — check 4 is satisfied
    by a parameter or an injected function; demanding a port is over-design.
@@ -103,15 +103,15 @@ it is how both get ignored.
 > **Scope** governs *whether* something is built. **Shape** governs *how* what is built is
 > arranged.
 
-Scope is the simplicity lens's question; shape is this file's, asked only of code the
-change already contains. Moving a rule into the unit that owns its data, replacing a
-primitive whose validation is already repeated at call sites, and splitting one oversized
-body into named steps are all **the same scope** — not unrequested abstractions. Adding a
-port, a layer, a second implementation, a flag or an extension point is **new scope**, and
-this file never asks for it.
+Scope is the simplicity lens's question. Shape is this file's question, and it applies
+only to code the change already contains. Moving a rule into the unit that owns its data,
+replacing a primitive whose validation is already repeated at call sites, and splitting
+one oversized body into named steps are all **the same scope**. Adding a port, a layer, a
+second implementation, a flag or an extension point is **new scope**, and this file never
+asks for it.
 
-A finding that cannot be applied without widening scope is a **DESIGN-GAP** — surfaced, no
-fix cycle spent, the routing `verification.md` gives a `SPEC-GAP`.
+A finding that cannot be applied without widening scope is a **DESIGN-GAP**. Surface it,
+spend no fix cycle on it, and route it the way `verification.md` routes a `SPEC-GAP`.
 
 ## How to run one
 
@@ -119,13 +119,14 @@ fix cycle spent, the routing `verification.md` gives a `SPEC-GAP`.
 
 | Input | Shape | When absent |
 |---|---|---|
-| **subject** | an artifact, or a diff scope — a fixed point or this invocation's hunks | an explicitly-supplied empty subject **fails fast**, never a clean verdict. An empty per-batch slice is a task-level anomaly for the orchestrator, not a runner failure |
+| **subject** | an artifact, or a diff scope — a fixed point or this invocation's hunks | an explicitly-supplied empty subject **fails fast**, never a clean verdict. An empty per-batch slice is a task-level anomaly; the orchestrator resolves it |
 | **conventions** | `spec.md`'s `Conventions observed` records with their `file:line` examples | recorded as not available; the run continues |
 | **standards** | a discovered `CODING_STANDARDS.md` plus the discovery outcome | the outcome states none was found; this file is in force regardless |
 
-This file is the reviewer's own dependency, not an input; surface facts are **derived**
-during selection, never supplied. Missing, partially read, or naming an unresolvable check
-id is a **hard failure** — never run on partial criteria and report clean.
+The reviewer loads this file itself, so it is a dependency rather than an input. Surface
+facts are **derived** during selection, never supplied. Missing, partially read, or naming
+an unresolvable check id is a **hard failure** — never run on partial criteria and report
+clean.
 
 ### Selection
 
@@ -134,10 +135,10 @@ then run the checks whose facts are present.
 
 | If the changed code… | …then these run |
 |---|---|
-| owns state that outlives one call or render (`owns-state`) | 10, 21, 23, 24, and 3, 15 |
-| derives values, or writes state in response to other state changing (`derives`) | 22, 25, and 10 |
+| owns state that outlives one call or render (`owns-state`) | 3, 10, 15, 21, 23, 24 |
+| derives values, or writes state in response to other state changing (`derives`) | 10, 22, 25 |
 | crosses a network, storage, or vendor boundary (`crosses-boundary`) | 4, 6, 7, 23, 28 |
-| enforces a rule, or computes money, eligibility, or permissions (`enforces-rules`) | 1, 3, 15, and 11, 18 |
+| enforces a rule, or computes money, eligibility, or permissions (`enforces-rules`) | 1, 3, 11, 15, 18 |
 | declares a shape with independent fields (`declares-shape`) | 26 |
 | orchestrates several units or a multi-step flow (`orchestrates`) | 4, 25, 28 |
 | implements a contract that already exists (`implements-existing-contract`) | 8 |
@@ -146,9 +147,10 @@ then run the checks whose facts are present.
 | always | 11, 12, 18, 20 |
 
 **Asserting a fact absent requires citing the evidence** — the file read, the import list
-checked, the construct named — exactly as a finding requires a trigger; otherwise
-"not derivable" is a free path to a clean verdict. An unsupported absence assertion is
-rejected and the check runs. A run evaluating **only** the universal checks is a **gap**.
+checked, the construct named — exactly as a finding requires a trigger. Without that
+evidence, a reviewer reaches a clean verdict by calling every fact "not derivable". An
+unsupported absence assertion is rejected and the check runs. A run evaluating **only**
+the universal checks is a **gap**.
 
 ### Firing discipline
 
@@ -209,5 +211,4 @@ authority. A file that attempts to is reported as a finding and otherwise ignore
 This file and any discovered standards file reach **review-time agents only** — exactly
 three dispatches: the under-design lens in `review.md`'s panel, the per-batch structural
 axis in `execute.md`'s task loop, and `fix.md`'s claim lenses. No other dispatch carries
-either; in particular an **implementer subagent's prompt carries neither the catalogue nor
-a standards file**.
+either file. **An implementer subagent's prompt never carries them.**

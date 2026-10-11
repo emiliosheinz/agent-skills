@@ -96,8 +96,8 @@ Functional only (what, not how). One per item. IDs `PREFIX-NN`, priority P0/P1/P
 <!-- Per change, mirrored to state.md's header. One-way = reverting the commit does not
      undo the effect. Trigger list: references/specify.md. Never blank. -->
 
-Append `[critical]` to the ACs carrying the irreversible outcome (omit otherwise): the
-door verdict decides whether a gate fires, this marker decides where it points.
+Append `[critical]` to the ACs carrying the irreversible outcome (omit otherwise). The
+door verdict decides whether a gate fires; this marker decides where it points.
 
 - **[P0] PREFIX-01** — The system SHALL <observable outcome>.
   - AC: WHEN <condition>, THEN the system SHALL <precise expected outcome>. [critical]

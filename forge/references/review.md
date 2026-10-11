@@ -62,7 +62,7 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
    actually *proves* it, not a gate that merely names it. Reverse: every component, data
    model, and decision traces back to a requirement **or to a design element** — a named
    component, a seam, or a recorded convention. Both are legitimate anchors; an element
-   anchored to **neither** is scope creep. No AC orphaned in either direction. Reference
+   with **neither** is scope creep. No AC orphaned in either direction. Reference
    AC IDs; never restate the criterion text. Given: the drafted `design.md` plus the
    spec's AC IDs and gates.
 2. **Failure-mode / risk** — attack the design where it breaks in production: security
@@ -83,18 +83,20 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
    (deleting duplicates code across two or more callers — say so and move on).
    Given: the `design.md` plus the spec's codebase findings.
 4. **Under-design** — the symmetric lens: is what the design *does* build arranged well?
-   Criteria are **not** restated here — read `references/structural-standards.md` for the
-   checks, selection, firing discipline, do-not-flag list and scope/shape boundary, and
-   report the verdict delta it defines. At minimum the verdict covers: one responsibility
-   per component nameable without "and"; dependency direction across each named boundary;
-   domain concepts carried by primitives; consistency boundaries; where rules live
-   relative to transport; and units mixing abstraction levels. Given: the drafted
+   Read `references/structural-standards.md` for the checks, selection, firing discipline,
+   do-not-flag list and scope/shape boundary, and report the verdict delta it defines.
+   That file holds the criteria; this one never repeats them. At minimum the verdict
+   covers: one responsibility per component nameable without "and"; dependency direction
+   across each named boundary; domain concepts carried by primitives; consistency
+   boundaries; where rules live relative to transport; and units mixing abstraction
+   levels. Given: the drafted
    `design.md`, the spec's `Conventions observed` section, and any discovered standards
    file.
 
 ### The scope/shape boundary (lenses 3 and 4 both carry it)
 
-Lens 3 argues for less, lens 4 for better-arranged; they collide unless both carry it:
+Lens 3 argues for less code; lens 4 argues for better-arranged code. Both carry this
+boundary, so their findings cannot contradict each other:
 
 > **Scope** governs *whether* something is built. **Shape** governs *how* what is built
 > is arranged.

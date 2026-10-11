@@ -48,8 +48,8 @@ Size can only increase. A downgrade requires your confirmation. See
 two-way door — one-way meaning reverting the commit does not undo the effect (destructive
 migration, bulk delete, mass communication, money movement, an auth boundary, a broken
 contract, no revert path). A one-way door runs the heavier reviewers and the mutation
-sensor however small it is: a two-line change that emails every user deserves more
-scrutiny than a sixty-file rename.
+sensor at any size: a two-line change that emails every user deserves more scrutiny than a
+sixty-file rename.
 
 ## What you get out of forge
 
@@ -62,8 +62,8 @@ scrutiny than a sixty-file rename.
   modes, over-engineering, **under-design**. Size-gated, and the fixes land in the
   artifact. Catches a vague AC or an orphaned requirement at authoring time instead of at
   execute time.
-- **A structural baseline, not just a simplicity one.** Three of forge's voices argue for
-  less code; a fourth design lens asks whether what *is* built is arranged well — where
+- **A structural baseline.** Three of forge's voices argue for less code; a fourth design
+  lens asks whether what *is* built is arranged well — where
   a rule lives, which way a dependency points, whether a domain concept is a bare
   primitive, whether one body mixes abstraction levels. Its criteria live in one sourced
   file, `references/structural-standards.md`, extensible per project via

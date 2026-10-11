@@ -105,10 +105,10 @@ categories, always all six:
 
 Rules:
 
-- **Every entry cites a `file:line`.** Without an example it is an opinion, not an
-  observation.
+- **Every entry cites a `file:line`.** Without an example the entry is an opinion.
 - **A category with nothing observed names where it looked** — "none observed (searched
-  `src/**/*.ts`, `test/`)". Six bare markers are otherwise the cheapest green at `quick`.
+  `src/**/*.ts`, `test/`)". Otherwise a `quick` run can mark all six categories empty
+  without searching.
 - **At `quick`, one record per category maximum** — the light scan still fills all six
   rows, stopping at the first clear example of each.
 - **Regenerated whole on a re-run**, so re-running a phase is idempotent.
@@ -227,9 +227,8 @@ genuinely missing:
   → `ONBD`). Sequential: `ONBD-01`, `ONBD-02`.
 - Priorities: **P0** launch blocker · **P1** high value · **P2** nice to have.
 - **Classify the change one-way or two-way door, and record the verdict.** Scrutiny
-  follows what a mistake costs, not how many files it touches. A **one-way door** is a
-  change whose effect cannot be undone by reverting the commit. Triggers, any one firing
-  it:
+  follows what a mistake costs. A **one-way door** is a change whose effect cannot be
+  undone by reverting the commit. Any one of these triggers fires it:
   - destructive migration, or any irreversible data loss;
   - bulk delete;
   - mass communication to real users;
@@ -239,13 +238,12 @@ genuinely missing:
   - any action with **no revert path**.
 
   Record the verdict **per change** in `state.md`'s header table with the triggers that
-  fired. Two-way is the normal case and is still recorded — the field is never blank,
-  since blank reads as unconsidered.
+  fired. Two-way is the normal case and is still recorded: the field is never blank,
+  because a blank field reads as unconsidered.
 
-  **Retain it per AC too**, wherever a consumer scopes work to a path: append
-  **`[critical]`** to the ACs carrying the irreversible outcome. The door verdict says
-  *this needs more scrutiny*; the per-AC marker says *scope it here*, which is what
-  execute's mutation sensor aims at.
+  **Mark the ACs as well.** Append **`[critical]`** to the ACs carrying the irreversible
+  outcome. The door verdict says *this needs more scrutiny*; the per-AC marker says *scope
+  it here*, which is where execute's mutation sensor aims.
 
   Consumers key on the door verdict for whether they fire and on the per-AC marker for
   what they scope to: see `references/verification.md`, `review.md`, `execute.md` and

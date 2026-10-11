@@ -77,7 +77,7 @@ design's gates, the commit/diff under review). They are stateless.
    `file:line + assertion → anchor → keep?`. A design element is a named component, a
    seam, or a recorded convention, and it is a legitimate anchor in its own right:
    structural work has no AC of its own and must not be deleted for lacking one. An item
-   anchored to **neither** kind is still scope creep → remove. Reject speculative
+   with **neither** anchor is still scope creep → remove. Reject speculative
    what-if tests, tests of framework/library behavior, and cross-layer duplicate
    assertions.
 
@@ -95,17 +95,17 @@ design's gates, the commit/diff under review). They are stateless.
    time.
 
    **Conventions-only mode** (`quick`, or any size with no design). Compare the diff
-   against `spec.md`'s `Conventions observed` section and nothing else. Three exclusions
-   define it, and they are what keep `quick` cheap: it **reads no design document**,
-   **loads no structural catalogue**, and **dispatches no subagent** — it runs inline.
+   against `spec.md`'s `Conventions observed` section and nothing else. It **reads no
+   design document**, **loads no structural catalogue**, and **dispatches no subagent**:
+   it runs inline. Those three exclusions keep `quick` cheap.
 
    Report each category as conformant or deviating, with the deviating `file:line`. A
    section present with nothing observed passes and says so; a none-observed marker that
    does not name where it looked is a finding.
 
-   **Verifiers 3 and 4 are conventions-*data* consumers, not review-time agents** — they
-   read the records directly and never carry the catalogue or a standards file, which
-   would drag it into `quick`'s cheap path.
+   **Verifiers 3 and 4 read the conventions records directly, as data.** They never
+   carry the catalogue or a standards file: that would drag it into `quick`'s cheap
+   path.
 5. **Mutation sensor** *(expensive, destructive)* — inject small faults into the
    task's **own new code** and confirm the tests catch them. Concrete examples:
    - flip a boolean condition (`==` → `!=`)
@@ -133,8 +133,8 @@ design's gates, the commit/diff under review). They are stateless.
 5 is expensive and destructive — run last, alone, scoped to the task's new code.
 
 **Verifier 4 runs at every size.** `quick` is where most changes live, and
-conventions-only mode costs one read of a section the spec already carries — a real
-structural floor without raising `quick`'s price.
+conventions-only mode costs one read of a section the spec already carries. `quick` gets a
+structural check and stays cheap.
 
 **Reversibility overrides the size gate.** A change classified a **one-way door**
 (`references/specify.md`) triggers verifier 5 regardless of size, with extra mutations (at

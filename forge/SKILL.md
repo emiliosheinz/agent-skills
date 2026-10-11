@@ -41,10 +41,10 @@ before acting** — it is the step-by-step playbook for that phase.
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
 | `fix` | `references/fix.md` | re-aligned artifacts + code |
 
-`references/structural-standards.md` is not a phase: it is the single always-applied
-baseline for what good structure is and how a structural review runs, loaded only by
-`review.md`'s under-design lens, `execute.md`'s per-batch structural axis, and `fix.md`'s
-claim lenses. No second structural check set exists in forge.
+`references/structural-standards.md` is the single always-applied baseline for what good
+structure is and how a structural review runs. Three dispatches load it: `review.md`'s
+under-design lens, `execute.md`'s per-batch structural axis, and `fix.md`'s claim lenses.
+It is the only structural check set in forge.
 
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
@@ -121,11 +121,11 @@ Design, plan, and execute reference those IDs; they never restate the criterion 
 
 Each change keeps its own `./.specs/<slug>/lessons.md` with `## Standing Rules` (short
 imperatives, always loaded) and `## Log` (tagged, append-only). Load it at the start of
-every phase, **reading only above the `<!-- environment-candidates -->` marker** — below
-it is parked and costs context for nothing. Append **only when something non-obvious was
-learned**: a hack, a gotcha, a corrected wrong assumption, a skipped gate. Triage first —
-a mechanical observation becomes a proposed check, not a sentence. Routine success writes
-nothing. See `references/lessons.md`.
+every phase, **reading only above the `<!-- environment-candidates -->` marker**. The
+text below it is parked, and no phase loads it. Append **only when something non-obvious
+was learned**: a hack, a gotcha, a corrected wrong assumption, a skipped gate. Triage
+first — a mechanical observation becomes a proposed check. Routine success writes nothing.
+See `references/lessons.md`.
 
 ## Orchestration (canonical — references should cite, not restate)
 

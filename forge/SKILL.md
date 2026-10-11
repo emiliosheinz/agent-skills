@@ -228,7 +228,10 @@ and let a failed gate promote it — the same ratchet as sizing.
    next phase. The one documented exception is `fix`: for a *contained* correction it
    re-aligns the artifacts and runs the code delta end-to-end in the same invocation
    (see `references/fix.md`); a larger correction still only recommends the phase chain.
-6. `/create-rfc` and `/create-adr` are separate skills. Use `/create-rfc` when a
-   significant decision needs stakeholder alignment; use `/create-adr` when an
-   architectural choice deserves a standalone record. Reach for either at any point in
-   the flow.
+6. `/create-rfc` and `/create-adr` are separate skills. Use `/create-rfc` when a decision
+   is **still open and binds someone outside this change** — a one-way door per
+   `state.md`'s verdict, a contract another consumer already depends on, or an assumption
+   `spec.md` flagged as spec-invalidating if wrong. Use `/create-adr` once such a decision
+   is **settled**, so the next reader finds the reasoning instead of re-deriving it. A
+   decision this change can settle on its own belongs in `state.md`'s Decisions. Reach for
+   either at any point in the flow.

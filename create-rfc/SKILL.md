@@ -34,7 +34,8 @@ field is present.
   document is an ADR, not an RFC — use `/create-adr` instead.
 - **Decision criteria come before options.** Criteria written after options
   look like justification for a preferred choice.
-- **Include "do nothing" as an explicit option** for any significant change.
+- **Include "do nothing" as an explicit option** for any significant change —
+  Universal rule 2 defines which changes those are.
 - **Never skip trade-offs.** Every option needs honest cons alongside pros.
 - **Never write in a language other than the user's.** Match the language
   the user is using in this session.
@@ -70,7 +71,12 @@ Pure markdown scaffold. Load only when writing:
    and cons are real; assumptions are surfaced with confidence levels and
    invalidation triggers.
 2. **"Do nothing" is always an option** for significant changes — it forces
-   honest evaluation of whether change is worth the cost.
+   honest evaluation of whether change is worth the cost. **Significant means
+   the impact level recorded in Step 1 is HIGH or MEDIUM** (multiple
+   teams/systems/users, or one whole team or system). A LOW-impact change —
+   limited scope, easily reversible — may omit the status quo, and says so in
+   one line rather than leaving the reader to wonder. This is the only
+   definition of *significant* in this skill; every other mention keys to it.
 3. **Outcome is a placeholder** during drafting — fill it after the
    decision is made, then link to the resulting ADR if the decision is
    worth preserving.

@@ -13,8 +13,9 @@
 - [ ] **Decision Criteria** — defined *before* options, weighted,
       must-haves flagged
 - [ ] **Data** — at least some evidence supporting the need for change
-- [ ] **Options** — minimum 2, including "do nothing" for significant
-      changes
+- [ ] **Options** — minimum 2, including "do nothing" whenever Impact is
+      HIGH or MEDIUM (`SKILL.md` → Universal rule 2); a LOW-impact RFC that
+      omits it states why in one line
 - [ ] **Options evaluated against the criteria** — not just pros/cons in
       isolation
 - [ ] **Pros/Cons** — honest, not sales copy for the preferred option
@@ -64,9 +65,10 @@ Concrete numbers make the case. Vague pain justifies nothing.
 
 ### Missing "do nothing" option
 
-Always include the status quo as an explicit option for significant
-changes. It forces honest evaluation of whether action is truly needed
-and gives readers a real baseline to compare against.
+Include the status quo as an explicit option whenever the recorded impact is
+HIGH or MEDIUM (`SKILL.md` → Universal rule 2 holds the definition). It
+forces honest evaluation of whether action is truly needed and gives readers
+a real baseline to compare against.
 
 ### No decision criteria, or criteria defined after options
 

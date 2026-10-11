@@ -145,12 +145,18 @@ Investigate before deciding: note the conventions the code already shows rather 
 invent new ones. Ground every claim in something you actually read or ran. **What the
 code answers is not a question for the user — it feeds A1.**
 
-**Scan thoroughly** — the reuse analysis in `design.md` depends on it. Use the best
-search the toolchain offers. Prefer a syntax-aware/structural search when one is
-available, since a plain text/regex search misses how symbols are actually declared
-(arrow functions, methods, exported consts, decorators). Fall back to text search
-otherwise. Exclude generated, vendored, and build output so the scan does not surface
-false "prior art" from dependencies.
+**The scan is done when every bullet of Move 1 — and, at standard+, every heading of
+Move 2 — either holds an entry citing `file:line`, or names the search that came back
+empty (the pattern you ran and the paths you ran it over).** A heading left blank is a
+gap; "looked and found nothing here" is a finding. This is the stop condition: not a
+feeling of thoroughness, and not a line count.
+
+Search quality decides what that sweep can find, and the reuse analysis in `design.md`
+inherits it. Use the best search the toolchain offers. Prefer a syntax-aware/structural
+search when one is available, since a plain text/regex search misses how symbols are
+actually declared (arrow functions, methods, exported consts, decorators). Fall back to
+text search otherwise. Exclude generated, vendored, and build output so the scan does not
+surface false "prior art" from dependencies.
 
 ### A3. Surface external references
 

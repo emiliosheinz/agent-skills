@@ -216,13 +216,9 @@ Diff: 14 files, a new session middleware plus a migration dropping a column.
 `forge` run present, door verdict one-way.
 
 ````markdown
-The SSO callback trusted `users.legacy_token` for session lookup, so a session
-outlived an IdP-side revoke until the token expired on its own. **The column is
-gone and every request now resolves its session through one middleware.**
+The SSO callback trusted `users.legacy_token` for session lookup, so a session outlived an IdP-side revoke until the token expired on its own. **The column is gone and every request now resolves its session through one middleware.**
 
-`requireSession` sits in front of the authenticated router and is the only
-place a session is read. The callback writes a session row and returns a
-cookie; nothing downstream reads a token any more.
+`requireSession` sits in front of the authenticated router and is the only place a session is read. The callback writes a session row and returns a cookie; nothing downstream reads a token any more.
 
 ```diff
  request
@@ -234,21 +230,17 @@ cookie; nothing downstream reads a token any more.
    route handler
 ```
 
-We considered keeping `legacy_token` as a read-only fallback for one release.
-That leaves two session paths live at once, which is the bug being fixed, so
-the column goes in the same change.
+We considered keeping `legacy_token` as a read-only fallback for one release. That leaves two session paths live at once, which is the bug being fixed, so the column goes in the same change.
 
 **Where to look carefully**
 
-- `20261011_drop_legacy_token.sql` drops a column. One-way: rolling the code
-  back after deploy leaves sessions the old path cannot read.
-- `requireSession` decides who is authenticated. A handler reachable without it
-  is unchecked — router mount order is the entire guarantee.
-- Sessions issued before this deploy carry no `idp_sub`; `verifyIfStale` treats
-  a missing one as stale and re-verifies rather than failing closed.
+- `20261011_drop_legacy_token.sql` drops a column. One-way: rolling the code back after deploy leaves sessions the old path cannot read.
+- `requireSession` decides who is authenticated. A handler reachable without it is unchecked — router mount order is the entire guarantee.
+- Sessions issued before this deploy carry no `idp_sub`; `verifyIfStale` treats a missing one as stale and re-verifies rather than failing closed.
 ````
 
-About 210 words, scans in roughly 30 seconds. The reversibility rule earned the
+About 210 words, scans in roughly 30 seconds. Each paragraph and list item is one
+unwrapped line, which is what the rendered body needs. The reversibility rule earned the
 paragraphs. The call-tree diff replaced a paragraph describing the new path.
 "Why that way" appears because there was a real fork. Sensitive parts fired
 because 14 files exceed what a reviewer holds at once, and each entry names a

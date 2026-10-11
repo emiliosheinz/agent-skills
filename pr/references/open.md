@@ -157,9 +157,8 @@ Always `--draft`. Delete the body file once `gh` has succeeded.
 ## Step 7 — Report
 
 1. The PR URL.
-2. Whether the commit fallback ran, if it did.
-3. Whether a screenshot placeholder is waiting to be filled, if one is.
-4. Whether the base was approximated for a shallow clone, if it was.
+2. Whether a screenshot placeholder is waiting to be filled, if one is.
+3. Whether the base was approximated for a shallow clone, if it was.
 
 Do not paste the body back.
 

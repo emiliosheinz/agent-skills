@@ -37,21 +37,21 @@ an agent may or may not act on. Classify the observation first; the check is the
 
 | Class | What it looks like | Route |
 |---|---|---|
-| **mechanical** | a deterministic rule a command can check — a forbidden import, a missing flag, a path convention | A proposed check in the parked backlog as a concrete command or rule; *additionally* a plan task when the repo can host it during this change. Prefer it over a sentence — a check enforces itself |
-| **judgement** | a call no command can decide — where a responsibility belongs, what a name should describe | The standards route: the project's `CODING_STANDARDS.md` if one exists. If none exists, park it with its intended destination and do NOT create one (`references/structural-standards.md` → *Project standards discovery*, **Never create**) |
-| **navigation** | "the thing you were looking for lives here" | A pointer — one Standing Rule naming the location, the class Standing Rules suit |
+| **mechanical** | a deterministic rule a command can check — a forbidden import, a missing flag, a path convention | **A proposed check** in the parked backlog as a concrete command or rule; *additionally* a plan task when the repo can host it during this change. Prefer it over a sentence — a check enforces itself |
+| **judgement** | a call no command can decide — where a responsibility belongs, what a name should describe | **The standards route**: the project's `CODING_STANDARDS.md` if one exists. **If none exists, park it with its intended destination and do NOT create one** (`references/structural-standards.md` → *Project standards discovery*, **Never create**) |
+| **navigation** | "the thing you were looking for lives here" | **A pointer** — one Standing Rule naming the location, the class Standing Rules suit |
 | **process** | an observation about forge itself | **The parked backlog.** Not a Standing Rule, not a repo lesson |
 
 A mechanical lesson recorded as a Standing Rule is what this triage prevents: it is how a
 recurring mistake becomes standing rule number 12 that nothing enforces.
 
-Capture only code/execution lessons about this repo in `Standing Rules` and `Log`. Do
+**Capture only code/execution lessons about this repo** in `Standing Rules` and `Log`. Do
 not record opinions about the forge process itself ("specify earlier", "split phases
 differently") *there*. That is meta-commentary, it pollutes filtered loads, and it is not
 a repo lesson.
 
 **Carve-out.** The prohibition above carries one explicit carve-out: it applies to
-`Standing Rules` and `Log` only. Process observations are permitted in
+`Standing Rules` and `Log` only. Process observations **are** permitted in
 `## Environment candidates`, below the `<!-- environment-candidates -->` marker, which no
 phase loads — the point is keeping meta-commentary out of always-loaded text, not throwing
 the signal away. Park it there with its classification and intended destination.
@@ -120,5 +120,5 @@ wrong · root cause · the rule going forward`.
   wrong rule silently degrades every phase that reads it.
 - Tag entries so loads pull a relevant subset. Context cost stays flat as the file
   grows.
-- `## Environment candidates` is append-only and never loaded, so it is exempt from
+- `## Environment candidates` is **append-only and never loaded**, so it is exempt from
   the cap and the distillation pass, and nothing is promoted out of it.

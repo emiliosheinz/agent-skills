@@ -44,7 +44,7 @@ tells you which later phases you still need.
 Size can only increase. A downgrade requires your confirmation. See
 `references/sizing.md` for the full rubric.
 
-**Reversibility overrides size.** Every change is also classified a one-way door or a
+**Reversibility overrides size.** Every change is also classified a **one-way door** or a
 two-way door — one-way meaning reverting the commit does not undo the effect (destructive
 migration, bulk delete, mass communication, money movement, an auth boundary, a broken
 contract, no revert path). A one-way door runs the heavier reviewers and the mutation

@@ -60,9 +60,9 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
 
 1. **Requirement coverage** — forward: every spec AC ID maps to a verification gate that
    actually *proves* it, not a gate that merely names it. Reverse: every component, data
-   model, and decision traces back to a requirement or to a design element — a named
+   model, and decision traces back to a requirement **or to a design element** — a named
    component, a seam, or a recorded convention. Both are legitimate anchors; an element
-   anchored to neither is scope creep. No AC orphaned in either direction. Reference
+   anchored to **neither** is scope creep. No AC orphaned in either direction. Reference
    AC IDs; never restate the criterion text. Given: the drafted `design.md` plus the
    spec's AC IDs and gates.
 2. **Failure-mode / risk** — attack the design where it breaks in production: security
@@ -78,13 +78,13 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
    implementation detail that doesn't belong.
 
    **The deletion test, and a two-sided verdict.** For each abstraction, ask what deleting
-   it would cost and return one of two values citing the caller count: `pass-through`
+   it would cost and return one of two values **citing the caller count**: `pass-through`
    (deleting removes code, no caller grows — recommend the deletion) or `earns-keep`
    (deleting duplicates code across two or more callers — say so and move on). Naming the
    passing case is what makes the failing case credible.
    Given: the `design.md` plus the spec's codebase findings.
 4. **Under-design** — the symmetric lens: is what the design *does* build arranged well?
-   Criteria are not restated here — read `references/structural-standards.md` for the
+   Criteria are **not** restated here — read `references/structural-standards.md` for the
    checks, selection, firing discipline, do-not-flag list and scope/shape boundary, and
    report the verdict delta it defines. At minimum the verdict covers: one responsibility
    per component nameable without "and"; dependency direction across each named boundary;
@@ -101,7 +101,7 @@ Lens 3 argues for less, lens 4 for better-arranged; they collide unless both car
 > is arranged.
 
 Relocating a rule into the unit that owns its data, or giving a primitive whose validation
-is already repeated a domain type, is the same scope — lens 3 must not report it as an
+is already repeated a domain type, is **the same scope** — lens 3 must not report it as an
 unrequested abstraction. Adding a port, layer, second implementation, flag or extension
 point *is* new scope, and lens 4 never asks for it. Full statement:
 `references/structural-standards.md` → *Scope versus shape*.
@@ -119,7 +119,7 @@ closure gate is proportionate; do not dispatch reviewers for it. Standard runs t
 highest-value lenses plus the under-design lens; complex runs the full panel.
 
 **Reversibility overrides the size gate.** A change classified a **one-way door**
-(`references/specify.md`) forces spec reviewer 3 and design lens 4 regardless of size,
+(`references/specify.md`) forces spec reviewer 3 and design lens 4 **regardless of size**,
 including at `quick` with no design — there the lens reads the acceptance criteria
 gathered inline. Same principle as execute's mutation-sensor override, replacing the old
 `critical`-domain override one for one: a two-line change that moves money must not ship
@@ -132,7 +132,7 @@ or frontier with high effort for a complex change**, per SKILL.md's Model & effo
 selection (the "adversarial judgment / ambiguous synthesis" row). Never send these lenses
 to the economy tier, and never fan the whole panel to frontier by default: complex earns
 frontier for its reviewers; standard runs them at standard/high. Design lens 4 inherits
-that row — standard/high, frontier at `complex` — and is never economy. Dispatch the applicable
+that row — **standard/high, frontier at `complex`** — and is never economy. Dispatch the applicable
 reviewers as concurrent subagents per SKILL.md's Orchestration rules — Workflow when the
 runtime supports it, sequential subagent calls otherwise. Reviewers spawn nothing.
 

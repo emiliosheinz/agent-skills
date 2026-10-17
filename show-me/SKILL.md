@@ -105,7 +105,7 @@ submitForm
 **UI structure — component tree**, including the state and module boundaries
 that matter:
 
-```tsx
+```xml
 <SessionPage> (apps/example/src/routes/session.tsx)
   useSessionEvents()
   <SessionToolbar>
@@ -127,9 +127,9 @@ on `markdown`, a Mermaid `pie`; on `html`, a real chart. Recipes per surface
 live in [references/surfaces.md](references/surfaces.md).
 
 ```text
-specify  ████████████████████                      2 reviewers
-design   ████████████████████████████████████████  4 lenses
-execute  ██████████████████████████████████████████████████  5 verifiers
+specify  ████████████████░░░░░░░░░░░░░░░░░░░░░░░░  2 reviewers
+design   ████████████████████████████████░░░░░░░░  4 lenses
+execute  ████████████████████████████████████████  5 verifiers
 ```
 
 **Component interaction, control flow, or data flow — Mermaid**, on a surface

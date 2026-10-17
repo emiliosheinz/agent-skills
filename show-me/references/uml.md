@@ -36,6 +36,11 @@ this skill draws, and forcing a non-UML subject into UML makes it worse.
 When the subject is not UML, say nothing about UML — do not apologise for it,
 and do not invent a stereotype to make a file tree look conformant.
 
+A UML diagram needs a surface that renders Mermaid, so these belong to
+`markdown` and `html`. On `terminal`, use the text view that carries the same
+shape — `surfaces.md` maps them — and offer another surface when the shape
+genuinely needs layout.
+
 ## Picking the type
 
 Mermaid implements part of UML and nothing fills the rest. Every row below was

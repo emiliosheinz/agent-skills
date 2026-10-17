@@ -24,18 +24,15 @@ Invoke this skill when you want to:
 
 | `surface` | Read in | What it uses |
 |-----------|---------|--------------|
-| `terminal` | Claude Code, any CLI | Fence syntax highlighting for color, tables for borders, fill texture for series, block characters for bars |
+| `terminal` | Claude Code, any CLI | Fence syntax highlighting for color, tables for borders, fill texture for series, block characters for bars. No Mermaid |
 | `markdown` | GitHub PRs, issues, READMEs | Mermaid with a palette that survives both GitHub themes, `<table><td>` columns, `<details>`, `> [!NOTE]` |
 | `html` | A published Artifact page | Real layout and CSS, native Mermaid, real charts |
-
-A terminal gets a drawn diagram only where a Mermaid renderer is present; the
-skill detects that rather than assuming either way.
 
 ## Requirements
 
 - Nothing, for the text views. They render anywhere Markdown does.
-- A surface that renders Mermaid — GitHub, an HTML page, or a terminal with a
-  Mermaid renderer — for the diagram views.
+- A surface that renders Mermaid — GitHub or an HTML page — for the diagram
+  views. A terminal gets text views instead.
 - Node, to validate Mermaid before it ships. Without it the skill falls back
   to a syntax checklist and says validation was skipped.
 - A caller that can publish an Artifact, for `surface: html`.

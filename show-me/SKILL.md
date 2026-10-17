@@ -16,10 +16,10 @@ metadata:
   version: 2.0.0
 compatibility: >
   Text views render anywhere Markdown does. Mermaid needs a surface that
-  renders it — GitHub, an HTML page, or a terminal with a Mermaid renderer
-  present. Validating Mermaid needs Node. The HTML surface needs a caller that
-  can publish an Artifact. Screenshot capture needs Playwright or a browser
-  extension in the session, plus a way to run the app.
+  renders it — GitHub or an HTML page, never a terminal. Validating Mermaid
+  needs Node. The HTML surface needs a caller that can publish an Artifact.
+  Screenshot capture needs Playwright or a browser extension in the session,
+  plus a way to run the app.
 ---
 
 # Show me
@@ -52,7 +52,7 @@ mistake that ruins an otherwise good view.
 
 | `surface` | Read in | What it can do |
 |-----------|---------|----------------|
-| `terminal` | Claude Code and any CLI | Text. Color comes from the fence language, borders from tables, series from fill texture. A diagram renders only where a Mermaid renderer is present. |
+| `terminal` | Claude Code and any CLI | Text only. Color comes from the fence language, borders from tables, series from fill texture. No Mermaid. |
 | `markdown` | GitHub PRs, issues, READMEs | Mermaid renders and takes color. `<table><td>` gives real columns. `<details>` folds. `> [!NOTE]` calls out. |
 | `html` | A published Artifact page | Real layout, CSS, charts and diagrams. Returned as a file path for the caller to publish. |
 
@@ -60,9 +60,9 @@ mistake that ruins an otherwise good view.
 were given before producing anything.** It holds the fence-to-color map, the
 safe glyph set, what GitHub's sanitizer keeps, and the rules for an HTML page.
 
-A raw Mermaid fence in a terminal is a wall of source, which is the opposite
-of the job. `surfaces.md` has the cascade that decides whether to render it,
-emit it, or drop it for a text view.
+Never emit a Mermaid fence to `terminal`. Nothing there renders it, so it
+arrives as a wall of source — the exact failure this skill exists to prevent.
+`surfaces.md` maps each diagram shape to the text view that replaces it.
 
 ## Composition
 

@@ -4,7 +4,7 @@ Three places a view gets read, with near-opposite strengths. Read the section
 for the `surface` you were given before producing anything.
 
 - [The matrix](#the-matrix)
-- [terminal](#terminal) — fence colors, glyphs, width, the Mermaid cascade
+- [terminal](#terminal) — fence colors, glyphs, width, no Mermaid
 - [markdown](#markdown) — GitHub's renderer, layout, images
 - [html](#html) — a published Artifact page
 
@@ -15,7 +15,7 @@ from documentation.
 
 | Primitive | `terminal` | `markdown` | `html` |
 |-----------|------------|------------|--------|
-| Mermaid | only if a renderer is present — see the cascade | renders | renders |
+| Mermaid | no | renders | renders |
 | Color inside a block | by fence language | by fence language | full CSS |
 | Tables | renders, padded and aligned | renders | renders |
 | Box drawing, block bars | yes | yes | yes |
@@ -131,26 +131,27 @@ decide each box's left edge and width — then fill the grid, then read the
 result back line by line checking that every `│` meets a `─` at a `┼`, `┬`,
 `┴`, `├` or `┤`.
 
-### The Mermaid cascade
+### No Mermaid here
 
-Mermaid is not automatically dead here, and it is not automatically safe.
-Work down these rungs and stop at the first that holds:
+A terminal gets text views, never a Mermaid fence. Claude Code's own renderer
+is behind a server-side gate that is off by default and cannot be switched on
+locally, and every other route needs a binary the reader may not have — so a
+fence here is a wall of source far more often than it is a diagram.
 
-1. **`mermaid-ascii` on PATH** — render the diagram to text yourself and paste
-   the result. This works for every reader regardless of their setup, which
-   makes it the only rung that is unconditionally correct. It covers
-   flowchart, sequence and ER only.
-2. **A Mermaid renderer in the reader's session** — detect with
-   `grep -il mermaid ~/.claude/plugins/installed_plugins.json`. Claude Code
-   also ships a built-in renderer for flowchart and sequence diagrams that is
-   off by default and cannot be detected; a positive grep is evidence, its
-   absence is not proof. On a hit, emit the fence and let it be drawn.
-3. **Neither** — text view only. Do not emit a raw Mermaid fence as a
-   consolation. A wall of diagram source is the exact failure this skill
-   exists to prevent.
+Each diagram shape has a text view that carries it:
 
-Drawing rules, ceilings and the validation loop live in
-[diagrams.md](diagrams.md) and apply on every surface.
+| If the shape wants to be | Draw instead |
+|--------------------------|--------------|
+| A flowchart or pipeline | A box panel, or a call tree when it is strictly nested |
+| A sequence diagram | A call tree, indented by who calls whom |
+| A state machine | A `diff`-fenced transition list, `state --event--> state` |
+| A class diagram | A type block in the real language, or a `diff` of it |
+| An ER diagram | A table of entities and their relations |
+| A pie or bar chart | Block bars against a `░` track |
+| An architecture diagram | A shallow file tree, or a table of parts and duties |
+
+When the shape genuinely needs layout a terminal cannot give it, say so and
+offer the `markdown` or `html` surface rather than approximating badly.
 
 ## markdown
 

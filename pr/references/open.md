@@ -72,17 +72,7 @@ Read what is available; none is required.
 
 ## Step 2 — Commits
 
-If anything is uncommitted:
-
-1. **Invoke the `commit-message-generator` skill** with the Skill tool. It
-   writes conventional commits and groups unstaged work into a sequence, which
-   beats one commit of everything, and commits without asking. It refuses
-   outright above 4 groups — in that case follow its instruction to re-group
-   rather than working around it.
-2. **If the Skill tool reports it is not installed**, fall back: stage
-   everything, make one commit with a conventional-commit subject, and **say in
-   the final report that the fallback ran** so the user knows grouping did not
-   happen.
+If anything is uncommitted, commit it, without asking.
 
 Never amend an existing commit. Never rewrite history on the branch.
 
@@ -169,9 +159,8 @@ Always `--draft`. Delete the body file once `gh` has succeeded.
 ## Step 7 — Report
 
 1. The PR URL.
-2. Whether the commit fallback ran, if it did.
-3. Whether a screenshot placeholder is waiting to be filled, if one is.
-4. Whether the base was approximated for a shallow clone, if it was.
+2. Whether a screenshot placeholder is waiting to be filled, if one is.
+3. Whether the base was approximated for a shallow clone, if it was.
 
 Do not paste the body back.
 

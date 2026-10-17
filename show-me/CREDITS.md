@@ -14,12 +14,17 @@ rather than the source, and its closing guidance.
 
 - **Screenshots added.** The original has no screenshot concept; a picture of
   the real running app outranks a hand-written mock of it.
-- **The focused HTML view dropped.** The original writes a self-contained HTML
-  file for a UI too dense for Mermaid. Where the app exists, a screenshot does
-  that job; where it does not, the fenced views cover the shape.
+- **The focused HTML view reworked into a surface.** The original writes a
+  self-contained HTML file for a UI too dense for Mermaid. Here HTML is one of
+  three surfaces any view can be built for, published as an Artifact by the
+  caller, rather than a view of its own.
+- **Surfaces added.** The original emits the same fenced blocks everywhere.
+  Here the caller says where the view will be read — a terminal, Markdown or
+  an HTML page — and the view is built from what that surface can actually
+  render.
 - **Model-invocable.** The original sets `disable-model-invocation: true`.
   Here `/pr` calls this skill, so it must be invocable by a model.
-- **Parameters added** so a caller can constrain view count and size.
+- **Parameters added** so a caller can constrain surface, view count and size.
 
 ### License
 

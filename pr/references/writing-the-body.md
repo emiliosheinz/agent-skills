@@ -128,6 +128,8 @@ text the diagram replaced, delete the diagram and keep the prose.
 **Invoke the `show-me` skill** with the Skill tool, passing in the prompt:
 
 - the topic — what the reviewer has to understand,
+- `surface: markdown`, because the body is read on GitHub, which renders
+  Mermaid and folds a long view behind `<details>`,
 - `size: tight`, because a PR body is scanned rather than studied,
 - `max-views: 1` or `2`. A body carrying five views is a body nobody scans.
 

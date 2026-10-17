@@ -2,26 +2,30 @@
 name: show-me
 description: >
   Produces a compact visual of a topic — pseudocode, call tree, component tree,
-  file tree, Mermaid diagram, a diff of any of those shapes, or a screenshot of
-  a running app. TRIGGER when: the user says "show me", asks to visualize or
-  diagram something, asks what the shape or structure or flow of something is,
-  or asks for a screenshot of the app; and when another skill needs a visual
-  for a document it is writing. SKIP for: prose explanations the user asked for
-  in words, and embedding or uploading an image anywhere — this skill produces
-  visuals, it does not publish them.
+  file tree, contract, chart, Mermaid diagram, a diff of any of those shapes,
+  or a screenshot of a running app — built for where it will be read: a
+  terminal, Markdown, or a self-contained HTML page. TRIGGER when: the user
+  says "show me", asks to visualize or diagram something, asks what the shape
+  or structure or flow of something is, or asks for a screenshot of the app;
+  and when another skill needs a visual for a document it is writing. SKIP
+  for: prose explanations the user asked for in words, and embedding or
+  uploading an image anywhere — this skill produces visuals, it does not
+  publish them.
 metadata:
   author: emiliosheinz
-  version: 1.0.0
+  version: 2.0.0
 compatibility: >
-  Views are fenced code blocks that render anywhere Markdown does, GitHub
-  included. Screenshot capture needs Playwright or a browser extension in the
-  session, plus a way to run the app.
+  Text views render anywhere Markdown does. Mermaid needs a surface that
+  renders it — GitHub or an HTML page, not a terminal. The HTML surface needs
+  a caller that can publish an Artifact. Screenshot capture needs Playwright
+  or a browser extension in the session, plus a way to run the app.
 ---
 
 # Show me
 
 Make the topic visible. Skip the preamble and keep prose brief. Pick the
-smallest view that makes the key point clear.
+smallest view that makes the key point clear, and build it for the surface it
+will be read on.
 
 This skill **produces** visuals. It does not embed, upload or publish them —
 the caller does that.
@@ -33,17 +37,53 @@ Callers may constrain the output. Each is optional except the topic.
 | Parameter | Meaning | Default |
 |-----------|---------|---------|
 | topic | What to make visible. Required. | — |
+| `surface` | Where the view will be read: `terminal`, `markdown`, or `html`. | `terminal` |
 | `max-views` | Ceiling on how many views to return | your judgement |
 | `size` | `tight` keeps every view under roughly 12 lines, dropping any detail that is not load-bearing. `normal` keeps what the topic needs. | `normal` |
 
-`/pr` calls this with `size: tight` and a low `max-views`, because a PR body is
-scanned rather than studied.
+`/pr` calls this with `surface: markdown`, `size: tight` and a low
+`max-views`, because a PR body is scanned rather than studied.
+
+## Surfaces
+
+The surface decides which primitives exist. Getting it wrong is the one
+mistake that ruins an otherwise good view.
+
+| `surface` | Read in | What it can do |
+|-----------|---------|----------------|
+| `terminal` | Claude Code and any CLI | Text only. No diagram renders. Color comes from the fence language; borders come from tables. 80 columns. |
+| `markdown` | GitHub PRs, issues, READMEs | Mermaid renders and takes color. `<details>` folds. `> [!NOTE]` calls out. |
+| `html` | A published Artifact page | Real layout, CSS and diagrams. Returned as a file path for the caller to publish. |
+
+**Read [references/surfaces.md](references/surfaces.md) for the surface you
+were given before producing anything.** It holds the fence-to-color map, the
+width budget, the Mermaid palette that survives both GitHub themes, and the
+rules for writing an HTML page.
+
+Never emit Mermaid to `terminal`. It arrives as a wall of source, which is
+the opposite of the job.
+
+## Composition
+
+How the views sit together matters as much as each one.
+
+- **One headline view** carries the answer, and it comes first. Everything
+  after it is support.
+- **Ceiling:** one view at `tight`, at most three at `normal`. A fourth means
+  you are writing a document, not showing a shape.
+- **One question per view.** A view answering two questions is two views, or
+  one hairball.
+- **Caption each view with its finding**, on the line above it — "state.md is
+  the only shared write", not "Architecture". A caption naming the view's
+  category tells the reader nothing they cannot see.
+- **No two adjacent views of the same shape.** Two trees in a row read as one
+  long tree.
 
 ## The views
 
 **Logic or an algorithm — pseudocode:**
 
-```text
+```py
 on(save)
   if content is unchanged
     return cached result
@@ -80,7 +120,19 @@ src/
 └── transport/      # sends API requests
 ```
 
-**Component interaction, control flow, or data flow — Mermaid:**
+**Counts, durations, sizes, proportions — a chart.** Numbers buried in prose
+are numbers nobody compares. On `terminal`, bars built from block characters;
+on `markdown`, a Mermaid `pie`; on `html`, a real chart. Recipes per surface
+live in [references/surfaces.md](references/surfaces.md).
+
+```text
+specify  ████████████████████                      2 reviewers
+design   ████████████████████████████████████████  4 lenses
+execute  ██████████████████████████████████████████████████  5 verifiers
+```
+
+**Component interaction, control flow, or data flow — Mermaid**, on a surface
+that renders it. Style it; an unstyled diagram is gray boxes.
 
 ```mermaid
 sequenceDiagram
@@ -104,7 +156,7 @@ function expandSkill(command: string): string {
 
 **An endpoint's request/response, or a table's columns — the contract:**
 
-```text
+```http
 POST /sessions
   → { email, password }
   ← 201 { sessionId, expiresAt }
@@ -176,6 +228,9 @@ A state or control-flow change:
 +  invalidate cache
 ```
 
+The `diff` fence is also the only way to get red and green into a terminal, so
+prefer it wherever the topic genuinely is a change.
+
 ## Screenshots
 
 For a change to something the reader would want to *see* — a UI, a layout, a
@@ -193,6 +248,9 @@ hosting belong to whoever asked for the visual.
 If the app cannot be run or driven, say so plainly and offer the nearest text
 view. Do not hand-write a mock of a UI that exists.
 
+A screenshot is an image, so it cannot be the view on `terminal`. Return the
+path and name what it shows.
+
 ## Guidance
 
 Place each visual next to the short text it supports. Keep only the calls,
@@ -205,6 +263,10 @@ restates the sentence above it is noise with syntax highlighting.
 You may use one of these, you may use several, you will rarely use all of
 them. Keep the views whose information the prose does not already carry, and
 drop the rest.
+
+Before returning, read the output as the reader will: **the headline has to
+land from the first view alone, without the prose around it.** If it does not,
+the wrong view is first, or the caption is not saying the finding.
 
 ## Credits
 

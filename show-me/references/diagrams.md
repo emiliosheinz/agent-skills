@@ -123,23 +123,44 @@ does nothing. It is a no-op on `sequenceDiagram` (use `box` to group),
 `classDiagram` (use `style`), `erDiagram`, `mindmap` and `sankey`. Styling
 those the usual way produces a silently unstyled diagram.
 
-Default to a **translucent fill with an opaque stroke and no `color:` entry**.
-The alpha lets the page show through, so the tint reads on white and on near
-black; omitting `color:` leaves the label to the theme's own text color, which
-is already correct in both modes. These four hues are colorblind-safe and
-clear the contrast threshold against both a white and a near-black page:
+Go **monochrome plus one accent**. A diagram where every node carries its own
+tint reads as fog: each one shouts quietly, so nothing is the subject. Give
+the ordinary nodes a fill so faint it is barely a tint and a crisp opaque
+stroke; spend colour on the one node, or the one path, the reader is meant to
+land on.
 
 ```text
-classDef entry fill:#0072B233,stroke:#0072B2,stroke-width:1.5px
-classDef work  fill:#009E7333,stroke:#009E73,stroke-width:1.5px
-classDef warn  fill:#D55E0033,stroke:#D55E00,stroke-width:1.5px
-classDef alt   fill:#CC79A733,stroke:#CC79A7,stroke-width:1.5px
+classDef node   fill:#80808014,stroke:#6e7781,stroke-width:1.25px
+classDef accent fill:#0072B21f,stroke:#0072B2,stroke-width:2px
 ```
 
-An opaque fill is for one emphasis node, never for the whole diagram, and then
-`color:` becomes mandatory and the fill must be mid-toned enough to work
-against both grounds — `#2563eb`, `#0e7490`, `#7c3aed`, `#be123c` and
-`#0f766e` all qualify.
+Why those values hold in both themes: a mid-grey at a fixed alpha sits between
+the foreground and the background whichever way round they are, so
+`#80808014` lands at 1.09 contrast on white and 1.08 on near-black — a tint
+either way. The strokes are opaque because a neutral stroke never clears the
+3:1 threshold on both grounds; `#6e7781` gives 4.55 and 4.16, `#0072B2` gives
+5.19 and 3.65. Set no `color:` entry anywhere, so the theme keeps supplying
+label colour.
+
+Accent the edge too, when the path is the point:
+`linkStyle 2 stroke:#0072B2,stroke-width:2px`.
+
+Where a second accent is genuinely needed, `#D55E00` and `#009E73` are the
+colourblind-safe partners for `#0072B2`. A third means you are colouring the
+wrong thing.
+
+Tighten the layout in frontmatter, which is safe because only `theme` and
+`themeVariables` break light and dark:
+
+```text
+---
+config:
+  flowchart:
+    nodeSpacing: 24
+    rankSpacing: 40
+    padding: 12
+---
+```
 
 Leave edges, edge labels, arrowheads and subgraph titles unstyled; they
 inherit theme-correct colors already. Encode a node's *kind* with a shape

@@ -32,6 +32,17 @@ rather than the source, and its closing guidance.
   Here `/pr` calls this skill, so it must be invocable by a model.
 - **Parameters added** so a caller can constrain surface, view count and size.
 
+## `beautiful-mermaid` — Luki Labs
+
+The monochrome-plus-one-accent palette follows the approach in
+[lukilabs/beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid):
+derive the whole look from a background and a foreground, keep node fills to a
+whisper and strokes quiet, and spend colour only on what the reader must
+notice. Its tightened node and rank spacing is borrowed too. The hex values
+here are this repo's own, computed to hold their contrast on both a white and
+a near-black page, because Mermaid's `classDef` on GitHub cannot call
+`color-mix()`.
+
 ### License
 
 The original is MIT licensed. Its notice, reproduced as the license requires:

@@ -195,7 +195,8 @@ server-side, so a referenced image renders even in a private repository, and
 supported way to ship a light and a dark variant. A repo-relative path works
 in a README and breaks in a PR body — use an absolute raw URL pinned to a sha.
 
-`gh pr create` has no `--attach` flag. It was never shipped.
+`gh pr create --attach` uploads a local image and rewrites its reference in
+the body, from `gh` v2.99.0 onward. Feature-detect it rather than assuming.
 
 ## html
 

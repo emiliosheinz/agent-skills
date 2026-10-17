@@ -86,18 +86,26 @@ If anything is uncommitted:
 
 Never amend an existing commit. Never rewrite history on the branch.
 
-## Step 3 — Screenshots
+## Step 3 — Capability and screenshots
 
-This decision changes what gets written in Step 4, so it comes first.
+Both decisions here change what gets written in Step 4, so they come first.
+
+```bash
+gh pr create --help | grep -q -- '--attach' && echo attach || echo placeholder
+gh repo view --json url    # attachments are GitHub.com and GHEC only
+```
+
+Feature-detect `--attach`; do not compare version strings. It arrived in
+`gh` v2.99.0, so an older `gh` is placeholder-only, as is any host that is
+neither GitHub.com nor GitHub Enterprise Cloud.
 
 Only when the change is one a reviewer would want to see: invoke `show-me`
 with `surface: markdown` for a screenshot. It returns an absolute path outside
-the repo. Carry that path into Step 4.
+the repo. Carry that path into Step 4 — the body must reference it for `gh` to
+rewrite it in place.
 
-`gh` cannot upload an image — there is no `--attach` flag on `gh pr create`,
-and committing a screenshot to get it into a body is not an option. So Step 4
-writes a placeholder line naming what belongs there, and Step 7 tells the user
-to drag the image in before marking the PR ready.
+With no `--attach` and a captured image, or on an unsupported host, Step 4
+writes a placeholder line instead.
 
 ## Step 4 — Write the body
 
@@ -149,6 +157,13 @@ gh pr create \
   --body-file "/tmp/pr-body-<branch>.md"
 ```
 
+With `--attach` available and an image captured, add one flag per image, using
+the absolute path `show-me` returned:
+
+```bash
+  --attach '/abs/path/after.png#what it shows'
+```
+
 Always `--draft`. Delete the body file once `gh` has succeeded.
 
 ## Step 7 — Report
@@ -166,3 +181,4 @@ Do not paste the body back.
 |---------|----------|
 | `git push` rejected (branch moved) | Stop. Report it. Do not force-push. |
 | `gh pr create` fails | The commits and the push already happened. Report exactly what succeeded and what did not, and give the command to retry. Never silently retry with different arguments. |
+| `--attach` rejected despite the Step 3 check | Re-write the body file with a placeholder line, then retry the create without `--attach`. Do not fail the verb over an image. |

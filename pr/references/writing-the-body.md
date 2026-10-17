@@ -149,11 +149,16 @@ exception: it comes back as a file path.
 ## Attaching a screenshot
 
 `show-me` captures the image and returns an absolute path outside the repo.
-Placing it is this skill's job.
+Placing it is this skill's job, and `open.md` Step 3 has already established
+whether attachment is possible.
 
-`gh` has no way to upload one: `gh pr create` carries no `--attach` flag.
-Write a placeholder line naming what belongs there, and tell the user to drag
-the image in before marking the PR ready.
+- **Attachment available:** reference that absolute path in the body, and
+  `gh pr create --attach '<path>#<alt text>'` rewrites it in place to the
+  uploaded URL. Reference nothing and the image is appended at the end instead.
+- **Not available** — a `gh` older than v2.99.0, or a host that is neither
+  GitHub.com nor GitHub Enterprise Cloud: write a placeholder line naming what
+  belongs there, and tell the user to drag the image in before marking the PR
+  ready.
 
 Never commit a screenshot into the repo to get it into a body. A committed
 image does not render from a private repo, and it is permanent repo weight for

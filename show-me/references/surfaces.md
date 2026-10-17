@@ -3,197 +3,238 @@
 Three places a view gets read, with near-opposite strengths. Read the section
 for the `surface` you were given before producing anything.
 
+- [The matrix](#the-matrix)
+- [terminal](#terminal) — fence colors, glyphs, width, the Mermaid cascade
+- [markdown](#markdown) — GitHub's renderer, layout, images
+- [html](#html) — a published Artifact page
+
+Everything below was verified against the renderer it describes, not inferred
+from documentation.
+
+## The matrix
+
 | Primitive | `terminal` | `markdown` | `html` |
 |-----------|------------|------------|--------|
-| Mermaid | source only | renders | renders |
+| Mermaid | only if a renderer is present — see the cascade | renders | renders |
 | Color inside a block | by fence language | by fence language | full CSS |
-| Tables | renders bordered | renders | renders |
+| Tables | renders, padded and aligned | renders | renders |
 | Box drawing, block bars | yes | yes | yes |
+| Callout bar | blockquote only, no `[!NOTE]` styling | `> [!NOTE]` | yes |
 | Collapsing a long view | no | `<details>` | yes |
-| Callout bar | no | `> [!NOTE]` | yes |
+| Inline HTML | printed as literal text | sanitized allowlist | full |
 | Images | no | yes | yes |
-| Width | 80 columns, hard | wide | wide |
+| Clickable links | yes, in most terminals | yes | yes |
 
 A view built for the wrong surface is the failure this file exists to prevent.
-Mermaid sent to a terminal is a wall of source. An 80-column box diagram sent
-to an HTML page wastes the page.
 
 ## terminal
 
-Claude Code renders Markdown but no diagrams. Everything is monospace text,
-so structure and color have to come from the two things it does render:
-**fence syntax highlighting** and **Markdown tables**.
+Claude Code renders Markdown through `marked` plus a bundled highlight.js.
+What that buys: headings carry weight (`#` bold-italic-underline, `##` and
+below bold), bold and italic work, inline code takes an accent color,
+blockquotes get a dim left bar with italic body, tables are padded and
+honour `:--:` alignment, and nested ordered lists change marker by depth —
+digits, then `a.`, then roman. Markdown links become real terminal
+hyperlinks in ghostty, kitty, iTerm2, WezTerm, Warp, Alacritty, Hyper,
+Windows Terminal and JetBrains terminals, so a file path can be clickable.
+
+Raw HTML is printed as literal text. `<details>` does nothing here.
 
 ### Fence language is the color channel
 
-A `text` fence is gray. Pick the language that colors the part the eye should
-land on.
+Claude Code maps highlight.js scopes to colors through a fixed table. Scopes
+missing from that table render with no color at all, which makes several
+intuitive choices useless — `section` (a `[toml-section]`, a Makefile target,
+an nginx block) and `attribute` (an HTTP header name) are both uncolored.
 
-| The view is | Fence | What it colors |
-|-------------|-------|----------------|
-| Anything added, removed or changed | `diff` | added lines green, removed red |
-| Pseudocode | `py` | `if`, `return`, `for`, `while`, `in` |
-| An endpoint contract | `http` | the method and the status codes |
-| Key-to-value pairs, a config shape | `ini` | keys apart from values |
-| A payload or a record | `json` | strings, numbers, booleans |
-| Commands and flags | `bash` | the command apart from its arguments |
-| Real code | its own language | types and keywords |
-| A call tree, a file tree, bars, a panel | `text` | nothing — no tokens to color |
+| The view is | Fence | What actually colors |
+|-------------|-------|----------------------|
+| Anything added, removed, good or bad | `diff` | `+` green, `-` red, `!` green, `@@` grey, and `===` / `---` / `***` green |
+| Pseudocode | `python` | `if`, `for`, `return`, `def`, `in` blue; builtins cyan; strings red; numbers green |
+| A label that needs real weight | `markdown` | `**x**` renders bold, `*x*` italic — inside a code block |
+| Key-to-value pairs | `ini` | keys cyan, strings red, numbers green, booleans blue, `#` comments green |
+| A payload or record | `json` | keys cyan, strings red, numbers green, literals blue |
+| An endpoint contract | `http` | method blue, path red, status code green |
+| A component or element tree | `xml` | tag names blue, attribute names cyan, values red |
+| A query | `sql` | keywords blue, builtins cyan, strings red |
+| Commands with a prompt | `console` | prompt grey, command highlighted as shell |
+| Pure geometry — trees, panels, bars | `text` | nothing, deliberately |
 
-Never leave a view in `text` when a real language fits it. That single choice
-is the difference between a gray block and a lit one.
+Rules that follow from how the highlighter works:
 
-In a `diff` fence, every unchanged line needs a leading space. Without it the
-highlighter reads the line as a header and the colors go wrong.
+- **Always label the fence.** An unlabeled fence is not grey — its whole body
+  is painted one accent color, which reads as "all of this matters equally".
+- **Only the first word of the info string selects the language.** ```` ```diff title=x ````
+  works; a misspelling is printed dimmed above the block and the body renders
+  plain, so the mistake is visible rather than silent.
+- **In a `diff` fence every unchanged line needs a leading space.** Without
+  it, a line starting `-` becomes a red deletion and one starting `---`
+  becomes a green rule. That last misread is useful on purpose: `====` inside
+  a `diff` fence is a green horizontal rule, the only one available.
+- **Avoid `makefile`, `apache`, `nginx` and `[sections]` in `ini`** — the part
+  you wanted emphasized is exactly the part that renders uncolored. Write an
+  `ini` heading as `# Name`, which is green, not `[Name]`, which is not.
 
-### Tables are the only bordered primitive
-
-When a view is really a small matrix — per-phase, per-file, per-state — a
-table beats drawn boxes. It gets real borders, it aligns, and it never wraps
-into garbage.
-
-Right-align numeric columns with `---:`.
-
-### Bars for quantity
-
-Scale the longest bar to 40 columns and keep labels short enough to stay under
-80 total. `█` is one unit, `▌` a half unit.
-
-```text
-specify  ████████████████████                      2 reviewers
-design   ████████████████████████████████████████  4 lenses
-execute  ██████████████████████████████████████████████████  5 verifiers
-```
-
-### Panels for flow
-
-One line weight per view — never mix `─` with `═`. The vocabulary:
-`─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼ ▶ ◀ ▲ ▼`.
+### Glyphs
 
 ```text
-  specify ──▶ design ──▶ plan ──▶ execute
-     │          │         │         │
-     └──────────┴────┬────┴─────────┘
-                     ▼
-               state.md (hub)
+Safe, width 1 everywhere:
+  ─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼   ━ ┃ ┏ ┓ ┗ ┛ ┣ ┫ ┳ ┻ ╋   ═ ║ ╔ ╗ ╚ ╝ ╠ ╣ ╦ ╩ ╬
+  ╭ ╮ ╯ ╰   ┄ ┆   ▁▂▃▄▅▆▇█   ▏▎▍▌▋▊▉   ▀ ▄ ▌ ▐   ▖▗▘▙▚▛▜▝▞▟   ░ ▒ ▓
+  and ASCII  -> <- => ^ v | + * x o # .
+Never, in anything that has to align:
+  ■ □ ● ○ ◆ ◇ ▲ ▼ ▶ ◀ ★ ✓ ✗ → ← ↑ ↓ ⇒ … — • · × °  and every emoji.
 ```
 
-### The width budget
+The banned set is East Asian **Ambiguous** width: Claude Code pads those
+characters as one column while several common monospace fonts draw them at
+two, so a table or panel using them shears for some readers and not others.
+Box Drawing and Block Elements are one column in every font measured.
 
-80 columns, no exceptions. A box diagram that wraps is worse than no diagram —
-the reader cannot even tell what it was. Count the longest line before you
-return it. Too wide means a different view, not a smaller font.
+Braille (`⠀`–`⣿`) is tempting — 2×4 subpixels per cell — and is width-safe,
+but ten of fourteen common monospace fonts ship **no braille glyphs at all**,
+including SF Mono, Menlo, Monaco, JetBrains Mono, Fira Code and Hack. The
+fallback is not a visible box but a wrong-width glyph that clips. Use braille
+only when the reader has asked for it.
+
+### Texture is a second channel
+
+With color unavailable inside a `text` fence, fill character carries the
+distinction: `█` solid, `░` light, `▓` medium, `⣿` hatched. That is three
+distinguishable series with no color at all. `▉` leaves a gap in every cell,
+so it reads as stripes — texture only, never a solid bar.
+
+Give bars a track so the scale is visible:
+
+```text
+specify  ███████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  2
+design   ███████████████░░░░░░░░░░░░░░░░░░░░░░░░  4
+execute  ███████████████████░░░░░░░░░░░░░░░░░░░░  5
+```
+
+Use the full eighths `▏▎▍▌▋▊▉█` when a bar needs sub-cell precision.
+
+### Width
+
+Claude Code wraps prose at `maxProseWidth` but leaves **tables and fenced
+blocks at full width** — nothing truncates them, so an over-wide view is
+re-wrapped by the terminal itself and its alignment is destroyed. You cannot
+know the reader's width. Target 80 columns because it is the narrowest common
+terminal, and treat it as a budget you chose rather than a limit anything
+enforces.
+
+### Drawing by hand
+
+Models generate ASCII layouts far less reliably than they read them. Do not
+free-hand a box diagram. Fix the column positions first — write the ruler,
+decide each box's left edge and width — then fill the grid, then read the
+result back line by line checking that every `│` meets a `─` at a `┼`, `┬`,
+`┴`, `├` or `┤`.
+
+### The Mermaid cascade
+
+Mermaid is not automatically dead here, and it is not automatically safe.
+Work down these rungs and stop at the first that holds:
+
+1. **`mermaid-ascii` on PATH** — render the diagram to text yourself and paste
+   the result. This works for every reader regardless of their setup, which
+   makes it the only rung that is unconditionally correct. It covers
+   flowchart, sequence and ER only.
+2. **A Mermaid renderer in the reader's session** — detect with
+   `grep -il mermaid ~/.claude/plugins/installed_plugins.json`. Claude Code
+   also ships a built-in renderer for flowchart and sequence diagrams that is
+   off by default and cannot be detected; a positive grep is evidence, its
+   absence is not proof. On a hit, emit the fence and let it be drawn.
+3. **Neither** — text view only. Do not emit a raw Mermaid fence as a
+   consolation. A wall of diagram source is the exact failure this skill
+   exists to prevent.
+
+Drawing rules, ceilings and the validation loop live in
+[diagrams.md](diagrams.md) and apply on every surface.
 
 ## markdown
 
-GitHub renders Mermaid, so the diagram views are live here. The failure mode
-is different: diagrams that render but look like default gray boxes, and
-bodies that stack four of them with nothing to scan.
+GitHub renders Mermaid, so the diagram views are live. Everything specific to
+writing one is in [diagrams.md](diagrams.md); this section is the rest of the
+renderer.
 
-### Style every Mermaid diagram
+### Layout
 
-GitHub picks the Mermaid theme from the reader's light or dark setting, and an
-unstyled node is a gray box in both. Give the nodes meaning with color.
+GitHub's sanitizer strips `class`, `style`, `aria-*` and `role`, deletes
+inline `<svg>` entirely, and removes the `src` of any `data:` URI — so there
+is no CSS, no hand-authored inline vector, and no embedded image bytes.
 
-```mermaid
-flowchart LR
-    SP[specify] --> DS[design] --> PL[plan] --> EX[execute]
-    FIX[fix] -.->|lift to the true layer| SP
-    classDef phase fill:#0f766e,stroke:#115e59,color:#fff
-    classDef entry fill:#b91c1c,stroke:#7f1d1d,color:#fff
-    class SP,DS,PL,EX phase
-    class FIX entry
-```
+What survives is a real one:
 
-The palette, dark enough that white text reads on it in either theme:
+- **`<table><td>` is the only column layout.** With blank lines inside a cell,
+  the cell holds full Markdown — including fenced code and Mermaid. This is
+  how a diagram sits beside its legend, or a before and after sit side by
+  side.
+- `<details>`/`<summary>` folds a long view, nests, and can contain a Mermaid
+  fence provided blank lines surround it.
+- `> [!NOTE]` and `> [!IMPORTANT]` are the only colored callouts. One per
+  output; a second spends the emphasis of the first. They cannot nest.
+- `<kbd>`, `<sub>`, `<sup>`, `<ins>`, `<del>`, `<mark>`, `<samp>`, `<br>`,
+  `<dl>`, `<div align>` and `<p align>` all survive. `<nobr>`, `<small>`,
+  `<abbr>`, `<figure>` and `<figcaption>` do not — use `&nbsp;` where you
+  wanted `<nobr>`.
+- Unicode box drawing inside a fence or a `<td>` needs no hosting and cannot
+  be sanitized away.
 
-```text
-classDef primary fill:#1e40af,stroke:#1e3a8a,color:#fff
-classDef work    fill:#0f766e,stroke:#115e59,color:#fff
-classDef state   fill:#6d28d9,stroke:#5b21b6,color:#fff
-classDef danger  fill:#b91c1c,stroke:#7f1d1d,color:#fff
-classDef muted   fill:#334155,stroke:#1e293b,color:#fff
-```
+### Line breaks and length
 
-Always set all three of `fill`, `stroke` and `color` together. A `fill` without
-a `color` is unreadable in whichever theme you did not check.
+In a PR or issue body a single newline is a **hard break**, so a paragraph
+wrapped at 80 columns arrives as ragged short lines. Write each paragraph as
+one unwrapped line. A README does not do this. Body cap is 65,536 codepoints.
 
-Never set the theme with `%%{init: {'theme': ...}}%%`. It overrides GitHub's
-light-and-dark switching, so fixing one theme breaks the other.
+### Images
 
-Color carries emphasis, never information on its own — the node's label still
-has to say what it is.
+`geojson`, `topojson` and `stl` fences render as live interactive views.
+Beyond those, an image needs a URL: GitHub proxies external `<img>` sources
+server-side, so a referenced image renders even in a private repository, and
+`<picture>` with `<source media="(prefers-color-scheme: dark)">` is the
+supported way to ship a light and a dark variant. A repo-relative path works
+in a README and breaks in a PR body — use an absolute raw URL pinned to a sha.
 
-### One question per diagram
-
-A flowchart holding the pipeline, the artifacts it emits, the shared state hub
-and the re-entry paths answers four questions and reads as a hairball. Split
-it, or drop the parts the reader did not ask about. Two diagrams of five nodes
-beat one of twenty.
-
-Pick `LR` for a pipeline, `TD` for a hierarchy or a decision. Use `subgraph`
-only when the grouping is itself part of the answer.
-
-### Quantity
-
-`pie` is the safe quantitative diagram — stable, and it renders everywhere
-GitHub renders Mermaid.
-
-```mermaid
-pie showData
-    title Verifiers per phase
-    "execute" : 5
-    "design" : 4
-    "specify" : 2
-```
-
-For a series across an axis, `xychart-beta` renders on current GitHub; confirm
-it once on the host that matters before a body depends on it. Where it is not
-certain, a table of bars built the `terminal` way renders identically in
-Markdown and cannot fail.
-
-### Fold the long view
-
-When the compact view is the answer and the full one is reference, give the
-reader both without the wall:
-
-````text
-<details>
-<summary>Full call tree</summary>
-
-```text
-submitForm
-  createSession
-```
-
-</details>
-````
-
-### Call out the invariant
-
-One `> [!NOTE]` or `> [!IMPORTANT]` per output, holding the single line the
-reader must not miss. A second one spends the emphasis of the first.
+`gh pr create` has no `--attach` flag. It was never shipped.
 
 ## html
 
 A self-contained page, published as an Artifact by whoever asked for it. This
-is the surface with real layout, real color and real diagrams — so it is also
-the one to resist. Reach for it only when the view genuinely exceeds the other
-two: more nodes than 80 columns can hold, more than one dimension at once, or
-something the reader will return to rather than scroll past.
-
-A six-line call tree does not need a web page.
+is the surface with real layout, color and diagrams — so it is also the one to
+resist. Reach for it only when the view genuinely exceeds the other two: more
+nodes than a terminal can hold, more than one dimension at once, or something
+the reader will return to rather than scroll past. A six-line call tree does
+not need a web page.
 
 1. Load the `artifact-design` skill before writing the file. Load
    `artifact-diagramming` as well if the page carries a diagram, and `dataviz`
    if it carries a chart.
 2. Write page content only — no doctype, `html`, `head` or `body` tags; the
    publisher wraps the file. Put the `<title>` and the `<style>` at the top.
-3. Mermaid renders natively in a published Artifact through
-   `<pre class="mermaid">`. Do not load a Mermaid library.
+3. Match the product being described: its real colors, type, spacing and
+   component shapes, with real labels and real data rather than placeholders.
+   The page may be a diagram, an infographic or a short deck.
 4. Write the file into the session scratchpad, never into the repository, and
    **return the absolute path**.
 
 Publishing is the caller's job, exactly as it is for a screenshot. When no
 other skill asked for the visual, the one who invoked you is the caller:
 publish the file with the Artifact tool and hand back the link.
+
+### Libraries
+
+Only `cdnjs.cloudflare.com`, `cdn.jsdelivr.net/npm/`, `cdn.tailwindcss.com`
+and `code.jquery.com` load, and only scripts — **stylesheets from a CDN are
+blocked**, so any library CSS must be pasted inline. WebAssembly is blocked
+too, which rules out Graphviz, Pikchr and svgbob.
+
+| Need | Load |
+|------|------|
+| A diagram | `https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.min.js` — jsdelivr, not cdnjs, which has no 12.x. Version 12 uses the ELK layout engine by default, which is the single biggest quality difference available |
+| A chart | `echarts` for best defaults, `Chart.js` for best quality per kilobyte. Load `dataviz` first |
+| ASCII art as crisp vector | `https://cdn.jsdelivr.net/npm/aasvg@0.5.7/text2svg.js` — 84 KB, no dependencies; turns the same ASCII source the terminal surface uses into clean SVG |
+
+Two traps worth knowing: Observable Plot's bundle silently renders nothing
+unless a global `d3` is loaded first, and Vega throws under the page's
+security policy unless you pass `vega.expressionInterpreter` as `expr`.

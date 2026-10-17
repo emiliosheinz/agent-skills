@@ -24,18 +24,37 @@ Invoke this skill when you want to:
 
 | `surface` | Read in | What it uses |
 |-----------|---------|--------------|
-| `terminal` | Claude Code, any CLI | Fence syntax highlighting for color, tables for borders, block characters for bars, 80 columns |
-| `markdown` | GitHub PRs, issues, READMEs | Mermaid with a palette that survives both GitHub themes, `<details>`, `> [!NOTE]` |
+| `terminal` | Claude Code, any CLI | Fence syntax highlighting for color, tables for borders, fill texture for series, block characters for bars |
+| `markdown` | GitHub PRs, issues, READMEs | Mermaid with a palette that survives both GitHub themes, `<table><td>` columns, `<details>`, `> [!NOTE]` |
 | `html` | A published Artifact page | Real layout and CSS, native Mermaid, real charts |
+
+A terminal gets a drawn diagram only where a Mermaid renderer is present; the
+skill detects that rather than assuming either way.
 
 ## Requirements
 
 - Nothing, for the text views. They render anywhere Markdown does.
-- A surface that renders Mermaid — GitHub or an HTML page — for the diagram
-  views.
+- A surface that renders Mermaid — GitHub, an HTML page, or a terminal with a
+  Mermaid renderer — for the diagram views.
+- Node, to validate Mermaid before it ships. Without it the skill falls back
+  to a syntax checklist and says validation was skipped.
 - A caller that can publish an Artifact, for `surface: html`.
 - Playwright or a browser extension, plus a way to run the app, for
   screenshots.
+
+## Validating a diagram
+
+Mermaid fails silently: a broken diagram reaches the reader as an error box or
+as raw source, and nothing reports back. `scripts/validate-mermaid.mjs` parses
+a file's Mermaid fences with Mermaid's own parser under Node — no browser —
+and prints the failing line along with the tokens the parser will accept
+there.
+
+```bash
+node show-me/scripts/validate-mermaid.mjs path/to/file.md
+```
+
+Dependencies install once into a cache directory outside the project.
 
 ## Responsibility
 
@@ -58,7 +77,9 @@ anything about GitHub.
 ## It's working if
 
 The headline lands from the first view alone, without the prose around it —
-and the prose around it got shorter rather than longer.
+and the prose around it got shorter rather than longer. A diagram additionally
+has to survive being read back against the node and edge list it was drawn
+from; looking right is not evidence of being right.
 
 ## Credits
 

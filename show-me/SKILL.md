@@ -16,9 +16,10 @@ metadata:
   version: 2.0.0
 compatibility: >
   Text views render anywhere Markdown does. Mermaid needs a surface that
-  renders it — GitHub or an HTML page, not a terminal. The HTML surface needs
-  a caller that can publish an Artifact. Screenshot capture needs Playwright
-  or a browser extension in the session, plus a way to run the app.
+  renders it — GitHub, an HTML page, or a terminal with a Mermaid renderer
+  present. Validating Mermaid needs Node. The HTML surface needs a caller that
+  can publish an Artifact. Screenshot capture needs Playwright or a browser
+  extension in the session, plus a way to run the app.
 ---
 
 # Show me
@@ -51,17 +52,17 @@ mistake that ruins an otherwise good view.
 
 | `surface` | Read in | What it can do |
 |-----------|---------|----------------|
-| `terminal` | Claude Code and any CLI | Text only. No diagram renders. Color comes from the fence language; borders come from tables. 80 columns. |
-| `markdown` | GitHub PRs, issues, READMEs | Mermaid renders and takes color. `<details>` folds. `> [!NOTE]` calls out. |
-| `html` | A published Artifact page | Real layout, CSS and diagrams. Returned as a file path for the caller to publish. |
+| `terminal` | Claude Code and any CLI | Text. Color comes from the fence language, borders from tables, series from fill texture. A diagram renders only where a Mermaid renderer is present. |
+| `markdown` | GitHub PRs, issues, READMEs | Mermaid renders and takes color. `<table><td>` gives real columns. `<details>` folds. `> [!NOTE]` calls out. |
+| `html` | A published Artifact page | Real layout, CSS, charts and diagrams. Returned as a file path for the caller to publish. |
 
 **Read [references/surfaces.md](references/surfaces.md) for the surface you
 were given before producing anything.** It holds the fence-to-color map, the
-width budget, the Mermaid palette that survives both GitHub themes, and the
-rules for writing an HTML page.
+safe glyph set, what GitHub's sanitizer keeps, and the rules for an HTML page.
 
-Never emit Mermaid to `terminal`. It arrives as a wall of source, which is
-the opposite of the job.
+A raw Mermaid fence in a terminal is a wall of source, which is the opposite
+of the job. `surfaces.md` has the cascade that decides whether to render it,
+emit it, or drop it for a text view.
 
 ## Composition
 
@@ -78,6 +79,9 @@ How the views sit together matters as much as each one.
   category tells the reader nothing they cannot see.
 - **No two adjacent views of the same shape.** Two trees in a row read as one
   long tree.
+- **Twelve nodes to a diagram**, split at twenty. The ceiling binds harder
+  than it feels like it should — see
+  [references/diagrams.md](references/diagrams.md).
 
 ## The views
 
@@ -132,7 +136,11 @@ execute  ███████████████████████�
 ```
 
 **Component interaction, control flow, or data flow — Mermaid**, on a surface
-that renders it. Style it; an unstyled diagram is gray boxes.
+that renders it. Before drawing one, read
+[references/diagrams.md](references/diagrams.md): it carries the node
+ceilings, the enumerate-draw-validate loop, which diagram type fits which
+subject, the palette that survives both GitHub themes, and the syntax that
+fails silently.
 
 ```mermaid
 sequenceDiagram
@@ -267,6 +275,12 @@ drop the rest.
 Before returning, read the output as the reader will: **the headline has to
 land from the first view alone, without the prose around it.** If it does not,
 the wrong view is first, or the caption is not saying the finding.
+
+A view carrying a diagram is not finished until it has been through the loop
+in [references/diagrams.md](references/diagrams.md) — enumerated, drawn,
+validated, then read back against the enumeration. Renderers fail silently in
+both directions: a broken diagram looks fine from here, and a diagram that
+renders beautifully can still be missing half its edges.
 
 ## Credits
 

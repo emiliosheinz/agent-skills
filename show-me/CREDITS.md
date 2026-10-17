@@ -22,6 +22,12 @@ rather than the source, and its closing guidance.
   Here the caller says where the view will be read — a terminal, Markdown or
   an HTML page — and the view is built from what that surface can actually
   render.
+- **Diagram craft and validation added.** Node and edge ceilings, the
+  enumerate-draw-validate-verify loop, the anti-pattern tests, and a parser
+  that checks Mermaid before it ships. The original has no equivalent.
+- **The HTML guidance kept from the original**: match the product's colors,
+  type, spacing and components, use real labels and data, and allow the page
+  to be an infographic or a short deck rather than only a diagram.
 - **Model-invocable.** The original sets `disable-model-invocation: true`.
   Here `/pr` calls this skill, so it must be invocable by a model.
 - **Parameters added** so a caller can constrain surface, view count and size.

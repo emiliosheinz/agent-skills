@@ -5,10 +5,7 @@ anyone sees it. Applies on every surface; the Mermaid sections apply wherever
 Mermaid renders.
 
 - [The loop](#the-loop)
-- [Ceilings](#ceilings)
-- [Rules, ranked](#rules-ranked)
-- [Anti-patterns](#anti-patterns)
-- [The self-check](#the-self-check)
+- [Rules and their checks](#rules-and-their-checks)
 - [Mermaid: choosing a type](#mermaid-choosing-a-type)
 - [Mermaid: color](#mermaid-color)
 - [Mermaid: syntax that fails silently](#mermaid-syntax-that-fails-silently)
@@ -36,88 +33,39 @@ is almost no evidence of a complete one — completeness stayed under a third
 across every configuration tested, and a model once scored full marks on
 clarity with zero on completeness. Grade against the list, never by eye.
 
-## Ceilings
+## Rules and their checks
 
-| Quantity | Ceiling | Why |
-|----------|---------|-----|
-| Nodes | 12 to scan, **split at 20** | Attention holds about four chunks; a 12-node diagram with three or four visual groups is already at that limit |
-| Edges | ≤ 1.5 × node count | Past that it is a hairball whatever the layout engine does |
-| Edge crossings | **0** at this size | By far the strongest measured aesthetic for comprehension. If one is truly unavoidable, make it cross near 90° |
-| Bends per edge | ≤ 1 | Measured, smaller effect than crossings |
-| Node label | ≤ 4 words | Longer labels break the layout before they break the reader |
-| Edge label | ≤ 3 words, a verb | An unlabeled arrow asserts "related somehow" |
+Every rule is a check you can run on your own draft, cheapest first. Crossings,
+the title and the edge verbs are the three with measured effects on
+comprehension; the rest are argued.
 
-This model over-generates nodes relative to others, with no matching gain in
-edge quality. Treat the node ceiling as a real constraint rather than a
-guideline, and raise abstraction instead of shrinking type.
+| Rule | Check |
+|------|-------|
+| At most 12 nodes, split at 20 | Count them |
+| Edges no more than 1.5 × nodes | Count them |
+| Title asserts a finding, not a category | Read it. Needing "and" means it is two diagrams |
+| Every edge carries a verb | Count unlabelled edges; any at all fails |
+| Node labels ≤ 4 words, edge labels ≤ 3 | Read the longest one |
+| One abstraction level | Name each node's kind; more than one kind splits |
+| At most four hues, none load-bearing alone | Count hues; a hue meaning two things fails |
+| Zero edge crossings, at most one bend per edge | Count them. An unavoidable crossing meets near 90° |
+| One axis semantic, held throughout | Name it in one word — time, call depth, layer. Cannot → re-lay out |
+| The main path holds one direction | Trace it; zig-zag means re-lay out |
+| Two or three visual weights | Count them. Exactly one means nothing is the subject |
+| Every mark encodes something | Name the datum behind each non-text mark; delete the rest |
+| Labels inline, no legend | Cover the legend. Any node now ambiguous fails |
+| Shape never carries a category alone | Shape is not preattentive; it may only repeat what colour or position already says |
+| It draws a mechanism, not a list | Delete every arrow. Same meaning → it was prose in boxes |
+| Comparisons are small multiples | Same layout, same scale, one variable changed |
 
-## Rules, ranked
+Then validate the syntax, and read the drawn diagram back against the
+enumerated node and edge lists.
 
-Ranked by how much evidence there is that each one changes comprehension.
-
-1. **Zero edge crossings.** At twelve nodes a crossing-free arrangement nearly
-   always exists — reorder before accepting one.
-2. **Title states the finding, not the category.** "Auth runs twice per
-   request", not "Authentication flow". A sentence headline asserting the
-   point measurably raises what readers retain over a topic label.
-3. **Keep the main path straight.** The flow a reader traces should not
-   zig-zag; continuity and crossings dominate the cost of following a path.
-4. **Every edge carries a verb** — `writes`, `invalidates`, `polls every 30s`.
-   Edge direction and relationship type are exactly where generated diagrams
-   are measured to be weakest, and naming the relation forces the commitment.
-5. **One axis semantic, held throughout.** Position means time, or call depth,
-   or layer — pick one and never let placement be incidental.
-6. **One abstraction level per diagram.** A box that is a whole service next
-   to a box that is a function is two diagrams.
-7. **At most four categorical colors**, and color is never the only carrier —
-   duplicate every color distinction in position, grouping or text.
-8. **Group by enclosure before reaching for color.** A labelled box around
-   three nodes beats three nodes sharing a fill.
-9. **Two or three visual weights, no more.** Push context to low contrast and
-   keep the subject at full contrast. One weight means nothing is emphasized;
-   four also means nothing is.
-10. **Never encode a category by node shape alone.** Shape is the one visual
-    variable the eye cannot isolate preattentively — it may only ever be
-    redundant with something else.
-11. **Delete every mark that encodes nothing.** Not as asceticism: embellished
-    charts test no worse on accuracy and better on recall weeks later. The
-    rule is "remove marks that carry no datum", never "plainer is clearer".
-12. **Compare with small multiples**, not one merged picture: same layout,
-    same scale, one variable changed.
-
-Deliberately absent, because the evidence does not support them: maximizing
+Claude over-generates nodes relative to other models with no matching gain in
+edge quality, so the node ceiling binds harder than it feels like it should.
+Deliberately absent, because the evidence does not support them: maximising
 symmetry, orthogonality, uniform edge lengths, and Miller's "seven plus or
 minus two" as a budget.
-
-## Anti-patterns
-
-| Name | Detection test on your own draft |
-|------|----------------------------------|
-| Hairball | Count crossings; count edges against 1.5 × nodes. Either fails → raise abstraction |
-| Kitchen sink | Write the title as one assertion. Needing "and" means it is two diagrams |
-| Prose in boxes | Delete every arrow. If it still says the same thing, it was a list — draw the mechanism or cut it |
-| Verbless arrows | Count unlabeled edges. Any at all → fail |
-| Chartjunk | Point at each non-text mark and name the datum it encodes. Cannot → delete it |
-| Abstraction salad | List each node's kind. More than one level → split |
-| Legend dependency | Cover the legend. Any node now ambiguous → inline the labels |
-| Mystery-meat position | State the axis semantic in one word. Cannot → re-lay out |
-| Rainbow | Count hues. More than four, or any hue meaning two things → recolor |
-| Monochrome mush | Count visual weights. Exactly one → nothing is the subject |
-
-## The self-check
-
-Cheapest first, so the common failures are caught before the expensive checks
-run.
-
-1. Count nodes. Over 12 simplify, over 20 split.
-2. Count edges against 1.5 × nodes.
-3. Read the title — a complete sentence asserting a finding, with no "and".
-4. Count unlabeled edges. Any → add verbs.
-5. Count hues and abstraction levels.
-6. Count crossings.
-7. Trace the main path; it should hold one direction.
-8. Validate the syntax (below).
-9. Read the drawn diagram back against the enumerated node and edge lists.
 
 ## Mermaid: choosing a type
 

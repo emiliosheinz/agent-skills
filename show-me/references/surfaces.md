@@ -91,11 +91,9 @@ characters as one column while several common monospace fonts draw them at
 two, so a table or panel using them shears for some readers and not others.
 Box Drawing and Block Elements are one column in every font measured.
 
-Braille (`⠀`–`⣿`) is tempting — 2×4 subpixels per cell — and is width-safe,
-but ten of fourteen common monospace fonts ship **no braille glyphs at all**,
-including SF Mono, Menlo, Monaco, JetBrains Mono, Fira Code and Hack. The
-fallback is not a visible box but a wrong-width glyph that clips. Use braille
-only when the reader has asked for it.
+Braille (`⠀`–`⣿`) looks tempting at 2×4 subpixels per cell, but ten of
+fourteen common monospace fonts ship no braille glyphs at all — the fallback
+is a wrong-width glyph that clips, not a visible box. Skip it.
 
 ### Texture is a second channel
 

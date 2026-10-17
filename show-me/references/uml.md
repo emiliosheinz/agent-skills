@@ -9,8 +9,7 @@ Readers follow the conventions of a notation they recognise over any generic
 layout aesthetic, so a UML subject drawn in ad-hoc boxes forfeits the
 comprehension the convention already buys.
 
-- [What is and is not a UML subject](#what-is-and-is-not-a-uml-subject)
-- [Picking the type](#picking-the-type)
+- [What is a UML subject](#what-is-a-uml-subject)
 - [Class diagrams](#class-diagrams)
 - [Sequence diagrams](#sequence-diagrams)
 - [State machine diagrams](#state-machine-diagrams)
@@ -18,43 +17,33 @@ comprehension the convention already buys.
 - [Activity diagrams](#activity-diagrams)
 - [Gotchas](#gotchas)
 
-## What is and is not a UML subject
+## What is a UML subject
 
-UML covers structure and behaviour of a system. It does not cover everything
-this skill draws, and forcing a non-UML subject into UML makes it worse.
+UML covers the structure and behaviour of a system, not everything this skill
+draws. Forcing a non-UML subject into UML makes it worse, so when the subject
+is not on this table, draw the plain view and say nothing about UML — do not
+apologise for it, and do not invent a stereotype to make a file tree look
+conformant.
 
-| Subject | Treatment |
-|---------|-----------|
-| Classes, types, data model | Class diagram |
-| An exchange between participants over time | Sequence diagram |
-| Modes and transitions of one object | State machine diagram |
-| Goals of actors against a system | Use case diagram |
-| A workflow or algorithm | Activity diagram |
-| Deployed units and their interfaces | Component or deployment diagram |
-| A file tree, a call tree, a chart, a screenshot, an endpoint contract, a repository history | **Not UML.** Use the plain view and do not dress it as UML |
+Every Mermaid column below was checked against Mermaid's own parser.
 
-When the subject is not UML, say nothing about UML — do not apologise for it,
-and do not invent a stereotype to make a file tree look conformant.
+| Subject | UML diagram | Mermaid | Fidelity gap |
+|---------|-------------|---------|--------------|
+| Classes, types, a data model | Class | `classDiagram` | All six relationships, visibility, multiplicity, stereotypes |
+| An exchange between participants over time | Sequence | `sequenceDiagram` | Lifelines, execution specifications, combined fragments, create and destroy |
+| Modes and transitions of one object | State machine | `stateDiagram-v2` | No history pseudostate; the rest is there |
+| Goals of actors against a system | Use case | `usecase-beta` | Actors, boundaries and links only; no «include» / «extend» rendering |
+| A workflow or algorithm | Activity | `flowchart` | Approximation only — see below |
+| Deployed units and their interfaces | Component, deployment | **none** | Mermaid cannot draw provided and required interfaces |
+| Objects, packages, timing, communication | — | **none** | Approximate honestly or use prose |
+
+A file tree, a call tree, a chart, a screenshot, an endpoint contract and a
+repository history are **not** UML subjects.
 
 A UML diagram needs a surface that renders Mermaid, so these belong to
 `markdown` and `html`. On `terminal`, use the text view that carries the same
 shape — `surfaces.md` maps them — and offer another surface when the shape
 genuinely needs layout.
-
-## Picking the type
-
-Mermaid implements part of UML and nothing fills the rest. Every row below was
-checked against Mermaid's own parser.
-
-| UML diagram | Mermaid | Fidelity gap |
-|-------------|---------|--------------|
-| Class | `classDiagram` | Full enough: all six relationships, visibility, multiplicity, stereotypes |
-| Sequence | `sequenceDiagram` | Full enough: lifelines, execution specifications, combined fragments, create and destroy |
-| State machine | `stateDiagram-v2` | Good: initial, final, composite, choice, fork, join. No history pseudostate |
-| Use case | `usecase-beta` | Actors, system boundaries and links only. No «include» / «extend» stereotype rendering |
-| Activity | `flowchart` | Approximation only — see below |
-| Component | **none** | Mermaid cannot draw provided and required interfaces. Use a `flowchart` and say it is not a component diagram |
-| Deployment, object, package, timing, communication | **none** | Same: approximate honestly or use prose |
 
 ## Class diagrams
 

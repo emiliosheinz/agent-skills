@@ -79,9 +79,6 @@ How the views sit together matters as much as each one.
   category tells the reader nothing they cannot see.
 - **No two adjacent views of the same shape.** Two trees in a row read as one
   long tree.
-- **Twelve nodes to a diagram**, split at twenty. The ceiling binds harder
-  than it feels like it should — see
-  [references/diagrams.md](references/diagrams.md).
 
 ## The views
 
@@ -209,29 +206,6 @@ A file-layout change:
 +    └── stream.ts
 ```
 
-A call-tree change:
-
-```diff
- submitForm
-   createSession
-     persistPrompt
-+    expandSkillMention
-     launchAgent
-   navigateToSession
-+    subscribeToEvents
-```
-
-A state or control-flow change:
-
-```diff
- on(save)
--  write content
-+  if content is unchanged
-+    return cached result
-+  write new content
-+  invalidate cache
-```
-
 The `diff` fence is also the only way to get red and green into a terminal, so
 prefer it wherever the topic genuinely is a change.
 
@@ -257,8 +231,7 @@ path and name what it shows.
 
 ## Drawing a diagram
 
-Copy this checklist and work it in order. Steps 1 and 4 are what keep a
-diagram honest; step 3 is what keeps it from arriving broken.
+Copy this checklist and work it in order.
 
 ```text
 - [ ] Enumerate the nodes, and the edges as `source --verb--> target`
@@ -268,43 +241,26 @@ diagram honest; step 3 is what keeps it from arriving broken.
 - [ ] Read the drawn diagram back against the enumeration
 ```
 
-Classes, an exchange between participants, one object's states, actor goals,
-a workflow and deployed units each have a UML diagram type. Draw that type and
-follow its notation — [references/uml.md](references/uml.md) holds the
-mapping, the arrow glyphs and the rules that are part of the notation rather
-than decoration. A file tree, a call tree, a chart, a screenshot or an
-endpoint contract is not a UML subject; draw it plainly and say nothing about
-UML.
+**Run** `scripts/validate-mermaid.mjs`; there is no reason to read it. It
+needs `node` and `npm`, and names the failing line and the tokens the parser
+will accept there.
 
-**Run** `scripts/validate-mermaid.mjs`; there is no reason to read it. It exits
-0 when every diagram parsed, 1 when one did not — with the failing line and
-the tokens the parser accepts there — and 2 when it could not run at all, in
-which case check the diagram by hand and say validation was skipped. It needs
-`node` and `npm`.
-
-The ceilings, the diagram-type menu, the palette and the syntax that fails
-silently are all in [references/diagrams.md](references/diagrams.md).
+[references/diagrams.md](references/diagrams.md) holds the rules, their
+checks, the diagram-type menu, the palette and the syntax that fails silently.
+[references/uml.md](references/uml.md) holds UML notation, for the subjects
+that have a UML type — a file tree or a chart does not, and is drawn plainly
+rather than dressed up as one.
 
 ## Guidance
 
-Place each visual next to the short text it supports. Keep only the calls,
-files, props, states and boundaries needed to answer the question actually
-being asked.
-
-Each view must add information rather than repeat the prose. A view that
-restates the sentence above it is noise with syntax highlighting.
-
-You may use one of these, you may use several, you will rarely use all of
-them. Keep the views whose information the prose does not already carry, and
-drop the rest.
+Place each visual next to the short text it supports, and keep only the calls,
+files, props, states and boundaries that answer the question actually being
+asked. A view that restates the sentence above it is noise with syntax
+highlighting — drop it.
 
 Before returning, read the output as the reader will: **the headline has to
 land from the first view alone, without the prose around it.** If it does not,
 the wrong view is first, or the caption is not saying the finding.
-
-Renderers fail silently in both directions, which is why the checklist above
-is not optional: a broken diagram looks fine from here, and a diagram that
-renders beautifully can still be missing half its edges.
 
 ## Credits
 

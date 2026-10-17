@@ -95,9 +95,9 @@ gh pr create --help | grep -q -- '--attach' && echo attach || echo placeholder
 gh repo view --json url    # attachments are GitHub.com and GHEC only
 ```
 
-Feature-detect `--attach`; do not compare version strings. It arrived in
-`gh` v2.99.0, so an older `gh` is placeholder-only, as is any host that is
-neither GitHub.com nor GitHub Enterprise Cloud.
+Feature-detect `--attach`; do not compare version strings. A `gh` without it
+is placeholder-only, as is any host that is neither GitHub.com nor GitHub
+Enterprise Cloud.
 
 Only when the change is one a reviewer would want to see: invoke `show-me`
 with `surface: markdown` for a screenshot. It returns an absolute path outside

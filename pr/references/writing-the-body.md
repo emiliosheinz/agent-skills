@@ -155,10 +155,9 @@ whether attachment is possible.
 - **Attachment available:** reference that absolute path in the body, and
   `gh pr create --attach '<path>#<alt text>'` rewrites it in place to the
   uploaded URL. Reference nothing and the image is appended at the end instead.
-- **Not available** — a `gh` older than v2.99.0, or a host that is neither
-  GitHub.com nor GitHub Enterprise Cloud: write a placeholder line naming what
-  belongs there, and tell the user to drag the image in before marking the PR
-  ready.
+- **Not available** — no `--attach`, or a host that is neither GitHub.com nor
+  GitHub Enterprise Cloud: write a placeholder line naming what belongs there,
+  and tell the user to drag the image in before marking the PR ready.
 
 Never commit a screenshot into the repo to get it into a body. A committed
 image does not render from a private repo, and it is permanent repo weight for

@@ -124,21 +124,28 @@ run.
 GitHub renders far more than flowcharts. Picking the type that matches the
 shape beats bending a flowchart into it.
 
-| The subject is | Type |
-|----------------|------|
-| A pipeline, a call graph, an architecture | `flowchart` |
-| An exchange over time between parties | `sequenceDiagram` |
-| Modes and transitions | `stateDiagram-v2` |
-| Tables and their relations | `erDiagram` |
-| Branch and release history | `gitGraph` |
-| Events along a timeline | `timeline` |
-| A hierarchy with no edges worth naming | `mindmap` |
-| Proportions of a whole | `pie` |
-| A series across an axis | `xychart-beta` |
-| Flow volumes between stages | `sankey` |
-| Nested sizes | `treemap` |
-| Work in columns | `kanban` |
-| Two-axis positioning | `quadrantChart` |
+Six of these subjects are UML subjects, marked below. For those, the notation
+is not a style choice — read [uml.md](uml.md) before drawing one.
+
+| The subject is | Type | UML |
+|----------------|------|-----|
+| A pipeline, a call graph, an architecture | `flowchart` | no |
+| A workflow or algorithm | `flowchart` as an approximation | yes, activity |
+| An exchange over time between parties | `sequenceDiagram` | yes |
+| Modes and transitions of one object | `stateDiagram-v2` | yes |
+| Classes, types, a data model | `classDiagram` | yes |
+| Goals of actors against a system | `usecase-beta` | yes |
+| Deployed units and their interfaces | none — approximate and say so | yes |
+| Tables and their relations | `erDiagram` | no, crow's foot |
+| Branch and release history | `gitGraph` | no |
+| Events along a timeline | `timeline` | no |
+| A hierarchy with no edges worth naming | `mindmap` | no |
+| Proportions of a whole | `pie` | no |
+| A series across an axis | `xychart-beta` | no |
+| Flow volumes between stages | `sankey` | no |
+| Nested sizes | `treemap` | no |
+| Work in columns | `kanban` | no |
+| Two-axis positioning | `quadrantChart` | no |
 
 Never `zenuml` — GitHub does not register it. Never plain `radar`; the
 `-beta` suffix is mandatory on that one.
@@ -200,6 +207,8 @@ carries its own small built-in set.
 The failures below produce an error box or raw source for the reader and
 nothing at all for you.
 
+- **`usecase-beta` rejects any leading indentation.** Its keywords must start
+  at column 0, unlike every other Mermaid diagram type.
 - **Quote any label containing** `(` `)` `[` `]` `{` `}` `:` `;` `#` `/` `\`
   `@` `!` `?` `<` `>` `"` `'`. Unquoted parentheses are the single most common
   break: `A[Start (now)]` fails, `A["Start (now)"]` works.

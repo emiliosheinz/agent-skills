@@ -1,17 +1,21 @@
 [
   {
-    "skills": ["show-me"],
+    "skills": [
+      "show-me"
+    ],
     "query": "show me how the session middleware chain works in this codebase",
     "expected_behavior": [
       "Produces a text view, not a raw Mermaid fence, because the default surface is terminal and no Mermaid renderer was detected",
       "Labels every fenced block with a language rather than leaving a fence bare",
-      "Uses only box-drawing and block characters in anything that has to align, never ▶ ◀ ▲ ▼ ● ■ ✓ or arrows",
+      "Uses only box-drawing and block characters in anything that has to align, never \u25b6 \u25c0 \u25b2 \u25bc \u25cf \u25a0 \u2713 or arrows",
       "Leads with a caption stating the finding, not a category label like 'Architecture'",
       "Keeps the prose around the view shorter than it would have been without it"
     ]
   },
   {
-    "skills": ["show-me"],
+    "skills": [
+      "show-me"
+    ],
     "query": "show me the request path for a cache miss, surface: markdown, size: tight, max-views: 1",
     "expected_behavior": [
       "Returns exactly one view",
@@ -24,7 +28,9 @@
     ]
   },
   {
-    "skills": ["show-me"],
+    "skills": [
+      "show-me"
+    ],
     "query": "show me a sequence diagram of the OAuth callback, surface: markdown",
     "expected_behavior": [
       "Does not attempt to style the diagram with classDef, which is a no-op on sequenceDiagram",
@@ -34,17 +40,46 @@
     ]
   },
   {
-    "skills": ["show-me"],
-    "query": "show me how long each build phase takes: install 42s, compile 118s, test 203s, package 31s",
+    "skills": [
+      "show-me"
+    ],
+    "query": "show me the relationship between Order, LineItem, Coupon and Customer, surface: markdown",
     "expected_behavior": [
-      "Chooses the chart view rather than restating the numbers in prose",
-      "Draws bars against a track so the scale is visible, using █ for fill and ░ for the remainder",
-      "Scales the bars proportionally to the values given",
-      "Does not use ▉ as a solid bar, since it leaves a gap in every cell"
+      "Recognises a UML subject and draws a classDiagram rather than a flowchart",
+      "Uses the filled diamond *-- only where the part cannot outlive the whole, and o-- otherwise",
+      "Puts the whole on the left of *-- and o--, and the supertype on the left of <|--",
+      "Gives every association a multiplicity on both ends",
+      "Marks member visibility with + - # or ~",
+      "Styles with style rather than classDef, which is a no-op on classDiagram"
     ]
   },
   {
-    "skills": ["show-me"],
+    "skills": [
+      "show-me"
+    ],
+    "query": "show me the file layout of the transport module",
+    "expected_behavior": [
+      "Draws a plain file tree",
+      "Does not force the subject into a UML package or component diagram",
+      "Says nothing about UML, since a file tree is not a UML subject"
+    ]
+  },
+  {
+    "skills": [
+      "show-me"
+    ],
+    "query": "show me how long each build phase takes: install 42s, compile 118s, test 203s, package 31s",
+    "expected_behavior": [
+      "Chooses the chart view rather than restating the numbers in prose",
+      "Draws bars against a track so the scale is visible, using \u2588 for fill and \u2591 for the remainder",
+      "Scales the bars proportionally to the values given",
+      "Does not use \u2589 as a solid bar, since it leaves a gap in every cell"
+    ]
+  },
+  {
+    "skills": [
+      "show-me"
+    ],
     "query": "show me the component tree for the settings page as a page I can share, surface: html",
     "expected_behavior": [
       "Writes an HTML file to the session scratchpad and returns its absolute path",
@@ -55,7 +90,9 @@
     ]
   },
   {
-    "skills": ["show-me"],
+    "skills": [
+      "show-me"
+    ],
     "query": "explain in words, no diagrams, why the retry logic double-submits",
     "expected_behavior": [
       "Does not produce any view; this is the documented SKIP case for prose the user asked for in words",

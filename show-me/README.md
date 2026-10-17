@@ -76,10 +76,11 @@ anything about GitHub.
 
 ## Evaluations
 
-`evals/cases.json` holds six scenarios covering the default terminal surface,
-a tight Markdown PR view, a sequence diagram where `classDef` is a no-op, a
-quantity that should become a chart, an HTML page, and the documented SKIP
-case. Each lists the behaviour the output has to show. Run them against the
+`evals/cases.json` holds eight scenarios covering the default terminal
+surface, a tight Markdown PR view, a sequence diagram where `classDef` is a
+no-op, a class diagram that has to get UML notation right, a file tree that
+must *not* be forced into UML, a quantity that should become a chart, an HTML
+page, and the documented SKIP case. Each lists the behaviour the output has to show. Run them against the
 models you intend to use — guidance that is right for one is not automatically
 enough for a smaller one.
 

@@ -262,10 +262,19 @@ diagram honest; step 3 is what keeps it from arriving broken.
 
 ```text
 - [ ] Enumerate the nodes, and the edges as `source --verb--> target`
+- [ ] If the subject is a UML subject, pick that UML type and its notation
 - [ ] Draw only what is enumerated, 12 nodes or fewer
 - [ ] Validate: node show-me/scripts/validate-mermaid.mjs <file>
 - [ ] Read the drawn diagram back against the enumeration
 ```
+
+Classes, an exchange between participants, one object's states, actor goals,
+a workflow and deployed units each have a UML diagram type. Draw that type and
+follow its notation — [references/uml.md](references/uml.md) holds the
+mapping, the arrow glyphs and the rules that are part of the notation rather
+than decoration. A file tree, a call tree, a chart, a screenshot or an
+endpoint contract is not a UML subject; draw it plainly and say nothing about
+UML.
 
 **Run** `scripts/validate-mermaid.mjs`; there is no reason to read it. It exits
 0 when every diagram parsed, 1 when one did not — with the failing line and

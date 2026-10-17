@@ -14,12 +14,34 @@ rather than the source, and its closing guidance.
 
 - **Screenshots added.** The original has no screenshot concept; a picture of
   the real running app outranks a hand-written mock of it.
-- **The focused HTML view dropped.** The original writes a self-contained HTML
-  file for a UI too dense for Mermaid. Where the app exists, a screenshot does
-  that job; where it does not, the fenced views cover the shape.
+- **The focused HTML view reworked into a surface.** The original writes a
+  self-contained HTML file for a UI too dense for Mermaid. Here HTML is one of
+  three surfaces any view can be built for, published as an Artifact by the
+  caller, rather than a view of its own.
+- **Surfaces added.** The original emits the same fenced blocks everywhere.
+  Here the caller says where the view will be read — a terminal, Markdown or
+  an HTML page — and the view is built from what that surface can actually
+  render.
+- **Diagram craft and validation added.** Node and edge ceilings, the
+  enumerate-draw-validate-verify loop, the anti-pattern tests, and a parser
+  that checks Mermaid before it ships. The original has no equivalent.
+- **The HTML guidance kept from the original**: match the product's colors,
+  type, spacing and components, use real labels and data, and allow the page
+  to be an infographic or a short deck rather than only a diagram.
 - **Model-invocable.** The original sets `disable-model-invocation: true`.
   Here `/pr` calls this skill, so it must be invocable by a model.
-- **Parameters added** so a caller can constrain view count and size.
+- **Parameters added** so a caller can constrain surface, view count and size.
+
+## `beautiful-mermaid` — Luki Labs
+
+The monochrome-plus-one-accent palette follows the approach in
+[lukilabs/beautiful-mermaid](https://github.com/lukilabs/beautiful-mermaid):
+derive the whole look from a background and a foreground, keep node fills to a
+whisper and strokes quiet, and spend colour only on what the reader must
+notice. Its tightened node and rank spacing is borrowed too. The hex values
+here are this repo's own, computed to hold their contrast on both a white and
+a near-black page, because Mermaid's `classDef` on GitHub cannot call
+`color-mix()`.
 
 ### License
 

@@ -2,26 +2,31 @@
 name: show-me
 description: >
   Produces a compact visual of a topic — pseudocode, call tree, component tree,
-  file tree, Mermaid diagram, a diff of any of those shapes, or a screenshot of
-  a running app. TRIGGER when: the user says "show me", asks to visualize or
-  diagram something, asks what the shape or structure or flow of something is,
-  or asks for a screenshot of the app; and when another skill needs a visual
-  for a document it is writing. SKIP for: prose explanations the user asked for
-  in words, and embedding or uploading an image anywhere — this skill produces
-  visuals, it does not publish them.
+  file tree, contract, chart, Mermaid diagram, a diff of any of those shapes,
+  or a screenshot of a running app — built for where it will be read: a
+  terminal, Markdown, or a self-contained HTML page. TRIGGER when: the user
+  says "show me", asks to visualize or diagram something, asks what the shape
+  or structure or flow of something is, or asks for a screenshot of the app;
+  and when another skill needs a visual for a document it is writing. SKIP
+  for: prose explanations the user asked for in words, and embedding or
+  uploading an image anywhere — this skill produces visuals, it does not
+  publish them.
 metadata:
   author: emiliosheinz
-  version: 1.0.0
+  version: 2.0.0
 compatibility: >
-  Views are fenced code blocks that render anywhere Markdown does, GitHub
-  included. Screenshot capture needs Playwright or a browser extension in the
-  session, plus a way to run the app.
+  Text views render anywhere Markdown does. Mermaid needs a surface that
+  renders it — GitHub or an HTML page, never a terminal. Validating Mermaid
+  needs Node. The HTML surface needs a caller that can publish an Artifact.
+  Screenshot capture needs Playwright or a browser extension in the session,
+  plus a way to run the app.
 ---
 
 # Show me
 
 Make the topic visible. Skip the preamble and keep prose brief. Pick the
-smallest view that makes the key point clear.
+smallest view that makes the key point clear, and build it for the surface it
+will be read on.
 
 This skill **produces** visuals. It does not embed, upload or publish them —
 the caller does that.
@@ -33,17 +38,53 @@ Callers may constrain the output. Each is optional except the topic.
 | Parameter | Meaning | Default |
 |-----------|---------|---------|
 | topic | What to make visible. Required. | — |
+| `surface` | Where the view will be read: `terminal`, `markdown`, or `html`. | `terminal` |
 | `max-views` | Ceiling on how many views to return | your judgement |
 | `size` | `tight` keeps every view under roughly 12 lines, dropping any detail that is not load-bearing. `normal` keeps what the topic needs. | `normal` |
 
-`/pr` calls this with `size: tight` and a low `max-views`, because a PR body is
-scanned rather than studied.
+`/pr` calls this with `surface: markdown`, `size: tight` and a low
+`max-views`, because a PR body is scanned rather than studied.
+
+## Surfaces
+
+The surface decides which primitives exist. Getting it wrong is the one
+mistake that ruins an otherwise good view.
+
+| `surface` | Read in | What it can do |
+|-----------|---------|----------------|
+| `terminal` | Claude Code and any CLI | Text only. Color comes from the fence language, borders from tables, series from fill texture. No Mermaid. |
+| `markdown` | GitHub PRs, issues, READMEs | Mermaid renders and takes color. `<table><td>` gives real columns. `<details>` folds. `> [!NOTE]` calls out. |
+| `html` | A published Artifact page | Real layout, CSS, charts and diagrams. Returned as a file path for the caller to publish. |
+
+**Read [references/surfaces.md](references/surfaces.md) for the surface you
+were given before producing anything.** It holds the fence-to-color map, the
+safe glyph set, what GitHub's sanitizer keeps, and the rules for an HTML page.
+
+Never emit a Mermaid fence to `terminal`. Nothing there renders it, so it
+arrives as a wall of source — the exact failure this skill exists to prevent.
+`surfaces.md` maps each diagram shape to the text view that replaces it.
+
+## Composition
+
+How the views sit together matters as much as each one.
+
+- **One headline view** carries the answer, and it comes first. Everything
+  after it is support.
+- **Ceiling:** one view at `tight`, at most three at `normal`. A fourth means
+  you are writing a document, not showing a shape.
+- **One question per view.** A view answering two questions is two views, or
+  one hairball.
+- **Caption each view with its finding**, on the line above it — "state.md is
+  the only shared write", not "Architecture". A caption naming the view's
+  category tells the reader nothing they cannot see.
+- **No two adjacent views of the same shape.** Two trees in a row read as one
+  long tree.
 
 ## The views
 
 **Logic or an algorithm — pseudocode:**
 
-```text
+```py
 on(save)
   if content is unchanged
     return cached result
@@ -64,7 +105,7 @@ submitForm
 **UI structure — component tree**, including the state and module boundaries
 that matter:
 
-```tsx
+```xml
 <SessionPage> (apps/example/src/routes/session.tsx)
   useSessionEvents()
   <SessionToolbar>
@@ -80,7 +121,19 @@ src/
 └── transport/      # sends API requests
 ```
 
-**Component interaction, control flow, or data flow — Mermaid:**
+**Counts, durations, sizes, proportions — a chart.** Numbers buried in prose
+are numbers nobody compares. On `terminal`, bars built from block characters;
+on `markdown`, a Mermaid `pie`; on `html`, a real chart. Recipes per surface
+live in [references/surfaces.md](references/surfaces.md).
+
+```text
+specify  ████████████████░░░░░░░░░░░░░░░░░░░░░░░░  2 reviewers
+design   ████████████████████████████████░░░░░░░░  4 lenses
+execute  ████████████████████████████████████████  5 verifiers
+```
+
+**Component interaction, control flow, or data flow — Mermaid**, on a surface
+that renders it. Drawing one has its own checklist, below.
 
 ```mermaid
 sequenceDiagram
@@ -104,7 +157,7 @@ function expandSkill(command: string): string {
 
 **An endpoint's request/response, or a table's columns — the contract:**
 
-```text
+```http
 POST /sessions
   → { email, password }
   ← 201 { sessionId, expiresAt }
@@ -153,28 +206,8 @@ A file-layout change:
 +    └── stream.ts
 ```
 
-A call-tree change:
-
-```diff
- submitForm
-   createSession
-     persistPrompt
-+    expandSkillMention
-     launchAgent
-   navigateToSession
-+    subscribeToEvents
-```
-
-A state or control-flow change:
-
-```diff
- on(save)
--  write content
-+  if content is unchanged
-+    return cached result
-+  write new content
-+  invalidate cache
-```
+The `diff` fence is also the only way to get red and green into a terminal, so
+prefer it wherever the topic genuinely is a change.
 
 ## Screenshots
 
@@ -193,18 +226,41 @@ hosting belong to whoever asked for the visual.
 If the app cannot be run or driven, say so plainly and offer the nearest text
 view. Do not hand-write a mock of a UI that exists.
 
+A screenshot is an image, so it cannot be the view on `terminal`. Return the
+path and name what it shows.
+
+## Drawing a diagram
+
+Copy this checklist and work it in order.
+
+```text
+- [ ] Enumerate the nodes, and the edges as `source --verb--> target`
+- [ ] If the subject is a UML subject, pick that UML type and its notation
+- [ ] Draw only what is enumerated, 12 nodes or fewer
+- [ ] Validate: node show-me/scripts/validate-mermaid.mjs <file>
+- [ ] Read the drawn diagram back against the enumeration
+```
+
+**Run** `scripts/validate-mermaid.mjs`; there is no reason to read it. It
+needs `node` and `npm`, and names the failing line and the tokens the parser
+will accept there.
+
+[references/diagrams.md](references/diagrams.md) holds the rules, their
+checks, the diagram-type menu, the palette and the syntax that fails silently.
+[references/uml.md](references/uml.md) holds UML notation, for the subjects
+that have a UML type — a file tree or a chart does not, and is drawn plainly
+rather than dressed up as one.
+
 ## Guidance
 
-Place each visual next to the short text it supports. Keep only the calls,
-files, props, states and boundaries needed to answer the question actually
-being asked.
+Place each visual next to the short text it supports, and keep only the calls,
+files, props, states and boundaries that answer the question actually being
+asked. A view that restates the sentence above it is noise with syntax
+highlighting — drop it.
 
-Each view must add information rather than repeat the prose. A view that
-restates the sentence above it is noise with syntax highlighting.
-
-You may use one of these, you may use several, you will rarely use all of
-them. Keep the views whose information the prose does not already carry, and
-drop the rest.
+Before returning, read the output as the reader will: **the headline has to
+land from the first view alone, without the prose around it.** If it does not,
+the wrong view is first, or the caption is not saying the finding.
 
 ## Credits
 

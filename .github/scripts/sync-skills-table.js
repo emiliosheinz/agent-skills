@@ -63,7 +63,7 @@ skills.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 const tableLines = [
   "| Skill | Description |",
   "|-------|-------------|",
-  ...skills.map((s) => `| <nobr>\`${s.name}\`</nobr> | ${s.description} |`),
+  ...skills.map((s) => `| \`${s.name}\` | ${s.description} |`),
 ];
 const newTable = tableLines.join("\n") + "\n";
 

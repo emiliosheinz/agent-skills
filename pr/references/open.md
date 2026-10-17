@@ -85,12 +85,14 @@ gh pr create --help | grep -q -- '--attach' && echo attach || echo placeholder
 gh repo view --json url    # attachments are GitHub.com and GHEC only
 ```
 
-Feature-detect `--attach`; do not compare version strings. Treat any host that
-is not GitHub.com or GitHub Enterprise Cloud as placeholder-only.
+Feature-detect `--attach`; do not compare version strings. A `gh` without it
+is placeholder-only, as is any host that is neither GitHub.com nor GitHub
+Enterprise Cloud.
 
-Only when the change is one a reviewer would want to see: invoke `show-me` for
-a screenshot. It returns an absolute path outside the repo. Carry that path
-into Step 4 — the body must reference it for `gh` to rewrite it in place.
+Only when the change is one a reviewer would want to see: invoke `show-me`
+with `surface: markdown` for a screenshot. It returns an absolute path outside
+the repo. Carry that path into Step 4 — the body must reference it for `gh` to
+rewrite it in place.
 
 With no `--attach` and a captured image, or on an unsupported host, Step 4
 writes a placeholder line instead.

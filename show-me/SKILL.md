@@ -136,11 +136,7 @@ execute  ███████████████████████�
 ```
 
 **Component interaction, control flow, or data flow — Mermaid**, on a surface
-that renders it. Before drawing one, read
-[references/diagrams.md](references/diagrams.md): it carries the node
-ceilings, the enumerate-draw-validate loop, which diagram type fits which
-subject, the palette that survives both GitHub themes, and the syntax that
-fails silently.
+that renders it. Drawing one has its own checklist, below.
 
 ```mermaid
 sequenceDiagram
@@ -259,6 +255,27 @@ view. Do not hand-write a mock of a UI that exists.
 A screenshot is an image, so it cannot be the view on `terminal`. Return the
 path and name what it shows.
 
+## Drawing a diagram
+
+Copy this checklist and work it in order. Steps 1 and 4 are what keep a
+diagram honest; step 3 is what keeps it from arriving broken.
+
+```text
+- [ ] Enumerate the nodes, and the edges as `source --verb--> target`
+- [ ] Draw only what is enumerated, 12 nodes or fewer
+- [ ] Validate: node show-me/scripts/validate-mermaid.mjs <file>
+- [ ] Read the drawn diagram back against the enumeration
+```
+
+**Run** `scripts/validate-mermaid.mjs`; there is no reason to read it. It exits
+0 when every diagram parsed, 1 when one did not — with the failing line and
+the tokens the parser accepts there — and 2 when it could not run at all, in
+which case check the diagram by hand and say validation was skipped. It needs
+`node` and `npm`.
+
+The ceilings, the diagram-type menu, the palette and the syntax that fails
+silently are all in [references/diagrams.md](references/diagrams.md).
+
 ## Guidance
 
 Place each visual next to the short text it supports. Keep only the calls,
@@ -276,10 +293,8 @@ Before returning, read the output as the reader will: **the headline has to
 land from the first view alone, without the prose around it.** If it does not,
 the wrong view is first, or the caption is not saying the finding.
 
-A view carrying a diagram is not finished until it has been through the loop
-in [references/diagrams.md](references/diagrams.md) — enumerated, drawn,
-validated, then read back against the enumeration. Renderers fail silently in
-both directions: a broken diagram looks fine from here, and a diagram that
+Renderers fail silently in both directions, which is why the checklist above
+is not optional: a broken diagram looks fine from here, and a diagram that
 renders beautifully can still be missing half its edges.
 
 ## Credits

@@ -1,0 +1,65 @@
+[
+  {
+    "skills": ["show-me"],
+    "query": "show me how the session middleware chain works in this codebase",
+    "expected_behavior": [
+      "Produces a text view, not a raw Mermaid fence, because the default surface is terminal and no Mermaid renderer was detected",
+      "Labels every fenced block with a language rather than leaving a fence bare",
+      "Uses only box-drawing and block characters in anything that has to align, never ▶ ◀ ▲ ▼ ● ■ ✓ or arrows",
+      "Leads with a caption stating the finding, not a category label like 'Architecture'",
+      "Keeps the prose around the view shorter than it would have been without it"
+    ]
+  },
+  {
+    "skills": ["show-me"],
+    "query": "show me the request path for a cache miss, surface: markdown, size: tight, max-views: 1",
+    "expected_behavior": [
+      "Returns exactly one view",
+      "Emits a Mermaid diagram, since the markdown surface renders them",
+      "Styles nodes with classDef using a translucent fill and an opaque stroke, and sets no color: entry",
+      "Does not set theme or themeVariables through %%{init}%% or frontmatter config:",
+      "Keeps the diagram at twelve nodes or fewer",
+      "Labels every edge with a verb",
+      "Passes scripts/validate-mermaid.mjs before being returned"
+    ]
+  },
+  {
+    "skills": ["show-me"],
+    "query": "show me a sequence diagram of the OAuth callback, surface: markdown",
+    "expected_behavior": [
+      "Does not attempt to style the diagram with classDef, which is a no-op on sequenceDiagram",
+      "Uses box to group participants if grouping is needed at all",
+      "Quotes any label containing parentheses or colons",
+      "Passes scripts/validate-mermaid.mjs before being returned"
+    ]
+  },
+  {
+    "skills": ["show-me"],
+    "query": "show me how long each build phase takes: install 42s, compile 118s, test 203s, package 31s",
+    "expected_behavior": [
+      "Chooses the chart view rather than restating the numbers in prose",
+      "Draws bars against a track so the scale is visible, using █ for fill and ░ for the remainder",
+      "Scales the bars proportionally to the values given",
+      "Does not use ▉ as a solid bar, since it leaves a gap in every cell"
+    ]
+  },
+  {
+    "skills": ["show-me"],
+    "query": "show me the component tree for the settings page as a page I can share, surface: html",
+    "expected_behavior": [
+      "Writes an HTML file to the session scratchpad and returns its absolute path",
+      "Writes page content only, with no doctype, html, head or body tags",
+      "Loads Mermaid from cdn.jsdelivr.net rather than cdnjs, which has no 12.x",
+      "Does not reference a CDN stylesheet, which the page's security policy blocks",
+      "Does not commit the file into the repository"
+    ]
+  },
+  {
+    "skills": ["show-me"],
+    "query": "explain in words, no diagrams, why the retry logic double-submits",
+    "expected_behavior": [
+      "Does not produce any view; this is the documented SKIP case for prose the user asked for in words",
+      "Answers in prose"
+    ]
+  }
+]

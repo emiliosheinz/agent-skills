@@ -5,8 +5,14 @@
 //   cat view.mmd | node validate-mermaid.mjs
 //
 // Input may be raw Mermaid or Markdown containing ```mermaid fences; every
-// fence is checked. Prints OK, or one `line N: message` per failure and exits
-// 1. Dependencies install once into a cache directory outside the project.
+// fence is checked.
+//
+// Requires node and npm. Mermaid and jsdom install once into a cache directory
+// outside the project; nothing is added to the project itself.
+//
+// Exit codes: 0 every diagram parsed, 1 at least one did not,
+// 2 validation could not run — fall back to checking the silent-failure list
+// in references/diagrams.md by hand, and say validation was skipped.
 
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -20,18 +26,40 @@ const CACHE = join(
   "mermaid-validator",
 )
 
+/** Exits 2 with an actionable message rather than letting a stack escape. */
+function unavailable(reason) {
+  console.error(`cannot validate: ${reason}`)
+  console.error(
+    "Check the diagram against the silent-failure list in " +
+      "references/diagrams.md by hand, and say validation was skipped.",
+  )
+  process.exit(2)
+}
+
 function ensureDeps() {
   if (existsSync(join(CACHE, "node_modules", "mermaid"))) return
-  mkdirSync(CACHE, { recursive: true })
-  writeFileSync(
-    join(CACHE, "package.json"),
-    JSON.stringify({ name: "show-me-mermaid-validator", private: true, type: "module" }),
-  )
+  try {
+    mkdirSync(CACHE, { recursive: true })
+    writeFileSync(
+      join(CACHE, "package.json"),
+      JSON.stringify({ name: "show-me-mermaid-validator", private: true, type: "module" }),
+    )
+  } catch (error) {
+    unavailable(`could not write the cache directory ${CACHE} (${error.code ?? error.message})`)
+  }
   process.stderr.write("installing the Mermaid parser (one time)\n")
-  execFileSync("npm", ["install", "--no-audit", "--no-fund", "--silent", "mermaid", "jsdom"], {
-    cwd: CACHE,
-    stdio: ["ignore", "ignore", "inherit"],
-  })
+  try {
+    execFileSync("npm", ["install", "--no-audit", "--no-fund", "--silent", "mermaid", "jsdom"], {
+      cwd: CACHE,
+      stdio: ["ignore", "ignore", "inherit"],
+    })
+  } catch (error) {
+    unavailable(
+      error.code === "ENOENT"
+        ? "npm is not on PATH"
+        : `npm install failed in ${CACHE} (${error.message})`,
+    )
+  }
 }
 
 const resolve = (name) =>
@@ -41,17 +69,23 @@ const resolve = (name) =>
   )
 
 async function loadMermaid() {
-  const { JSDOM } = await import(join(CACHE, "node_modules", "jsdom", "lib", "api.js"))
-  const dom = new JSDOM("<!doctype html><body></body>")
-  globalThis.window = dom.window
-  globalThis.document = dom.window.document
-  globalThis.Element = dom.window.Element
-  globalThis.HTMLElement = dom.window.HTMLElement
-  const entry = JSON.parse(
-    readFileSync(join(CACHE, "node_modules", "mermaid", "package.json"), "utf8"),
-  )
-  const main = entry.exports?.["."]?.import?.default ?? entry.module ?? entry.main
-  return (await import(join(CACHE, "node_modules", "mermaid", main))).default
+  try {
+    // Mermaid's parser touches the DOM even though it renders nothing here,
+    // so a minimal jsdom window stands in for a browser.
+    const { JSDOM } = await import(join(CACHE, "node_modules", "jsdom", "lib", "api.js"))
+    const dom = new JSDOM("<!doctype html><body></body>")
+    globalThis.window = dom.window
+    globalThis.document = dom.window.document
+    globalThis.Element = dom.window.Element
+    globalThis.HTMLElement = dom.window.HTMLElement
+    const entry = JSON.parse(
+      readFileSync(join(CACHE, "node_modules", "mermaid", "package.json"), "utf8"),
+    )
+    const main = entry.exports?.["."]?.import?.default ?? entry.module ?? entry.main
+    return (await import(join(CACHE, "node_modules", "mermaid", main))).default
+  } catch (error) {
+    unavailable(`the cached Mermaid parser would not load (${error.message})`)
+  }
 }
 
 /**
@@ -76,7 +110,15 @@ function diagrams(text, source) {
   return found
 }
 
-const read = (path) => readFileSync(path === "-" ? 0 : path, "utf8")
+function read(path) {
+  try {
+    return readFileSync(path === "-" ? 0 : path, "utf8")
+  } catch (error) {
+    unavailable(
+      error.code === "ENOENT" ? `no such file: ${path}` : `cannot read ${path} (${error.code})`,
+    )
+  }
+}
 
 const inputs = process.argv.slice(2)
 const texts = inputs.length
@@ -98,6 +140,9 @@ for (const [index, diagram] of all.entries()) {
     await mermaid.parse(diagram.body)
   } catch (error) {
     failed++
+    // 300 characters keeps the caret line and the full "Expecting ..." token
+    // list, which is the part that makes the error repairable, while cutting
+    // the echoed diagram source that follows it.
     const message = String(error?.message ?? error).replace(/\s+/g, " ").trim().slice(0, 300)
     const line = Number(message.match(/line (\d+)/)?.[1] ?? 1) + diagram.offset
     console.error(`${diagram.source}:${line}: diagram ${index + 1}: ${message}`)

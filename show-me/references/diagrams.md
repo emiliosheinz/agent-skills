@@ -143,6 +143,10 @@ shape beats bending a flowchart into it.
 Never `zenuml` — GitHub does not register it. Never plain `radar`; the
 `-beta` suffix is mandatory on that one.
 
+Renderers move. To see which Mermaid version a host deploys before relying on
+anything above, put `info` alone in a Mermaid fence there — it renders the
+version string.
+
 Two GitHub behaviours worth designing around: a wide diagram is scaled down
 and its text shrinks with it, so prefer `TD` over `LR` past about five
 columns; and diagrams are zoomable and pannable, so detail that rewards a
@@ -218,6 +222,12 @@ of accepted tokens is the point: repair feedback that names the admissible
 alternatives fixes far more than feedback naming only the location. Fix the
 named construct, re-run, and do not present a diagram that has not passed.
 
-First run installs the parser into a cache directory outside the project,
-which takes a moment. If Node is unavailable, fall back to checking the
-silent-failure list above by hand and say that validation was skipped.
+| Exit | Meaning |
+|------|---------|
+| 0 | Every diagram parsed, or the file carries no Mermaid |
+| 1 | At least one failed; the message names the line and the legal tokens |
+| 2 | Validation could not run — `npm` missing, or the cache unwritable |
+
+On exit 2, check the diagram against the silent-failure list above by hand and
+say that validation was skipped. First run installs the parser into a cache
+directory outside the project, which takes a moment.

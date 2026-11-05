@@ -6,7 +6,9 @@ agent grading its own work tends to pass it, so the check must come from outside
 author.
 
 A plan phase's gate **is** its verifiers. `SKILL.md` → *Sizing* says which run for a given
-size and door. Numbers match run order.
+size and door. Numbers match run order. On a phase whose diff renders, styles or lays out
+a screen, **the look** (`references/ui.md`) runs after verifier 3 and before 4, at every
+size. It is a named stage and carries no number.
 
 ## Run order and progression
 
@@ -96,6 +98,10 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
    (unless not-throwing *is* the criterion). The row must also show the test ran: its name
    in the gate's output, or a pass line the gate matched.
 
+   An AC whose expected outcome is visible may instead be evidenced by a `look` row: the
+   capture path and the observed outcome. Lacking an assertion, it is then neither
+   uncovered nor a SPEC-GAP.
+
    **Field-level rule.** When an AC outcome is a multi-field event, returned object,
    or persisted record, require a value/state assertion at file:line for *each* named
    field. Asserting that a method was *called* (spy/mock/call-count) is never a
@@ -181,14 +187,12 @@ blocking gap: ask the spec, rather than mutating everything or nothing.
 
 ## Human checks
 
-**Optional UAT** *(conditional)* — for **user-facing** ACs only (visual/UX/end-to-end
-correctness the five automated verifiers cannot see), offer a manual acceptance check:
-present a short checklist via `AskUserQuestion` when available, plain checklist otherwise,
-and record the result against the AC IDs. Backend/infra ACs rely on the automated
-verifiers — keep the default pipeline automated.
+**On a UI phase**, the look and its look list (`references/ui.md`) replace a manual
+check. Backend and infrastructure ACs rely on the automated verifiers.
 
-**Agent walk.** If the agent can start the app, it walks the user-facing paths before
-Finish and labels the result an author check, never an independent one. A break with no AC
+**Agent walk.** For other user-facing changes, such as CLI output, if the agent can start
+the app it walks the user-facing paths before Finish and labels the result an author check,
+never an independent one. A break with no AC
 behind it is reported with a recommended `/forge fix`.
 
 ## Gaps

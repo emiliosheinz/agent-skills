@@ -4,6 +4,7 @@
 |-------|-------|
 | Size | quick / standard / complex — <one-line justification> |
 | Door | one-way / two-way door — <the triggers that fired, or "none"> |
+| Surface | ui / none — <the trigger that fired, or "none"> |
 | Created | YYYY-MM-DD |
 
 <!-- Door: set by the first phase to run, per references/specify.md. Overrides the size

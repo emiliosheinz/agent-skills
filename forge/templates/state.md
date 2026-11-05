@@ -9,7 +9,9 @@
 
 <!-- Door: set by the first phase to run, per references/specify.md. Overrides the size
      gate for spec reviewer 3, design lens 4 and verifiers 3, 4 and 5. Never blank. Like Size
-     it moves one way only; a downgrade needs the user's confirmation. -->
+     it moves one way only; a downgrade needs the user's confirmation.
+     Surface: set by the first phase to run, per SKILL.md step 4. Never blank; moves only
+     from none to ui. -->
 
 <!-- state.md is the single source of truth. Re-read at the start of every phase.
      Write SURGICALLY (see SKILL.md Universal rules for the section write-mode table).

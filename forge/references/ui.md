@@ -21,7 +21,8 @@ Name one reference per screen the change touches: the first of these that exists
    is needed, as in `references/plan.md`.
 
 Record each reference in `spec.md`'s `Conventions observed` as a `reference` row: the
-screen and its route with a `file:line`, or the saved design's path.
+screen and its route with a `file:line`, or the saved design's path. Beside the rows, state
+that each reference is a consistency anchor, not a template, as below.
 
 **The reference is a consistency anchor, not a template.** It fixes the app's vocabulary:
 its components, tokens, feedback patterns and tone. Layout, hierarchy and interaction for

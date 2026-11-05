@@ -177,8 +177,8 @@ including what a one-way door adds. Author ≠ verifier; fresh context.
 
 If `Surface` is `none` and a task or the phase's diff renders, styles or lays out a
 screen, set it to `ui`, log the reason in Decisions, and read `references/ui.md` before
-dispatching. On such
-a phase, verifier 3's prompt also carries the reference and the UI rows, per that file.
+dispatching. On any phase whose diff renders, styles or lays out a screen, verifier 3's
+prompt also carries the reference and the UI rows, per that file.
 
 Write `Verifying: <stage>, cycle <n>` under the phase's heading in `## Tasks` as each stage
 and cycle starts, so a compaction or a re-invocation keeps the position. Before a long

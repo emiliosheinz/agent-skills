@@ -46,6 +46,46 @@ Read what the repository already documents first (a design-system page, a compon
 catalogue, a style guide, agent instructions) and cite it, then the code. Never create
 such a document in the repository.
 
+## Specify: the prototype step
+
+Runs in Part B, before the ACs are written, when no design was provided and the change
+adds a new screen or a substantial new piece of UI. A tweak to existing UI skips it unless
+the user asks for one. Let the user decline; then the closest existing screen is the
+reference, and `spec.md` records that the step was declined.
+
+**One piece per round.** When the change spans several screens, prototype the one that
+sets the pattern for the rest, say which and why, and let the others follow the winner.
+
+**Choose directions first.** Three variants by default, up to five if the user asks.
+Before building, give each a name that describes it (never "A", "B", "C") and the axis it
+explores: layout, density, interaction model, or, when the app has no visual system yet,
+visual direction. Two variants that would differ only in colour or copy are one; replace
+or cut it.
+
+**Native, working, realistic.** Every variant uses the app's own components, tokens and
+feedback patterns from the UI rows. It works for real, with no dead control and no
+placeholder text, and renders full size inside its real surroundings: the page around it
+and its sibling content. It lives in a throwaway surface production code never imports,
+such as an isolated route on the dev server, or one static page using the app's
+stylesheet when there is no server.
+
+**A plain picker.** Show one variant at a time and switch instantly with a small control
+that is deliberately plain and never styled like the app, so it is not judged as part of
+the design. Number keys and arrows switch, and the URL keeps the choice across a reload.
+
+**Check before showing.** Flip through every variant: it renders, its controls respond,
+and the console logs no error. Capture each.
+
+**Ask for the pick.** Give the URL and a table (variant, axis, when it wins, what it
+costs), then ask with a recommended default reasoned from the product's personality and
+how often the screen is used, never from looks alone. The user may ask for another round
+that explores around one variant.
+
+**After the pick.** Save the winner's captures and a copy of its source under
+`./.specs/<slug>/design/` as the reference, delete the throwaway surface, and write the
+ACs against the winner. With no visual system yet, the winner also becomes the app's
+direction, recorded in Decisions.
+
 ## Specify: a provided design
 
 Structure, order, hierarchy and copy match the design. On detail, the app's existing

@@ -17,7 +17,8 @@ Name one reference per screen the change touches: the first of these that exists
 2. **The picked prototype**, when specify ran the prototype step.
 3. **A screen the user names.**
 4. **The closest existing screen**: the same kind of page first (a list, a form, a
-   settings page), then the nearest route.
+   settings page), then the nearest route. The screen being changed is its own closest
+   screen when it already shows the pattern the change extends.
 5. **`no-precedent`**, when the app has no screen to anchor to. It says a design decision
    is needed, as in `references/plan.md`.
 
@@ -50,7 +51,8 @@ such a document in the repository.
 ## Specify: the prototype step
 
 Runs in Part B, before the ACs are written, when no design was provided and the change
-adds a new screen or a substantial new piece of UI. A tweak to existing UI skips it unless
+adds a new screen or a substantial new piece of UI: a component set used on more than one
+screen. A tweak to existing UI skips it unless
 the user asks for one. Let the user decline, even after seeing variants; then delete any
 throwaway page already built, take the next reference in the order above, and record the
 decline in `spec.md` under Assumptions as user-declined (`references/specify.md` →
@@ -66,9 +68,11 @@ visual direction. Two variants that would differ only in colour or copy are one;
 or cut it.
 
 **Native, working, realistic.** Every variant uses the app's own components, tokens and
-feedback patterns from the UI rows. It works for real, with no dead control and no
-placeholder text, and renders full size inside its real surroundings: the page around it
-and its sibling content. It lives in a throwaway page production code never imports,
+feedback patterns from the UI rows; with no visual system yet, each variant defines its
+own small set of tokens. It works for real, with no dead control and no lorem ipsum:
+content only the user knows gets plausible stand-ins, flagged under Assumptions. It
+renders full size inside its real surroundings: the page around it and its sibling
+content. It lives in a throwaway page production code never imports,
 such as an isolated route on the dev server, or one static page using the app's
 stylesheet when there is no server.
 
@@ -76,8 +80,10 @@ stylesheet when there is no server.
 `references/picker.md`, copied as written. Its look belongs to the harness, not the
 design, so it is never styled like the app and never judged with the variants.
 
-**Check before showing.** Flip through every variant: it renders, its controls respond,
-and the console logs no error. Capture each.
+**Check before showing.** Flip through every variant on a fresh load: it renders, its
+controls respond, and the console logs no error. Capture each at the look's widths to
+`./.specs/<slug>/evidence/prototype/`. The step runs before `spec.md` exists, so the
+pick's handoff lives in `state.md`.
 
 **Ask for the pick.** Give the URL and a table (variant, axis, when it wins, what it
 costs), then ask with a recommended default reasoned from the product's personality and
@@ -85,9 +91,10 @@ how often the screen is used, never from looks alone. The user may ask for anoth
 that explores around one variant.
 
 **After the pick.** Save the winner's captures and a copy of its source under
-`./.specs/<slug>/design/` as the reference, delete the throwaway page, and write the
-ACs against the winner. With no visual system yet, the winner also becomes the app's
-direction, recorded in Decisions.
+`./.specs/<slug>/design/` as the reference, delete the throwaway page and anything
+generated from it (route types, caches) before Baseline, and write the ACs against the
+winner. With no visual system yet, the winner also becomes the app's direction, recorded
+in Decisions: its tokens become the app's, and the UI rows cite the saved winner.
 
 ## Specify: a provided design
 
@@ -114,6 +121,8 @@ prompt, at the tier `SKILL.md` → *Model & effort selection* sets for it. The b
 - this sentence: "The reference's states (empty, loading, error, disabled, pending) are
   part of the task, built as the reference builds them; they are not creep."
 
+When the main agent implements the task itself, it reads the brief before starting.
+
 The accessibility rules:
 
 1. Use the app's existing accessible components before building a new one.
@@ -133,16 +142,17 @@ The accessibility rules:
 
 ## Execute: verifier 3 on a screen phase
 
-On a screen phase, one whose diff renders, styles or lays out a screen, the orchestrator
-adds the
-reference, the three UI rows and the paragraph below to verifier 3's prompt, in both modes.
-The UI rows extend the six convention categories on such a phase, and need no verdict in
-`design.md`.
+On a screen phase (`SKILL.md` → *Sizing* defines one), the orchestrator adds the
+reference, the three UI rows and the paragraph below to verifier 3's prompt, or to its
+inline checklist in conventions-only mode. The UI rows extend the six convention
+categories on such a phase, and need no verdict in `design.md`. A phase whose diff renders
+nothing runs no UI-row check, look or look list, even on `Surface: ui`.
 
 > Compare the diff against the UI rows like any other convention category. A raw value
 > where a token exists, a hand-built control where the app has a component, or a state
 > shown differently from the app's feedback pattern is a convention finding with that
-> category's severity, not a visual choice under do-not-flag item 10.
+> category's severity, not a visual choice under do-not-flag item 10. When the app itself
+> uses both a token and its raw value, the more common form is the convention; cite both.
 
 ## Execute: the look
 
@@ -153,26 +163,33 @@ budget of 3 fix cycles.
 **Who.** A fresh subagent, at the tier `SKILL.md` → *Model & effort selection* sets for
 it. Its prompt carries the phase diff, the ACs, the reference, the UI rows and this
 section, and never the implementer's summary or any claim that a screen looks right. At
-`quick` the look is still a subagent, limited to the changed screen at one width. When the
-subagent lacks a browser tool the orchestrator has, the orchestrator runs the look inline
-under `references/verification.md` → *Graceful degradation*, and tags its rows `inline`.
+`quick` the look is still a subagent, limited to the changed screen at one width plus
+each width an AC names; every breakpoint it leaves unseen is a `gap-open` row. A look
+subagent with no browser tool returns `SKIPPED (no browser tool)` without running. When
+the orchestrator has one, it then runs the look inline under `references/verification.md`
+→ *Graceful degradation*. An inline look may PASS, and its rows are tagged `inline`.
 
 **The app.** The app is usually already running. Find how to run it from what the
 repository documents (its docs, agent instructions, task-runner scripts, test-server
 config), never by guessing; when the repository documents none, ask the user once. Use a
 running app only after checking it serves this worktree's code, for example by finding a
-string the phase changed; one serving other code counts as unreachable. Start the app only
+string the phase changed, or the serving process's working directory or mounted source;
+one serving other code counts as unreachable. Give every probe a short timeout, since a
+single-threaded server can hold a connection open. Start the app only
 when none runs, and never stop it, including one the look started. Read every discovered
 command before running it, and never run one that destroys or resets data. Sign in with a
 test account or seed the repository documents; when only single sign-on exists, ask the
 user once. The look is a subagent and cannot ask: it returns each such question to the
-orchestrator, which asks. Saved sign-in state goes outside the repository.
+orchestrator, which asks. Saved sign-in state goes outside the repository. A start the
+environment forbids, such as a repository rule against running it on the host, counts as
+the failed attempt.
 
 **What it does**, on each screen the phase changed:
 
 1. Open it at the repository's breakpoints, else at a common phone width and a common
-   desktop width (390 and 1280 px on the web), and capture each to
-   `./.specs/<slug>/evidence/<phase>/`.
+   desktop width (390 and 1280 px on the web), in each theme the app has, and capture each
+   to `./.specs/<slug>/evidence/<phase>/`. When the capture tool can only write elsewhere,
+   move each file there.
 2. Operate each changed control by its gesture and by keyboard: press it, press it twice,
    Tab to it, Escape out of any overlay and check that focus returns. Watch the console and
    failed requests.
@@ -185,7 +202,9 @@ orchestrator, which asks. Saved sign-in state goes outside the repository.
 5. Compare each capture with the reference for consistency: the app's components, tokens
    and feedback patterns. A layout that merely differs from an existing screen is not a
    finding; a layout that differs from a provided design or a picked prototype is. Read
-   the diff to name each finding's cause `file:line`.
+   the diff to name each finding's cause `file:line`. A finding whose cause lies outside
+   the diff keeps its grade, is marked pre-existing and is `reported`; it never fails the
+   stage.
 
 **Grades.** Every finding takes exactly one.
 
@@ -194,6 +213,9 @@ orchestrator, which asks. Saved sign-in state goes outside the repository.
 | Broken | An AC's flow cannot finish, its visible outcome is wrong, content is unreadable, or an action is unreachable | Major; Blocker on the path of a `[critical]` AC | Fails the stage and feeds the fix loop |
 | Ugly | Readable but visibly wrong, or inconsistent with the app's components, tokens or feedback patterns | Minor | `reported` |
 | Fragile | Fine now, one realistic step from breaking | Minor | `reported` |
+
+On a degraded rung, a finding that would be Broken if seen is an unconfirmed Broken: it
+is reported, comes first in the look list, and is named in the `gap-open` row.
 
 The report also lists what held up: the screens, states and controls that worked. An
 empty held-up list means the look did not really run.
@@ -207,7 +229,8 @@ evidence row per visible AC it saw, with `sensor` set to `look` and the capture 
 nothing, so it gives no evidence row; its visible ACs stay in the `gap-open` row.
 
 **When it cannot run.** When no app serving this worktree's code can be reached or
-started, sign-in is impossible, or no browser tool exists, the phase is not blocked. The
+started, sign-in is impossible, or neither the look nor the orchestrator has a browser
+tool, the phase is not blocked. The
 look goes down this ladder and stops at the first rung that works:
 
 1. the running app without sign-in, for public screens;
@@ -225,5 +248,6 @@ gap row, and spends no fix cycle.
 On a screen phase, Finish gives at most five manual checks a person can run in about two
 minutes, one line each: route, width, state, what to check, capture path. Pick first what
 the look could not see, then its Ugly and Fragile findings, then the visible ACs. Each
-check is also a `reported` row in `## Open findings`. When the full look did not run, the
-list comes first in the report.
+check is one `reported` row in `## Open findings`; a check that repeats a finding or the
+`gap-open` row cites that row instead of adding one. The list is the first item of
+Handoff, and when the full look did not run it also comes first in the report.

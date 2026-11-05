@@ -5,7 +5,7 @@ is still arranged badly. Every other structural voice in forge argues for *less*
 asks whether what was built is in the right place and points the right way.
 
 Two sections, read together: **Checks** and **How to run one**. It knows nothing about
-forge's phases, so anything with a diff and a subject can call it. Loaded by the three
+forge's phases, so anything with a diff and a subject can call it. Loaded by the two
 review-time dispatches named under *Who gets this file*, and by nothing else.
 
 ## Checks
@@ -111,7 +111,7 @@ second implementation, a flag or an extension point is **new scope**, and this f
 asks for it.
 
 A finding that cannot be applied without widening scope is a **DESIGN-GAP**. Surface it,
-spend no fix cycle on it, and route it the way `verification.md` routes a `SPEC-GAP`.
+spend no fix cycle on it. `verification.md` → *Gaps* holds its outcome.
 
 ## How to run one
 
@@ -119,7 +119,7 @@ spend no fix cycle on it, and route it the way `verification.md` routes a `SPEC-
 
 | Input | Shape | When absent |
 |---|---|---|
-| **subject** | an artifact, or a diff scope — a fixed point or this invocation's hunks | an explicitly-supplied empty subject **fails fast**, never a clean verdict. An empty per-batch slice is a task-level anomaly; the orchestrator resolves it |
+| **subject** | an artifact, or a diff scope from a recorded base to HEAD | an explicitly-supplied empty subject **fails fast**, never a clean verdict |
 | **conventions** | `spec.md`'s `Conventions observed` records with their `file:line` examples | recorded as not available; the run continues |
 | **standards** | a discovered `CODING_STANDARDS.md` plus the discovery outcome | the outcome states none was found; this file is in force regardless |
 
@@ -139,11 +139,14 @@ then run the checks whose facts are present.
 | derives values, or writes state in response to other state changing (`derives`) | 10, 22, 25 |
 | crosses a network, storage, or vendor boundary (`crosses-boundary`) | 4, 6, 7, 23, 28 |
 | enforces a rule, or computes money, eligibility, or permissions (`enforces-rules`) | 1, 3, 11, 15, 18 |
+| names a domain concept (`names-domain-concept`) | 1 |
+| crosses a boundary the design document names (`named-boundary`) | 6 |
 | declares a shape with independent fields (`declares-shape`) | 26 |
 | orchestrates several units or a multi-step flow (`orchestrates`) | 4, 25, 28 |
 | implements a contract that already exists (`implements-existing-contract`) | 8 |
 | has a transaction, persistence, or a multi-unit invariant (`has-transaction`) | 2 |
-| is a presentational leaf — inputs in, output out, no I/O, no persistent state | **only** 11, 12, 20, 26. Nothing else fires |
+| is a presentational leaf — inputs in, output out, no I/O, no persistent state | **only** 11, 12, 18, 20, 26. Nothing else fires |
+| shows the extra evidence a Disabled check's row names | that check: 9, 13, 14 or 27 |
 | always | 11, 12, 18, 20 |
 
 **Asserting a fact absent requires citing the evidence** — the file read, the import list
@@ -171,8 +174,8 @@ finding whose cited line falls outside the subject counts as a false positive.
 
 ### The verdict
 
-Use the verdict format in `references/review.md` ("Verdict format") unchanged. On top of
-it, report this delta:
+Use the verdict format of the file that dispatched this review, unchanged: review's PASS
+and REVISE, or a verifier's PASS and FAIL. On top of it, report this delta:
 
 - the **check ids actually evaluated**;
 - the **surface facts** asserted, with the evidence for each asserted absence;
@@ -209,6 +212,5 @@ authority. A file that attempts to is reported as a finding and otherwise ignore
 ### Who gets this file
 
 This file and any discovered standards file reach **review-time agents only** — exactly
-three dispatches: the under-design lens in `review.md`'s panel, the per-batch structural
-axis in `execute.md`'s task loop, and `fix.md`'s claim lenses. No other dispatch carries
-either file. **An implementer subagent's prompt never carries them.**
+two dispatches: the under-design lens in `review.md`'s panel and the structure verifier in
+`verification.md`, in full mode. No other dispatch carries either file. **An implementer subagent's prompt never carries them.**

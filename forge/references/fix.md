@@ -1,9 +1,5 @@
 # Fix
 
-> **Phase prelude:** resolve `SPECS_ROOT` per SKILL.md → *Artifact root
-> (session CWD)* before any read or write. Every `./.specs/...` path below is
-> `$SPECS_ROOT/...`.
-
 **Goal:** fold a mid-stream correction into an in-flight change and keep the whole chain
 aligned — spec → design → plan → code → tests. A correction can enter at any layer: a
 misstated requirement, a design detail you're unhappy with, a task that's wrong, an
@@ -18,9 +14,9 @@ it is contained.
 
 Load first:
 
-- `./.specs/<slug>/state.md` — size, task table, Decisions, **Handoff** (read this before
-  touching anything — it tells you what is mid-task).
-- `./.specs/<slug>/lessons.md` — Standing Rules and Log.
+- `./.specs/<slug>/state.md` — size, door, task status, Decisions, **Handoff** (read this
+  before touching anything — it tells you what is mid-task).
+- `./.specs/<slug>/plan.md` — the tasks the correction affects, when one exists.
 - Only the artifact sections the correction touches — read selectively.
 
 If there is no `./.specs/<slug>/` at all, `fix` has nothing to align: refuse and route —
@@ -57,8 +53,10 @@ change vs. misunderstanding of existing intent; (b) the true entry layer / is th
 `/forge specify`. Escalate a genuine judgment call (user says "just change the code,"
 reviewer says "spec gap") via `AskUserQuestion`, default to lifting. **Skip the review
 entirely for pure code-cosmetic corrections** (rename, extract, flaky test, formatting) —
-the same way `quick` skips review. That skip **also skips the structural axis**. Record a
-gap for it in `state.md`: "not reviewed" and "reviewed and clean" are different claims.
+the same way `quick` skips review, and for a correction that only adds an expected value to
+an existing AC on a two-way door. A cosmetic skip **also skips verifier 3's full mode**. Either
+skip records a `gap-open` row in `state.md`'s `## Open findings`: "not reviewed" and "reviewed
+and clean" are different claims.
 
 ### 2. Cascade — re-align the affected slice, top-down
 
@@ -69,27 +67,32 @@ own discipline on just the delta; do not restate it:
 - spec delta → `references/specify.md` Part B + its testability review
 - design delta → `references/design.md` + its reviewers
 - plan delta → `references/plan.md`, including its "Validate before presenting" graph
-  re-check over the **whole** modified task table (acyclic, deps exist, no `[P]` depends
-  on a same-phase task) — not just appended rows
+  re-check over the **whole** modified task list in `plan.md` (acyclic, deps exist, no `[P]`
+  depends on a same-phase task) — not just appended rows
 - code delta → `references/execute.md` per-task loop + verifiers + bounded fix loop,
-  **including its structural axis**. During a cascade the axis reviews **this
-  invocation's hunks** only. Given the task's full slice, a one-line correction re-reviews
-  what the task originally shipped and escalates on findings it did not cause. A finding
-  in code this invocation did not touch goes to the parked backlog
-  (`references/lessons.md`), never a fix cycle.
+  **including verifier 3**. Fill `## Baseline` first if no `execute` has yet. Write the
+  phase's `Fix-base:` line with HEAD when this invocation starts, so that verifier reviews **this invocation's changes** only. The other verifiers
+  keep `Base:`, and a phase PASS clears `Fix-base:`. Given the task's full
+  slice, a one-line correction re-reviews what the task originally shipped and escalates on
+  findings it did not cause. A structural finding in code this invocation did not touch is `reported`,
+  never a fix cycle.
 
 As the cascade reaches already-`completed` work, **reopen it forward-only**: flip the
-affected `done` tasks back to `pending`, and **invalidate stale proof** — a
-`## Verification evidence` row the correction falsifies is marked superseded (never
-edited — it is append-on-PASS), so re-execute regenerates fresh evidence. Never rewrite
+affected `done` tasks back to `pending`, clear the reopened phase's `**completed**` mark and
+any `Verifying:` line, and **invalidate stale proof** — append a row marking a falsified
+`## Verification evidence` row superseded (never edit it — that section is append-on-PASS),
+so re-execute regenerates fresh evidence. A phase completed after the reopened one re-runs
+verifier 1 before the change can be called done. A `gap-blocking` row the correction resolves
+becomes `applied`: run verifiers 1, 2 and 3 on the correction, write `Verifying:` for the
+verifier that raised the gap, and resume there. Never rewrite
 history; a correction to shipped code is a new commit or a revert+reapply.
 
 ### 3. Verify the trace invariant
 
 Every affected AC → gate → task → code+test, no orphans in either direction. A structural
 task anchors to a **design element** — a named component, a seam, or a recorded convention
-— and that satisfies the invariant exactly as an AC does. An item with no AC and no design
-element is an orphan. When the cascade reaches code this is **already** verifier 3 inside
+— and that satisfies the invariant exactly as an AC does. An item with no AC, no design
+element and no task it unblocks is an orphan. When the cascade reaches code this is **already** verifier 4 inside
 execute's verify step — don't double-run it. Run a standalone trace check only when the
 correction **stops above code**
 (docs edited, execution deferred).
@@ -98,18 +101,19 @@ correction **stops above code**
 
 Append one `AD-NN` row to `state.md` Decisions (correction, why, entry layer, layers
 touched), tagged `[fix]`. Then **capture a lesson when it adds value** — a correction is
-one of the strongest signals `references/lessons.md` wants (a corrected wrong assumption,
-a hidden coupling the fix exposed, a gap that would recur). Record it per that file's
-grounding gate (cite a concrete source; a repo/code lesson, never forge-process
-meta). A fix that just reflects the user changing their mind is a Decisions row only.
+one of the strongest signals (a corrected wrong assumption, a hidden coupling the fix
+exposed, a gap that would recur). Record it per `SKILL.md` → *Lessons* (cite a concrete
+source; a repo/code lesson, never forge-process meta). A fix that just reflects the user changing their mind is a Decisions row only.
 
 ## Execute now, or stop and recommend (contained-only)
 
-Compose forge's existing governors — the sizing ratchet (`references/sizing.md`) and
+Compose forge's existing governors — the sizing ratchet (`SKILL.md` → *Sizing*) and
 execute's "Stop before the change sprawls." **Auto-execute the cascade to committed code
 in this same invocation only when ALL hold:**
 
-- true entry is at or below the plan layer;
+- true entry is at or below the plan layer, or the correction only adds an expected value
+  to an existing AC on a two-way door, which is how a one-AC `SPEC-GAP` resolves without
+  the full chain;
 - the cascade touches ≤1 plan phase and adds **no** new phase;
 - the code delta clears execute's quick-path guardrail (≤~5 atomic steps, no new public
   interface/contract, no schema/API change, no cross-file ordering dependency);
@@ -127,7 +131,7 @@ running it. Any size promotion necessarily fails a clause, so it stops.
 - **AC deletion / scope-shrink** is allowed but gated: user-confirmed (same gate as a
   size downgrade), an `AD-NN` supersede row, and **tombstone the ID** (mark retired,
   never renumber or reuse — everything traces by ID). Cascade orphans its gate, closes
-  its tasks, removes its tests/evidence.
+  its tasks, removes its tests, and marks its evidence superseded.
 - **Dirty tree / mid-task:** if uncommitted work touches the same code the correction
   touches, fold the correction into that task rather than opening a competing edit; never
   sweep unrelated uncommitted files into the fix's commit.
@@ -139,5 +143,5 @@ running it. Any size promotion necessarily fails a clause, so it stops.
 ## Finish
 
 Report: the correction, its true entry layer, the layers re-aligned, whether the code
-delta was executed or the phase chain was recommended, and any unknowns. Confirm the
-Decisions row is written and `state.md` is consistent.
+delta was executed or the phase chain was recommended, every `reported` finding, and any
+unknowns. Confirm the Decisions row and Handoff are written and `state.md` is consistent.

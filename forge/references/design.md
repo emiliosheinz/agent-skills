@@ -1,17 +1,12 @@
 # Design
 
-> **Phase prelude:** resolve `SPECS_ROOT` per SKILL.md → *Artifact root
-> (session CWD)* before any read or write. Every `./.specs/...` path below is
-> `$SPECS_ROOT/...`.
-
 **Goal:** define *how* the change is built and *how we will know it is correct.*
 Output: `./.specs/<slug>/design.md`. Skipped at `quick` size.
 
 Load first:
 
 - `./.specs/<slug>/spec.md` — source of truth for requirements, ACs, scope.
-- `./.specs/<slug>/state.md` — size and Decisions log.
-- `./.specs/<slug>/lessons.md` — apply Standing Rules; read tagged Log entries.
+- `./.specs/<slug>/state.md` — size, door and Decisions log.
 
 If no spec exists, gather the minimum design context inline (problem, constraints,
 codebase realities). Prefer running `/forge specify` first for anything past `quick`.
@@ -38,7 +33,8 @@ The design must survive an implementation rewrite.
 
 1. **Architecture overview** — how components interact. Add a Mermaid diagram for
    complex changes.
-2. **Code-reuse analysis** — what already exists (from the spec's codebase findings)
+2. **Code-reuse analysis** *(required at every size that runs design, because plan's
+   `reuses` field depends on it)* — what already exists (from the spec's codebase findings)
    that this should reuse or extend, with locations. Do not design new what the repo
    already has. While reading that code, flag concerns it surfaces that affect the
    change. Categories:
@@ -60,6 +56,7 @@ The design must survive an implementation rewrite.
    - **domain concepts that take a type** rather than a primitive.
 4. **Data models** — schemas and relationships, if any.
 5. **Error-handling matrix** — failure scenarios → user-facing or system outcome.
+   An AC stating that something must not happen names its mechanism here: what prevents it.
 6. **Verification gates (required).** Define what makes the change *done and correct*.
    For each requirement / AC ID from the spec, name the gate that proves it: a test
    type and what it must assert, a typecheck check, or a runtime/observability
@@ -67,12 +64,15 @@ The design must survive an implementation rewrite.
    enforce. Reference AC IDs; never restate the criterion text.
 7. **Architectural risks** — with impact, probability, and mitigation. Execution and
    sequencing risks belong in `plan`, not here.
+8. **Hard-to-reverse choices** — one row each: the literal shape chosen (a schema, a
+   contract, a public name) and the alternative rejected. This holds at every size that runs
+   design, because these are what a later change pays the most to undo.
 
 ## State a verdict per observed convention
 
 `spec.md`'s `Conventions observed` section is an input. Design carries **one verdict per
 listed convention** — all six rows, always: either **conformant**, or **deviating with a
-stated reason**. Execute's structural axis re-checks **only the deviations**.
+stated reason**. Verifier 3 checks the diff against all six.
 
 **A deviation with no stated reason is a finding.** It is how a convention gets dropped
 silently. Record verdicts in the design's conventions table by
@@ -109,8 +109,9 @@ For a complex change, before detailing components:
    architecture.
 
 Use `AskUserQuestion` if the runtime supports it. Otherwise present your recommendation
-and proceed unless the user objects (in non-interactive runs, default to proceeding
-and log the assumption in `state.md` Decisions). Record the chosen approach (and why
+and proceed unless the user objects (in non-interactive runs, default to proceeding,
+log the choice in `state.md` Decisions as a flagged assumption, and surface it when you
+report). Record the chosen approach (and why
 the others were rejected) in the Decisions or Alternatives section.
 
 ## Research unknowns honestly
@@ -125,30 +126,27 @@ plausible fabrication that propagates design → plan → execute.
 
 ## Review the design adversarially
 
-The validation checklist below is your own self-check — and an agent grades its own work
-generously. Before writing the final design, draft it and hand the draft to independent
-reviewer subagents that attack it from lenses you're blind to: requirement coverage,
+Before writing the final design, draft it and hand the draft to independent reviewer
+subagents that attack it from lenses you're blind to: requirement coverage,
 failure-mode/risk, simplicity/reuse, and **under-design**. Run the review per
-`references/review.md` (size-gated), fold the ranked delta back into the draft, and
-escalate any genuine architecture decision to the user. This catches an orphaned AC, an
-over-built component, **or a weak arrangement** at design time. A structural finding here
-costs a document edit. The same defect found after the code is written costs a rewrite.
+`references/review.md` (`SKILL.md` → *Sizing* says which run), fold the ranked delta back
+into the draft, and escalate any genuine architecture decision to the user. A structural
+finding here costs a document edit. The same defect found after the code is written costs a
+rewrite.
 
 ## Write and route
 
-Write `./.specs/<slug>/design.md` from `templates/design.md`, sized per
-`references/sizing.md`. Validate before presenting:
+Write `./.specs/<slug>/design.md` from `templates/design.md`, sized per `SKILL.md` →
+*Sizing*. Validate before presenting:
 
 - Every requirement has a verification gate.
 - Every active decision is applied or superseded.
 - No implementation details leaked.
 - Risks have mitigations.
 
+A failing item goes back to the draft, for **at most 3 cycles** (`SKILL.md` → *Retries*).
+Then stop and report the failing items.
+
 Update `state.md` (decisions, any size promotion with a reason).
 
-Recommend the next phase:
-
-- Default: `/forge plan` next.
-- **Design may recommend skipping plan when** the standard change has ≤~3 ordered
-  steps with no cross-file dependency. In that case recommend `/forge execute`
-  directly and log the skip in `state.md` Decisions.
+Recommend `/forge plan` next.

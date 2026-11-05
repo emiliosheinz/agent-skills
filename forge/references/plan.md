@@ -1,9 +1,5 @@
 # Plan
 
-> **Phase prelude:** resolve `SPECS_ROOT` per SKILL.md → *Artifact root
-> (session CWD)* before any read or write. Every `./.specs/...` path below is
-> `$SPECS_ROOT/...`.
-
 **Goal:** group the work into **phases** of atomic tasks that `execute` runs one phase
 at a time. Output: `./.specs/<slug>/plan.md` plus the task table in `./.specs/<slug>/state.md`.
 Skipped at `quick` size.
@@ -16,8 +12,7 @@ Load first:
 
 - `./.specs/<slug>/spec.md` — requirements and AC IDs.
 - `./.specs/<slug>/design.md` — components, contracts, verification gates.
-- `./.specs/<slug>/state.md` — size and decisions.
-- `./.specs/<slug>/lessons.md` — Standing Rules plus tagged Log entries.
+- `./.specs/<slug>/state.md` — size, door and decisions.
 
 If a design is missing, do a quick codebase scan to derive the architectural context
 the plan needs; prefer running `/forge design` first for complex work.
@@ -39,7 +34,8 @@ Every gate command comes from one of those four sources, and the plan says which
 ## Phases
 
 A **phase** is a coherent checkpoint: a set of tasks that are implemented and verified
-as a unit before the next phase starts. **Phases run in sequence; tasks within a phase
+as a unit, its gate being the verifiers `execute` runs for this size, before the next
+phase starts. **Phases run in sequence; tasks within a phase
 run in parallel where it is safe to do so.** Order phases so each one builds on a
 working result from the phase before it — data layer before the service that uses it,
 the service before the endpoint that exposes it.
@@ -49,13 +45,10 @@ Each phase has:
 - **Goal** — the capability or checkpoint this phase delivers.
 - **Tasks** — atomic tasks (below), with `[P]` markers from the parallelism assessment.
 - **Depends-on** — the earlier phase(s) that must complete first.
-- **Phase gate** — the command run once all the phase's tasks are done, to confirm the
-  phase as a whole is sound (typically the project's full test + static analysis —
-  typecheck + lint + format).
 
 **How many phases (plan deliberately; do not pad):**
 
-- **standard** — usually ~3 phases.
+- **standard** — 1 to 3 phases.
 - **complex** — several phases, ordered by dependency. Split a phase when its tasks
   form two clearly separable checkpoints (e.g. "persistence layer" then "API surface").
 
@@ -73,12 +66,12 @@ register form, token storage, API client, route guard.
 | **id** | `PREFIX-PN-NN` — prefix = feature slug short code, `PN` = phase number, `NN` = task number (e.g. `ONBD-P1-01`). |
 | **action** | One line a fresh agent can act on. |
 | **depends-on** | Task IDs that must finish first. Keep minimal. Tasks in the same phase that depend on each other cannot both be `[P]`. |
-| **AC-trace** | The acceptance-criterion ID(s) from `spec.md` this task satisfies. Every task traces to at least one AC. (Enabling work traces to the task it unblocks.) |
-| **files** | The paths this task is allowed to touch. Three mechanisms need it: the structural axis attributes findings per task, the tamper check scopes its revert, and `execute` batches by locality (its commit step already assumes it). A glob is fine; a scope like "wherever it needs to" fails the plan gate. |
-| **tests** | The tests written **within this task**, co-located with the code it creates — never deferred to a later task. Use the highest test level the task's layer requires (unit for logic, e2e for routes/controllers). Must not be tautological, structure-sensitive, or cannot-fail — see *How a test lies* below. Name each test by the behaviour it pins, never by the AC ID it traces to (`references/execute.md` → step 2 holds the rule and the reason). |
+| **AC-trace** | The acceptance-criterion ID(s) from `spec.md` this task satisfies, or the design element it serves — a named component, a seam, or a recorded convention. Enabling work traces to the task it unblocks. A task with no anchor is scope creep. |
+| **files** | The paths this task is allowed to touch. `execute` batches by locality and scopes each task's commit with it. A glob is fine; a scope like "wherever it needs to" fails the plan gate. |
+| **tests** | The tests written **within this task**, co-located with the code it creates — never deferred to a later task. Use the highest test level the task's layer requires (unit for logic, e2e for routes/controllers). A control the user operates is tested through its gesture. Must not be tautological, structure-sensitive, or cannot-fail: read `references/verification.md` → *How a test lies*, that section only. Name each test by the behaviour it pins, never by the AC ID it traces to (`references/execute.md` → *Per-task loop* holds the rule and the reason). |
 | **gate** | A deterministic command that returns clean iff the task succeeded. Use the project's real runner (see "learn the project's real test setup" above), not an assumed one. |
 | **done-when** | A pass/fail checklist, each item true or false, ending with "gate passes: `<command>`". |
-| **reuses** *(required at `standard`+, optional at `quick`)* | The precedent this task mirrors, from `design.md`'s code-reuse analysis — a `path`, a `path:line`, or the literal sentinel **`no-precedent`** ("none exists; needs a design decision"). Example: `src/auth/refresh.ts:40 (mirror its token-rotation shape)`. A **blank or absent** field fails the plan gate, since silence is indistinguishable from "I did not look". |
+| **reuses** | The precedent this task mirrors, from `design.md`'s code-reuse analysis — a `path`, a `path:line`, or the literal sentinel **`no-precedent`** ("none exists; needs a design decision"). Example: `src/auth/refresh.ts:40 (mirror its token-rotation shape)`. A **blank or absent** field fails the plan gate, since silence is indistinguishable from "I did not look". |
 
 ## Parallelism assessment (per phase)
 
@@ -101,30 +94,6 @@ cites:
 - `[P] — per-test in-memory DB, see src/auth/login.test.ts:beforeEach`
 - `seq — integration tests share the test DB, see src/.../user.e2e-spec.ts truncates globally`
 
-## How a test lies
-
-A task's `tests` field is where its strength is decided. Verifier 5 catches a weak test
-but runs only at `complex` or on a one-way door, so these three names are the brake that
-runs at every size; verifier 3 uses the same words, so a planned and a rejected test share
-one vocabulary.
-
-- **tautological** — the assertion restates the implementation, comparing the code's
-  output to its own expression or to a constant the code also reads, so it passes for any
-  implementation including a wrong one.
-- **structure-sensitive** — it checks *shape* rather than *outcome*: that a method was
-  called, how often, in what order. A harmless refactor breaks it; a behavioural bug does
-  not.
-- **cannot-fail** — no input makes the assertion false: an empty loop body, a `try` that
-  swallows, `expect(result).toBeDefined()`, a snapshot written from current output.
-
-**The mocking boundary.** Mock at **system boundaries only** — external services, time,
-randomness, and where unavoidable the datastore and filesystem. Never the change's own
-collaborators: a test stubbing the unit next to the one under test asserts on the stub.
-
-**The independent-expected-value rule.** An expected value's expression must not reference
-any symbol **defined in the files the task changed** — write the value the acceptance
-criterion names. A value computed by the code under test cannot disagree with it.
-
 ## Gates
 
 - **Per-task gate:** the one-line check `execute` runs to call a task done. It must
@@ -133,9 +102,12 @@ criterion names. A value computed by the code under test cannot disagree with it
   - exit-zero: `npm test -- src/auth/token.test.ts`
   - grep-zero: `grep -rn "deprecatedApi" src | wc -l | grep -qx 0`
   - typecheck: `tsc --noEmit`
-- **Phase gate:** once every task in a phase is green, run the broader check (full
-  test suite + static analysis — typecheck + lint + format) so cross-task integration
-  is confirmed before the next phase.
+  - proves the test ran, where an exit code cannot show a new test was selected and the
+    runner prints one line per test:
+    `out=$(cmd) && printf '%s' "$out" | grep -q '<pass line>'`
+
+Plan writes no phase-level gate. A phase's gate is its verifiers, per `SKILL.md` →
+*Sizing*, and `execute` discovers the project's own commands for them.
 
 ## Execution plan
 
@@ -151,15 +123,18 @@ batches — `execute` runs it in the main agent. This is exactly what `execute` 
 
 - Every task is atomic (one component / function / endpoint / file).
 - Every task declares its **files**.
-- At `standard`+, every task's **reuses** holds a path, a `path:line`, or `no-precedent`
-  — never blank.
+- Every task's **reuses** holds a path, a `path:line`, or `no-precedent` — never blank.
+- Every spec AC ID is claimed by at least one task's AC-trace, excluding retired IDs.
 - The dependency graph is acyclic and every `depends-on` ID exists.
 - No `[P]` task depends on another task in the same phase.
 - Every task has co-located tests, a real gate (a project-real command), and an anchor:
-  an AC ID **or** a **design element** — a named component, a seam, or a recorded
-  convention. A task with neither anchor is scope creep; drop it or find its anchor.
+  an AC ID, a **design element** — a named component, a seam, or a recorded convention — or
+  the task it unblocks. A task with no anchor is scope creep; drop it or find its anchor.
 - Every `[P]` / seq call cites its parallelism evidence.
-- Each phase has a goal and a phase gate.
+- Each phase has a goal.
+
+A failing item goes back to the task list, for **at most 3 cycles** (`SKILL.md` →
+*Retries*). Then stop and report the failing items; do not present the plan as validated.
 
 ## Risks
 
@@ -169,8 +144,9 @@ production deploys (strategy, triggers + thresholds, steps).
 
 ## Write and route
 
-Write `./.specs/<slug>/plan.md` from `templates/plan.md` and populate the **task table
-in `state.md`**, grouped by phase, all tasks `pending`. Update `state.md` with any
+Write `./.specs/<slug>/plan.md` from `templates/plan.md` and populate the **task status
+table in `state.md`**, grouped by phase, new tasks `pending`. On a re-run, keep unaffected
+rows as they are and reopen affected ones per `references/fix.md`. Update `state.md` with any
 size promotion (and its reason).
 
 Recommend `/forge execute` next.

@@ -98,7 +98,8 @@ so old failures cost no fix cycles.
      **review-time agents only**. The only structural text an implementer's prompt carries
      is the scope/shape boundary in the self-check below.
    - A task that renders, styles or lays out a screen also carries the UI brief from
-     `references/ui.md`.
+     `references/ui.md`. On `Surface: none`, promote the surface first, as in *Run the
+     verifiers*.
    - The subagent returns the files it changed and does **not** commit; you run its
      gates and commit.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
@@ -174,8 +175,9 @@ Once all the phase's tasks are committed, dispatch the phase's verifiers over it
 `references/verification.md` holds the run order, and `SKILL.md` → *Sizing* says which run,
 including what a one-way door adds. Author ≠ verifier; fresh context.
 
-If `Surface` is `none` and the phase's diff renders, styles or lays out a screen, set it to
-`ui`, log the reason in Decisions, and read `references/ui.md` before dispatching. On such
+If `Surface` is `none` and a task or the phase's diff renders, styles or lays out a
+screen, set it to `ui`, log the reason in Decisions, and read `references/ui.md` before
+dispatching. On such
 a phase, verifier 3's prompt also carries the reference and the UI rows, per that file.
 
 Write `Verifying: <stage>, cycle <n>` under the phase's heading in `## Tasks` as each stage

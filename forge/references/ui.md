@@ -1,8 +1,7 @@
 # UI
 
-Every rule for a change that alters what a person sees on a rendered screen. A phase reads
-this file only when `state.md` records `Surface: ui` (`SKILL.md` → *Every phase starts
-by*, step 4). A change with `Surface: none` never opens it.
+Every rule for a change that alters what a person sees on a rendered screen. When a phase
+reads it is set in `SKILL.md` → *Dispatch*.
 
 The principle: on such a change, the expected look comes from outside the change. Specify
 fixes it as a reference before any code is written, the implementer receives it in the UI
@@ -33,8 +32,8 @@ misreads it.
 ## Specify: the UI rows
 
 Add three rows to `Conventions observed`, under the same rules as the six categories
-(`references/specify.md` → *A2*): every entry cites a `file:line`, an empty row names
-where it looked, and the section is regenerated whole.
+(`references/specify.md` → *A2*, *Conventions observed*): every entry cites a
+`file:line`, an empty row names where it looked, and the section is regenerated whole.
 
 | Category | What to record |
 |---|---|
@@ -62,8 +61,7 @@ A task that renders, styles or lays out a screen names its screen's reference in
 ## Execute: the UI brief
 
 A task that renders, styles or lays out a screen carries the UI brief in its implementer
-prompt, and runs at least at standard tier (`SKILL.md` → *Model & effort selection*). The
-brief holds:
+prompt, at the tier `SKILL.md` → *Model & effort selection* sets for it. The brief holds:
 
 - the reference for each screen the task touches, with the line that it is a consistency
   anchor, not a template;
@@ -87,14 +85,16 @@ The accessibility rules:
 7. Text meets a contrast of 4.5:1, and large text, icons and control borders 3:1, in every
    theme the app has.
 8. Motion respects the reduced-motion preference, and nothing flashes.
-9. A pointer target is at least 24 by 24 CSS pixels.
+9. A pointer target is at least 24 by 24 CSS pixels, or the platform's equivalent.
 
 ## Execute: verifier 3 on a screen phase
 
 On a phase whose diff renders, styles or lays out a screen, the orchestrator adds the
-reference and the three UI rows to verifier 3's prompt as convention categories, in both
-modes. Verifier 3 compares the diff against them like any other category. A raw value
-where a token exists, a hand-built control where the app has a component, or a state shown
-differently from the app's feedback pattern is a convention finding with that category's
-severity (`references/verification.md`), not a visual choice under do-not-flag item 10
-(`references/structural-standards.md`).
+reference, the three UI rows and the paragraph below to verifier 3's prompt, in both modes.
+The UI rows extend the six convention categories on such a phase, and need no verdict in
+`design.md`.
+
+> Compare the diff against the UI rows like any other convention category. A raw value
+> where a token exists, a hand-built control where the app has a component, or a state
+> shown differently from the app's feedback pattern is a convention finding with that
+> category's severity, not a visual choice under do-not-flag item 10.

@@ -50,8 +50,9 @@ such a document in the repository.
 
 Runs in Part B, before the ACs are written, when no design was provided and the change
 adds a new screen or a substantial new piece of UI. A tweak to existing UI skips it unless
-the user asks for one. Let the user decline; then the closest existing screen is the
-reference, and `spec.md` records that the step was declined.
+the user asks for one. Let the user decline; then the reference is the next one in the
+order above, and `spec.md` records the decline under Assumptions as user-declined
+(`references/specify.md` → *Part B*).
 
 **One piece per round.** When the change spans several screens, prototype the one that
 sets the pattern for the rest, say which and why, and let the others follow the winner.
@@ -65,13 +66,14 @@ or cut it.
 **Native, working, realistic.** Every variant uses the app's own components, tokens and
 feedback patterns from the UI rows. It works for real, with no dead control and no
 placeholder text, and renders full size inside its real surroundings: the page around it
-and its sibling content. It lives in a throwaway surface production code never imports,
+and its sibling content. It lives in a throwaway page production code never imports,
 such as an isolated route on the dev server, or one static page using the app's
 stylesheet when there is no server.
 
 **A plain picker.** Show one variant at a time and switch instantly with a small control
 that is deliberately plain and never styled like the app, so it is not judged as part of
-the design. Number keys and arrows switch, and the URL keeps the choice across a reload.
+the design. Number keys and arrows switch, and the URL keeps the choice across a reload
+(or the platform's equivalent).
 
 **Check before showing.** Flip through every variant: it renders, its controls respond,
 and the console logs no error. Capture each.
@@ -82,7 +84,7 @@ how often the screen is used, never from looks alone. The user may ask for anoth
 that explores around one variant.
 
 **After the pick.** Save the winner's captures and a copy of its source under
-`./.specs/<slug>/design/` as the reference, delete the throwaway surface, and write the
+`./.specs/<slug>/design/` as the reference, delete the throwaway page, and write the
 ACs against the winner. With no visual system yet, the winner also becomes the app's
 direction, recorded in Decisions.
 

@@ -238,8 +238,8 @@ scope, in their words. Then cover the following, asking only for what is genuine
   defaulted. A question the user declines stays flagged as user-declined.
 - **Edge conditions.** Empty / error / first-run / power-user behavior.
 
-On a UI change with no provided design, run the prototype step in `references/ui.md`
-before writing the ACs.
+On a UI change with no provided design, check whether the prototype step in
+`references/ui.md` applies, before writing the ACs.
 
 ### Requirements and acceptance criteria
 

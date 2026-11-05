@@ -27,7 +27,10 @@ prompt that uses these terms names this file.
 | **seam** | a place a dependency can be substituted without editing the code that uses it | `structural-standards.md` → check 4 |
 | **locality** | same module, same files; the axis `plan` groups implementer batches along and `execute` batches by | `plan.md` → *Execution plan* |
 | **depth** | how far a phase goes for a given size, as opposed to which phases run at all | `SKILL.md` → *Sizing* |
-| **ratchet** | a recorded judgement that may tighten freely but loosens only with the user's confirmation — size and door | `SKILL.md` → *Sizing* |
+| **ratchet** | a recorded judgement that may tighten freely but loosens only with the user's confirmation — size, door and surface | `SKILL.md` → *Sizing* |
+| **surface** | whether a change alters a rendered screen, `ui` or `none`, in `state.md`'s header. Unrelated to a check's *surface facts* | `SKILL.md` → *Every phase starts by*, step 4 |
+| **reference screen** | what a UI change takes the app's components, tokens and feedback patterns from: a provided design, a picked prototype or an existing screen. An anchor, not a template | `ui.md` → *Specify: the reference* |
+| **UI brief** | what the implementer of a screen task carries: the reference, the UI rows, the accessibility rules and the states statement | `ui.md` → *Execute: the UI brief* |
 | **mechanical change** | the same edit repeated, such as a rename; it stays standard at any reach | `SKILL.md` → *Sizing* |
 | **phase gate** | a plan phase's selected verifiers. There is no separate gate step | `SKILL.md` → *Sizing*; `verification.md` |
 | **cycle** | one fix plus one re-run of the check that failed; every retry against a check stops at 3 | `SKILL.md` → *Retries* |

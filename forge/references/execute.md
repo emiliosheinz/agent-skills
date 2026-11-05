@@ -34,10 +34,10 @@ stop and recommend `/forge specify`. Don't do a broad survey.
 ## Phase selection
 
 Read `state.md`'s task status. Implement **exactly one phase per invocation** — the first
-phase whose prerequisite phases are complete and that isn't done yet. A phase whose only
-open rows are `gap-open` counts as complete. If the user names a
-phase, use that one. Do not continue into the next phase; finish, report, and let the user
-invoke `/forge execute` again.
+phase whose prerequisite phases are complete and that isn't done yet. A phase with every
+task `done` or `unverified`, no `Verifying:` line, and only `gap-open` rows open counts as
+complete. If the user names a phase, use that one. Do not continue into the next phase;
+finish, report, and let the user invoke `/forge execute` again.
 
 **Resume comes first.** On a user's re-invocation, a `blocked` task is picked up before
 anything else, from its recorded failure, with its counter restarted. A phase whose
@@ -78,8 +78,9 @@ Baseline`:
 
 A repo already red, or whose checks cannot run here, continues only on the user's
 decision, with the failing names or the reason recorded, so old failures cost no fix
-cycles. A run that cannot ask takes `SKILL.md` honesty rule 5's default. Verifiers 1 and 2
-compare against these recorded results.
+cycles. A run that cannot ask continues as the type-check row of
+`references/verification.md` → *Gaps* says. Verifiers 1 and 2 compare against these
+recorded results.
 
 ## Run the phase
 
@@ -103,8 +104,8 @@ compare against these recorded results.
      `references/structural-standards.md` and any discovered `CODING_STANDARDS.md` go to
      **review-time agents only**. The only structural text an implementer's prompt carries
      is the scope/shape boundary in the self-check below.
-   - A task that renders, styles or lays out a screen also carries the UI brief from
-     `references/ui.md`, which the main agent reads first when it implements the task
+   - A task in a screen phase that touches what the screen shows also carries the UI brief
+     from `references/ui.md`, which the main agent reads first when it implements the task
      itself. On `Surface: none`, promote the surface first, as in *Run the verifiers*.
    - The subagent returns the files it changed and does **not** commit; you run its
      gates and commit.
@@ -160,8 +161,9 @@ For each task:
    commit, but start no new task behind a `blocked` one, and do not run the phase's gate.
 
    **A gate that cannot run here** (its command needs what the environment lacks) is not
-   red. Commit the task with status **`unverified`**, and record a `gap-open` row saying
-   why. It spends no cycle and blocks nothing; its verifiers record the same gap.
+   red. Go on to steps 4 and 5; in step 6 the task's status is **`unverified`**, not
+   `done`, with a `gap-open` row saying why. It spends no cycle and blocks nothing, unless
+   `references/verification.md` → *Gaps* makes that check `gap-blocking`.
 4. **Self-check before committing.** Would a senior engineer call this overcomplicated,
    or badly arranged? **Scope** governs *whether* something is built. **Shape** governs
    *how* what is built is arranged. Moving a rule to the unit that owns its data, or

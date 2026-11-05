@@ -6,9 +6,9 @@ agent grading its own work tends to pass it, so the check must come from outside
 author.
 
 A plan phase's gate **is** its verifiers. `SKILL.md` → *Sizing* says which run for a given
-size and door. Numbers match run order. On a phase whose diff renders, styles or lays out
-a screen, **the look** (`references/ui.md`) runs after verifier 3 and before 4, at every
-size. It is a named stage and carries no number.
+size and door. Numbers match run order. On a screen phase (`SKILL.md` → *Sizing*),
+**the look** (`references/ui.md`) runs after verifier 3 and before 4, at every size. It is
+a named stage and carries no number.
 
 ## Run order and progression
 
@@ -102,11 +102,12 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
    An AC whose expected outcome is visible may instead be evidenced by a `look` row: the
    capture path and the observed outcome. Lacking an assertion, it is then neither
    uncovered nor a SPEC-GAP. On a screen phase, verifier 4's prompt carries the look's
-   evidence rows. A row tagged `degraded` or `inline` counts as degraded evidence, as
-   under *Graceful degradation*, beside the look's `gap-open` row for what it could not
-   see, when the ladder wrote one. A visible AC that row names is scored `gap-open`, not
-   uncovered or SPEC-GAP. A visible AC a look row evidences needs no test, and a gesture
-   the toolchain cannot test is left to the look and recorded `gap-open`.
+   evidence rows. A row tagged `degraded` or `inline` scores covered, keeping its tag; it
+   is degraded evidence, not a skipped check. It sits beside the look's `gap-open` row for
+   what the look could not see, when the ladder wrote one. A visible AC that row names is
+   scored `gap-open`, not uncovered or SPEC-GAP. A visible AC a look row evidences needs
+   no test, and a gesture the toolchain cannot test is left to the look and recorded
+   `gap-open`.
 
    **Field-level rule.** When an AC outcome is a multi-field event, returned object,
    or persisted record, require a value/state assertion at file:line for *each* named
@@ -214,7 +215,7 @@ Decisions and change the row to `gap-open`.
 | **DESIGN-GAP** | `gap-open` | A recorded decision for the user. It does not block the phase unless the user acts, because the code works and the improvement needs new scope. Spends no cycle. |
 | A one-way door with no marked AC | `gap-blocking` | Stop until the spec marks one. |
 | Verifier 5 cannot run on a one-way door | `gap-blocking` | Stop until the user decides. |
-| A configured type check cannot run | `gap-blocking` | Stop until the user decides; a run that cannot ask takes `SKILL.md` honesty rule 5's default. |
+| A configured type check cannot run | `gap-blocking` | Stop until the user decides. A run that cannot ask continues, logs the flagged assumption (`SKILL.md` honesty rule 5) and turns the row `gap-open`. |
 | Verifier 5 skipped on a two-way door, with no test seam | `gap-open` | Recorded, plus a lesson if non-obvious. |
 | Any other check skipped or degraded | `gap-open` | Recorded. Never reported as passed. |
 
@@ -234,8 +235,8 @@ Decisions and change the row to `gap-open`.
   run **inline**, never as independent.
 - **No browser tool:** a look subagent without one returns `SKIPPED (no browser tool)`
   unrun. When the orchestrator has one, it runs the look inline (`references/ui.md` →
-  *Execute: the look*); its rows are tagged `inline` and count as degraded evidence. With
-  no browser anywhere, the look's ladder applies.
+  *Execute: the look*). An inline look may PASS; its rows are tagged `inline` and count as
+  degraded evidence. With no browser anywhere, the look's ladder applies.
 
 ## Verdict format
 

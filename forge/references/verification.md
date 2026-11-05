@@ -25,8 +25,8 @@ next from ever running. `references/execute.md` holds the fix loop.
 ## The five verifiers
 
 Run by independent subagents. Give each only what it needs (paths, AC IDs, the design's
-gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and `references/glossary.md` for forge's
-terms). They are stateless and spawn nothing.
+gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
+`references/glossary.md` for forge's terms). They are stateless and spawn nothing.
 
 1. **Test suite + regression guard** *(automated)* — run the full suite with the recorded
    test command. All pass, or report each failure by test name + file:line. A failure named
@@ -56,9 +56,8 @@ terms). They are stateless and spawn nothing.
    `## Baseline`. Every phase uses the same ones, because a different command would make
    the baseline comparison false.
 3. **Structure** *(analysis)* — confirm the phase's code is arranged well and follows what
-   was decided. The subject is the recorded `Fix-base:` sha through HEAD when one is set, else
-   `Base:` through HEAD. It reads, and does
-   not edit. Two modes:
+   was decided. The subject is the recorded `Fix-base:` sha through HEAD when one is set,
+   else `Base:` through HEAD. It reads, and does not edit. Two modes:
 
    **Full mode** (`standard`+, or a one-way door at any size). Carries
    `references/structural-standards.md`, any discovered `CODING_STANDARDS.md`, the spec's
@@ -76,13 +75,13 @@ terms). They are stateless and spawn nothing.
    dispatch: any new delta is then this read-only verifier's own. Revert it, keep the
    verdict, and record a gap.
 
-   **Conventions-only mode** (`quick` on a two-way door). Compare the diff against the `Conventions observed` records and nothing else.
-   It **reads no design document**, **loads no structural catalogue**, and **dispatches no
-   subagent**: it runs inline. Those three exclusions keep `quick` cheap. Report each
-   category as conformant or deviating, with the deviating `file:line`. A section present
-   with nothing observed passes and says so; a none-observed marker that does not name
-   where it looked is a finding. This step is part of quick's gate: a deviation feeds the
-   fix loop.
+   **Conventions-only mode** (`quick` on a two-way door). Compare the diff against the
+   `Conventions observed` records and nothing else. It **reads no design document**,
+   **loads no structural catalogue**, and **dispatches no subagent**: it runs inline.
+   Those three exclusions keep `quick` cheap. Report each category as conformant or
+   deviating, with the deviating `file:line`. A section present with nothing observed
+   passes and says so; a none-observed marker that does not name where it looked is a
+   finding. This step is part of quick's gate: a deviation feeds the fix loop.
 
    **Severity.** Blocker when the finding sits on the path of a `[critical]` AC. Major when
    it breaks a contract, boundary or decision the design names, or deviates from a
@@ -194,10 +193,10 @@ behind it is reported with a recommended `/forge fix`.
 
 ## Gaps
 
-Every gap is a row in `state.md`'s `## Open findings`, either `gap-blocking` or `gap-open`,
-so a resume can tell whether the phase can pass. A skipped check is recorded as a gap,
-never reported as green. When the user decides a blocking gap, log it in Decisions and change
-the row to `gap-open`.
+Every gap is a row in `state.md`'s `## Open findings`, either `gap-blocking` or
+`gap-open`, so a resume can tell whether the phase can pass. A skipped check is recorded
+as a gap, never reported as green. When the user decides a blocking gap, log it in
+Decisions and change the row to `gap-open`.
 
 | Gap | Disposition | Outcome |
 |---|---|---|

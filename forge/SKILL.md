@@ -44,9 +44,9 @@ structure is and how a structural review runs. Two dispatches load it: `review.m
 under-design lens and `verification.md`'s structure verifier. It is the only structural
 check set in forge.
 
-`references/glossary.md` indexes forge's load-bearing terms — the door verdict, blast radius, a
-seam, a stage, the three lies — and names where each one is defined. No phase dispatches it;
-read it when a pointer uses a term you cannot place.
+`references/glossary.md` indexes forge's load-bearing terms — the door verdict, blast
+radius, a seam, a stage, the three lies — and names where each one is defined. No phase
+dispatches it; read it when a pointer uses a term you cannot place.
 
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
@@ -69,9 +69,9 @@ describes its own fallback.
 
 1. Resolving `SPECS_ROOT` (see *Artifact root*).
 2. Resolving the slug. `specify` derives it from the feature name. Other phases take the
-   argument when it names a `.specs/` directory; otherwise, when the request does not point
-   elsewhere, the only directory there; otherwise they ask, and `fix` refuses when none exists. A direct `/forge execute` on a
-   new change derives one.
+   argument when it names a `.specs/` directory; otherwise, when the request does not
+   point elsewhere, the only directory there; otherwise they ask, and `fix` refuses when
+   none exists. A direct `/forge execute` on a new change derives one.
 3. Re-reading `state.md` if it exists, and otherwise creating it from the template (`fix`
    refuses instead). Do not assume the runtime
    preserves its own internal state across phases — if it is not in `state.md`, it did not
@@ -89,8 +89,9 @@ it with git and the task status before acting on it.
 
 Every change is one of three sizes. The size controls how deep each phase goes and which
 phases are needed at all. A change is **quick** unless a trigger below it fires, and then
-the **largest** tier with a trigger that fires. When in doubt, size up: under-sizing skips rigor a change needed, and over-sizing only
-wastes some effort. The numeric anchors are rough guides; the qualitative triggers decide.
+the **largest** tier with a trigger that fires. When in doubt, size up: under-sizing skips
+rigor a change needed, and over-sizing only wastes some effort. The numeric anchors are
+rough guides; the qualitative triggers decide.
 
 | Tier | Triggers (any one promotes to this tier; quick's are its limits) |
 |------|------------------------------------------|
@@ -189,9 +190,9 @@ differently, don't write an entry. Observations about forge itself stay out of t
 - **Match model tier and reasoning effort to the task.** See below. This is the primary
   cost lever.
 - **One level of delegation.** Subagents do not spawn subagents.
-- **Subagents are stateless.** Put everything they need in the prompt (file paths,
-  section refs, constraints), and name `references/glossary.md` when it uses forge's terms. Outputs over ~100 lines go to a file; return the path,
-  not the content.
+- **Subagents are stateless.** Put everything they need in the prompt (file paths, section
+  refs, constraints), and name `references/glossary.md` when it uses forge's terms.
+  Outputs over ~100 lines go to a file; return the path, not the content.
 - **Prefer `AskUserQuestion` when available**, with a recommended default per question.
   Fall back to a single plain-text question otherwise. Never bundle unrelated questions.
 
@@ -202,12 +203,13 @@ the most expensive model. Map tiers to the runtime's per-subagent model control 
 Code, `haiku`, `sonnet`, `opus`). With no such control, skip the tier and rely on effort.
 With no effort dial, fold the intent into the tier.
 
-- **Economy, low effort:** read-only scouting; verifiers 1 and 2; an implementer task that creates no new file, exported type,
-  interface or class, and either mirrors a `reuses` pointer or is mechanical with a clear
-  gate. `no-precedent` is not a pointer: it says a design decision is needed.
-- **Standard, medium effort:** ordinary implementation; verifier 5; and any task creating a
-  new file, exported type, interface or class — never economy, because where a responsibility
-  belongs is decided once, when the file or type is created.
+- **Economy, low effort:** read-only scouting; verifiers 1 and 2; an implementer task that
+  creates no new file, exported type, interface or class, and either mirrors a `reuses`
+  pointer or is mechanical with a clear gate. `no-precedent` is not a pointer: it says a
+  design decision is needed.
+- **Standard, medium effort:** ordinary implementation; verifier 5; and any task creating
+  a new file, exported type, interface or class — never economy, because where a
+  responsibility belongs is decided once, when the file or type is created.
 - **Standard, high effort:** review lenses and verifiers 3 and 4 at `standard`, or on a
   one-way door at `quick`. Analysis and adversarial work is never economy.
 - **Frontier, high effort:** design synthesis and plan decomposition for a complex change,
@@ -258,9 +260,9 @@ tiers, pick the lower and let a failed gate promote it.
    the check that failed, so a check gets its first run plus at most 3 re-runs. Each
    playbook names the exit. An interview or a scan gathers information rather than
    retrying a failed check, so it runs to its own stop condition instead.
-7. A failure the fix did not cause — one that predates the check's first failing run, or one
-   in a path the fix cannot affect — spends no cycle and does not loop: record it, then stop and report.
-   A cap never justifies weakening a check.
+7. A failure the fix did not cause — one that predates the check's first failing run, or
+   one in a path the fix cannot affect — spends no cycle and does not loop: record it,
+   then stop and report. A cap never justifies weakening a check.
 
 ### Hand-off
 

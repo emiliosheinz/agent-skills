@@ -20,16 +20,16 @@ Load first:
 Source is `spec.md` / `design.md` / `plan.md` under `./.specs/<slug>/`. Run the loop over
 the plan's tasks.
 
-If the change is above `quick` with no plan, stop and recommend `/forge plan`, or
-`/forge specify` if it has no spec. If artifacts are missing on a quick change (a direct
-`/forge execute`), do a **quick, focused** research pass: scan the codebase for patterns, test setup, entry points.
-Derive scope, architecture, constraints, and acceptance criteria from the request and
-code. Write a quick `spec.md` before any code: Problem, the six `Conventions observed`
-categories per `references/specify.md`, the verbatim Request, and explicit ACs, with each
-sentence of the request traced to an AC or a stated exclusion. Classify the door per
-`references/specify.md` and record it in `state.md`, because the door decides this change's
-gate. A one-way door needs reviews this path does not run, so stop and recommend
-`/forge specify`. Don't do a broad survey.
+If the change is above `quick` with no plan, stop and recommend `/forge plan`, or `/forge
+specify` if it has no spec. If artifacts are missing on a quick change (a direct `/forge
+execute`), do a **quick, focused** research pass: scan the codebase for patterns, test
+setup, entry points. Derive scope, architecture, constraints, and acceptance criteria from
+the request and code. Write a quick `spec.md` before any code: Problem, the six
+`Conventions observed` categories per `references/specify.md`, the verbatim Request, and
+explicit ACs, with each sentence of the request traced to an AC or a stated exclusion.
+Classify the door per `references/specify.md` and record it in `state.md`, because the
+door decides this change's gate. A one-way door needs reviews this path does not run, so
+stop and recommend `/forge specify`. Don't do a broad survey.
 
 ## Phase selection
 
@@ -64,7 +64,8 @@ it for the user.
 
 ## Baseline
 
-After the sprawl check and before a change's first task, once, fill `state.md`'s `## Baseline`:
+After the sprawl check and before a change's first task, once, fill `state.md`'s `##
+Baseline`:
 
 1. Discover the project's test, type-check, lint and format commands, per
    `references/verification.md`.
@@ -113,8 +114,8 @@ so old failures cost no fix cycles.
 
 For each task:
 
-1. **State intent, and mark the task `in-progress`.** Briefly: assumptions, files to touch, the AC IDs it satisfies,
-   and what "done" means (the task's gate + done-when).
+1. **State intent, and mark the task `in-progress`.** Briefly: assumptions, files to
+   touch, the AC IDs it satisfies, and what "done" means (the task's gate + done-when).
 2. **Implement, simply.**
    - Write the code and its co-located tests.
    - Test-first is encouraged. Derive tests from the spec's acceptance criteria (the
@@ -188,8 +189,8 @@ If a verifier FAILs:
    verifier starts; Minor and Cosmetic ones become `reported`.
 3. Commit the fix. A fix commit touches only the files its finding cites, and their tests.
 4. Re-run verifiers 1 and 2 and the verifier that failed, then go on to the next verifier.
-   Earlier stages that passed do not re-run. If that fix turns 1 or 2 red, repairing it spends
-   the same stage's budget and `Verifying:` keeps that stage.
+   Earlier stages that passed do not re-run. If that fix turns 1 or 2 red, repairing it
+   spends the same stage's budget and `Verifying:` keeps that stage.
 
 **At most 3 fix → re-verify cycles per stage.** Each stage has its own budget. If a stage is
 still failing after 3, stop there and escalate to the user with the delta and what was
@@ -208,10 +209,10 @@ without new scope — a port, a layer, a second implementation, a flag or an ext
 it.
 
 `references/verification.md` → *Gaps* holds the outcome of a SPEC-GAP, a DESIGN-GAP and
-every other gap. **On a `gap-blocking` row, stop:** finish what does not depend on it, write
-Handoff with `Next: /forge fix` for a SPEC-GAP or the decision needed otherwise, and report.
-On a later invocation, a SPEC-GAP row whose AC now has its expected value in `spec.md`, or is
-retired, becomes `applied`.
+every other gap. **On a `gap-blocking` row, stop:** finish what does not depend on it,
+write Handoff with `Next: /forge fix` for a SPEC-GAP or the decision needed otherwise, and
+report. On a later invocation, a SPEC-GAP row whose AC now has its expected value in
+`spec.md`, or is retired, becomes `applied`.
 
 **On PASS**, append a compact **Verification evidence** subsection in `state.md` —
 one row per AC (`AC ID → file:line → spec-defined expected value → covered`) plus the

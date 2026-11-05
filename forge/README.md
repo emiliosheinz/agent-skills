@@ -48,8 +48,8 @@ for the full rubric.
 two-way door — one-way meaning reverting the commit does not undo the effect (destructive
 migration, bulk delete, mass communication, money movement, an auth boundary, a broken
 contract, no revert path). A one-way door runs the heavier reviewers and the mutation
-sensor at any size, so its gate is all five verifiers: a two-line change that emails every user deserves more scrutiny than a
-sixty-file rename.
+sensor at any size, so its gate is all five verifiers: a two-line change that emails every
+user deserves more scrutiny than a sixty-file rename.
 
 ## What you get out of forge
 

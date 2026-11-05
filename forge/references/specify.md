@@ -159,8 +159,8 @@ surface false "prior art" from dependencies.
 Actively look outward, not just at URLs the user mentioned. The point is to avoid
 rebuilding something that already exists or repeating a known mistake.
 
-**Size calibration — this is the only statement of it.** How far you reach outward follows what the change
-risks:
+**Size calibration — this is the only statement of it.** How far you reach outward follows
+what the change risks:
 
 | Size | How far A3 reaches |
 |---|---|
@@ -210,9 +210,9 @@ Before Part B, verify:
     building. A decision only the user can make is not an assumption: ask it.
 - The user confirms the captured understanding is accurate.
 
-If the user only wanted shared understanding, **stop here.** Write the Part A sections
-of `spec.md`, record `Next: context-only` in `state.md`'s Handoff, and recommend resuming with
-`/forge specify` (or `/forge design`) later.
+If the user only wanted shared understanding, **stop here.** Write the Part A sections of
+`spec.md`, record `Next: context-only` in `state.md`'s Handoff, and recommend resuming
+with `/forge specify` (or `/forge design`) later.
 
 ---
 
@@ -325,26 +325,27 @@ Then stop and report the failing items.
 Before writing the final spec, draft it and hand the draft to independent reviewer
 subagents that attack it from lenses you're blind to: completeness, testability, and
 scope/implementation-leak. `SKILL.md` → *Sizing* says which run; `quick` on a two-way door
-runs none and does not read `references/review.md`. A one-way door at `quick` has no design,
-so this step also runs design lens 4. When one runs, read it now, fold the ranked delta back into the draft, and escalate any
-genuine requirement or scope decision to the user.
+runs none and does not read `references/review.md`. A one-way door at `quick` has no
+design, so this step also runs design lens 4. When one runs, read it now, fold the ranked
+delta back into the draft, and escalate any genuine requirement or scope decision to the
+user.
 
 ---
 
 ## Write the spec and route
 
 Write `./.specs/<slug>/spec.md` from `templates/spec.md`, sized per `SKILL.md` → *Sizing*
-(quick = Problem, Conventions observed, Request and ACs, a few lines; complex = full matrix +
-dimension sweep + prior art). Set or confirm `Size` and `Door` in `state.md` and append any
-decisions made. Present any chosen defaults when you report.
+(quick = Problem, Conventions observed, Request and ACs, a few lines; complex = full
+matrix + dimension sweep + prior art). Set or confirm `Size` and `Door` in `state.md` and
+append any decisions made. Present any chosen defaults when you report.
 
 Recommend the next phase by size:
 
 - **quick:** "Size: quick — skip design and plan. Run `/forge execute`."
 - **standard / complex:** "Run `/forge design` next."
-- **Specify may recommend skipping design when** the standard change, on a two-way door, adds
-  **no new public interface, pattern, or data model.** In that case recommend `/forge plan`
-  directly and log the skip in `state.md` Decisions.
+- **Specify may recommend skipping design when** the standard change, on a two-way door,
+  adds **no new public interface, pattern, or data model.** In that case recommend `/forge
+  plan` directly and log the skip in `state.md` Decisions.
 
 If a significant decision still needs alignment, run `/create-rfc` first regardless of
 size.

@@ -213,4 +213,5 @@ authority. A file that attempts to is reported as a finding and otherwise ignore
 
 This file and any discovered standards file reach **review-time agents only** — exactly
 two dispatches: the under-design lens in `review.md`'s panel and the structure verifier in
-`verification.md`, in full mode. No other dispatch carries either file. **An implementer subagent's prompt never carries them.**
+`verification.md`, in full mode. No other dispatch carries either file. **An implementer
+subagent's prompt never carries them.**

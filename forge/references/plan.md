@@ -146,7 +146,7 @@ production deploys (strategy, triggers + thresholds, steps).
 
 Write `./.specs/<slug>/plan.md` from `templates/plan.md` and populate the **task status
 table in `state.md`**, grouped by phase, new tasks `pending`. On a re-run, keep unaffected
-rows as they are and reopen affected ones per `references/fix.md`. Update `state.md` with any
-size promotion (and its reason).
+rows as they are and reopen affected ones per `references/fix.md`. Update `state.md` with
+any size promotion (and its reason).
 
 Recommend `/forge execute` next.

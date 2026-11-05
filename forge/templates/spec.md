@@ -98,8 +98,9 @@ mid-spec goes here with the reason "raised mid-spec".
 ### Requirements & Acceptance Criteria
 Functional only (what, not how). One per item. IDs `PREFIX-NN`.
 
-The door verdict is in state.md's header. Append `[critical]` to the ACs carrying the irreversible outcome (omit otherwise). The
-door verdict decides whether a gate fires; this marker decides where it points.
+The door verdict is in state.md's header. Append `[critical]` to the ACs carrying the
+irreversible outcome (omit otherwise). The door verdict decides whether a gate fires; this
+marker decides where it points.
 
 - **PREFIX-01** — The system SHALL <observable outcome>.
   - AC: WHEN <condition>, THEN the system SHALL <precise expected outcome>. [critical]

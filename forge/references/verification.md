@@ -78,11 +78,11 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
    verdict, and record a gap.
 
    **Conventions-only mode** (`quick` on a two-way door). Compare the diff against the
-   `Conventions observed` records and nothing else. It **reads no design document**,
-   **loads no structural catalogue**, and **dispatches no subagent**: it runs inline.
-   Those three exclusions keep `quick` cheap; the look, on a screen phase, still runs as a
-   subagent. Report each category as conformant or
-   deviating, with the deviating `file:line`. A section present with nothing observed
+   `Conventions observed` records, with the UI rows on a screen phase, and nothing else. It
+   **reads no design document**, **loads no structural catalogue**, and **dispatches no
+   subagent**: it runs inline. Those three exclusions keep `quick` cheap; the look, on a
+   screen phase, still runs as a subagent. Report each category as conformant or deviating,
+   with the deviating `file:line`. A section present with nothing observed
    passes and says so; a none-observed marker that does not name where it looked is a
    finding. This step is part of quick's gate: a deviation feeds the fix loop.
 
@@ -105,7 +105,8 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
    evidence rows. A row tagged `degraded` or `inline` counts as degraded evidence, as
    under *Graceful degradation*, beside the look's `gap-open` row for what it could not
    see, when the ladder wrote one. A visible AC that row names is scored `gap-open`, not
-   uncovered or SPEC-GAP.
+   uncovered or SPEC-GAP. A visible AC a look row evidences needs no test, and a gesture
+   the toolchain cannot test is left to the look and recorded `gap-open`.
 
    **Field-level rule.** When an AC outcome is a multi-field event, returned object,
    or persisted record, require a value/state assertion at file:line for *each* named
@@ -213,7 +214,7 @@ Decisions and change the row to `gap-open`.
 | **DESIGN-GAP** | `gap-open` | A recorded decision for the user. It does not block the phase unless the user acts, because the code works and the improvement needs new scope. Spends no cycle. |
 | A one-way door with no marked AC | `gap-blocking` | Stop until the spec marks one. |
 | Verifier 5 cannot run on a one-way door | `gap-blocking` | Stop until the user decides. |
-| A configured type check cannot run | `gap-blocking` | Stop until the user decides. |
+| A configured type check cannot run | `gap-blocking` | Stop until the user decides; a run that cannot ask takes `SKILL.md` honesty rule 5's default. |
 | Verifier 5 skipped on a two-way door, with no test seam | `gap-open` | Recorded, plus a lesson if non-obvious. |
 | Any other check skipped or degraded | `gap-open` | Recorded. Never reported as passed. |
 
@@ -231,6 +232,10 @@ Decisions and change the row to `gap-open`.
   from disk, with no edits during the review. Report the tree comparison as `inoperative`,
   because one context gives a tree delta no boundary to straddle. Record those verifiers as
   run **inline**, never as independent.
+- **No browser tool:** a look subagent without one returns `SKIPPED (no browser tool)`
+  unrun. When the orchestrator has one, it runs the look inline (`references/ui.md` →
+  *Execute: the look*); its rows are tagged `inline` and count as degraded evidence. With
+  no browser anywhere, the look's ladder applies.
 
 ## Verdict format
 

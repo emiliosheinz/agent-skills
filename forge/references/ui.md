@@ -72,10 +72,9 @@ and its sibling content. It lives in a throwaway page production code never impo
 such as an isolated route on the dev server, or one static page using the app's
 stylesheet when there is no server.
 
-**A plain picker.** Show one variant at a time and switch instantly with a small control
-that is deliberately plain and never styled like the app, so it is not judged as part of
-the design. Number keys and arrows switch, and the URL keeps the choice across a reload
-(or the platform's equivalent).
+**The picker.** Show one variant at a time, switched by the fixed control in
+`references/picker.md`, copied as written. Its look belongs to the harness, not the
+design, so it is never styled like the app and never judged with the variants.
 
 **Check before showing.** Flip through every variant: it renders, its controls respond,
 and the console logs no error. Capture each.

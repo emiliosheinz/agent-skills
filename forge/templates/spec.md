@@ -49,6 +49,11 @@ integration boundaries, prior decisions). Observations only — no conclusions.
 | layering | | |
 | error handling | | |
 | test placement | | |
+<!-- Surface: ui only (references/ui.md); a reference is an anchor, not a template:
+| reference | | |
+| components | | |
+| tokens | | |
+| feedback pattern | | | -->
 
 ### Impact / Blast Radius (standard+)
 Observed: where the problem area sits and what already depends on it. Current state only —

@@ -211,6 +211,8 @@ Before Part B, verify:
     flag any that would invalidate the spec if wrong, so design/plan surface them before
     building. A decision only the user can make is not an assumption: ask it.
 - The user confirms the captured understanding is accurate.
+- If the code already does what was asked, say so with `file:line` and stop. Ask before
+  building anything else.
 
 If the user only wanted shared understanding, **stop here.** Write the Part A sections of
 `spec.md`, record `Next: context-only` in `state.md`'s Handoff, and recommend resuming

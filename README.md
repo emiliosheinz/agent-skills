@@ -48,21 +48,8 @@ phase at a time; each does its work, updates shared state, and **recommends** th
 phase without auto-running it. Depth **auto-sizes** to the change.
 
 ```mermaid
-stateDiagram-v2
-    direction TB
-    state "Change in flight" as Flight {
-        direction LR
-        [*] --> Specifying
-        Specifying --> Designing : forge design
-        Designing --> Planning : forge plan
-        Planning --> Executing : forge execute
-        Specifying --> Executing : forge execute [quick]
-        Executing --> [*] : all phases verified
-    }
-    [*] --> Flight : forge specify
-    Flight --> [*]
-    Flight --> Fixing : forge fix
-    Fixing --> Flight : / re-enter at wrong layer
+flowchart LR
+    IN(["Problem"]) --> SP["specify"] --> DE["design"] --> PL["plan"] --> EX["execute"] --> OUT(["Verified code"])
 ```
 
 | Phase | Verb | Question it answers | Output |

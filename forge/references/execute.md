@@ -276,7 +276,7 @@ When the phase is done and green:
    `SKILL.md` → *Lessons*. Routine success writes nothing.
 3. **Report what no phase will act on:** every `reported` finding; any lesson a command
    could enforce, proposed as a concrete check; and any judgement lesson, naming the
-   project's `CODING_STANDARDS.md` as its destination when one exists. On a UI phase,
+   project's `CODING_STANDARDS.md` as its destination when one exists. On a screen phase,
    include the look list per `references/ui.md`.
 4. Summarize what was built, decisions made beyond the artifacts, and any unknowns.
 5. Recommend next: more phases remain → `/forge execute` again for the next phase;

@@ -80,7 +80,8 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
    **Conventions-only mode** (`quick` on a two-way door). Compare the diff against the
    `Conventions observed` records and nothing else. It **reads no design document**,
    **loads no structural catalogue**, and **dispatches no subagent**: it runs inline.
-   Those three exclusions keep `quick` cheap. Report each category as conformant or
+   Those three exclusions keep `quick` cheap; the look, on a screen phase, still runs as a
+   subagent. Report each category as conformant or
    deviating, with the deviating `file:line`. A section present with nothing observed
    passes and says so; a none-observed marker that does not name where it looked is a
    finding. This step is part of quick's gate: a deviation feeds the fix loop.
@@ -100,7 +101,10 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
 
    An AC whose expected outcome is visible may instead be evidenced by a `look` row: the
    capture path and the observed outcome. Lacking an assertion, it is then neither
-   uncovered nor a SPEC-GAP.
+   uncovered nor a SPEC-GAP. On a screen phase, verifier 4's prompt carries the look's
+   evidence rows. A row tagged `degraded` or `inline` counts as degraded evidence, as
+   under *Graceful degradation*, beside the look's `gap-open` row for what it could not
+   see.
 
    **Field-level rule.** When an AC outcome is a multi-field event, returned object,
    or persisted record, require a value/state assertion at file:line for *each* named
@@ -187,7 +191,7 @@ blocking gap: ask the spec, rather than mutating everything or nothing.
 
 ## Human checks
 
-**On a UI phase**, the look and its look list (`references/ui.md`) replace a manual
+**On a screen phase**, the look and its look list (`references/ui.md`) replace a manual
 check. Backend and infrastructure ACs rely on the automated verifiers.
 
 **Agent walk.** For other user-facing changes, such as CLI output, if the agent can start

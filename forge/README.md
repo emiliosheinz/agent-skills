@@ -81,8 +81,8 @@ user deserves more scrutiny than a sixty-file rename.
   three fix cycles, then the work stops and escalates rather than looping.
 - **UI changes get looked at.** On a change that alters a screen, `execute` adds
   **the look**: a fresh subagent drives the running app against a reference screen and
-  grades what it sees. With no design to follow, `specify` first builds a few
-  native-looking prototypes and lets you pick one as that reference.
+  grades what it sees. For a new screen with no design to follow, `specify` first
+  builds a few native-looking prototypes and lets you pick one as that reference.
 - **Structural review after commit.** Verifier 3 reviews the phase's commits for structure
   and fixes land as follow-up commits. Each finding's disposition — applied, rejected with a
   reason, or reported — is recorded, so a finding cannot quietly vanish.

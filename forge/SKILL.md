@@ -130,8 +130,8 @@ step. Reviewer and lens numbers are defined in `references/review.md`, verifier 
 | **Design lenses** | no design | 1, 2, 4 | 1, 2, 3, 4 | 4 (at quick, reading the ACs gathered inline) |
 | **Verifiers** | 1, 2, 3 in conventions-only mode | 1, 2, 3, 4 | 1, 2, 3, 4, 5 | all 5 at any size, with 3 in full mode |
 
-On a plan phase whose diff renders, styles or lays out a screen, the gate also includes
-the look (`references/ui.md`), at every size, after verifier 3.
+On a screen phase, one whose diff renders, styles or lays out a screen, the gate also
+includes the look, placed by `references/verification.md` and run per `references/ui.md`.
 
 Each phase ends by stating the size and naming the next needed phase: quick goes from
 `specify` to `execute`; standard and complex run the whole chain, except that `specify` may

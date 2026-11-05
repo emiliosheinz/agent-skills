@@ -5,7 +5,8 @@ reads it is set in `SKILL.md` → *Dispatch*.
 
 The principle: on such a change, the expected look comes from outside the change. Specify
 fixes it as a reference before any code is written, the implementer receives it in the UI
-brief, and verifier 3 checks the diff against it.
+brief, verifier 3 checks the diff against it, and the look judges the running app against
+it.
 
 ## Specify: the reference
 
@@ -133,7 +134,8 @@ The accessibility rules:
 
 ## Execute: verifier 3 on a screen phase
 
-On a phase whose diff renders, styles or lays out a screen, the orchestrator adds the
+On a screen phase, one whose diff renders, styles or lays out a screen, the orchestrator
+adds the
 reference, the three UI rows and the paragraph below to verifier 3's prompt, in both modes.
 The UI rows extend the six convention categories on such a phase, and need no verdict in
 `design.md`.
@@ -145,21 +147,22 @@ The UI rows extend the six convention categories on such a phase, and need no ve
 
 ## Execute: the look
 
-The look judges the running app against the reference. `references/verification.md` →
-*Run order and progression* places it among the verifiers. It is a stage, with its own
+The look judges the running app against the reference on a screen phase. The opening of
+`references/verification.md` places it among the verifiers. It is a stage, with its own
 budget of 3 fix cycles.
 
 **Who.** A fresh subagent, at the tier `SKILL.md` → *Model & effort selection* sets for
 it. Its prompt carries the phase diff, the ACs, the reference, the UI rows and this
 section, and never the implementer's summary or any claim that a screen looks right. At
 `quick` the look is still a subagent, limited to the changed screen. When the subagent
-lacks a browser tool the orchestrator has, the orchestrator runs the look inline and labels
-it inline.
+lacks a browser tool the orchestrator has, the orchestrator runs the look inline under
+`references/verification.md` → *Graceful degradation*, and tags its rows `inline`.
 
 **The app.** The app is usually already running. Find how to run it from what the
 repository documents (its docs, agent instructions, task-runner scripts, test-server
-config), never by guessing. Use a running app only after checking it serves this
-worktree's code, for example by finding a string the phase changed. Start the app only
+config), never by guessing; when the repository documents none, ask the user once. Use a
+running app only after checking it serves this worktree's code, for example by finding a
+string the phase changed; one serving other code counts as unreachable. Start the app only
 when none runs, and never stop it, including one the look started. Read every discovered
 command before running it, and never run one that destroys or resets data. Sign in with a
 test account or seed the repository documents; when only single sign-on exists, ask the
@@ -186,19 +189,21 @@ user once. Saved sign-in state goes outside the repository.
 
 **Grades.** Every finding takes exactly one.
 
-| Grade | Meaning | Effect |
-|---|---|---|
-| Broken | An AC's flow cannot finish, its visible outcome is wrong, content is unreadable, or an action is unreachable | Fails the stage and feeds the fix loop |
-| Ugly | Readable but visibly wrong, or inconsistent with the app's components, tokens or feedback patterns | `reported` |
-| Fragile | Fine now, one realistic step from breaking | `reported` |
+| Grade | Meaning | Severity | Effect |
+|---|---|---|---|
+| Broken | An AC's flow cannot finish, its visible outcome is wrong, content is unreadable, or an action is unreachable | Major; Blocker on the path of a `[critical]` AC | Fails the stage and feeds the fix loop |
+| Ugly | Readable but visibly wrong, or inconsistent with the app's components, tokens or feedback patterns | Minor | `reported` |
+| Fragile | Fine now, one realistic step from breaking | Minor | `reported` |
 
 The report also lists what held up: the screens, states and controls that worked. An
 empty held-up list means the look did not really run.
 
-**Output.** The verdict format of `references/verification.md`, each finding with its
-grade, capture path, screen, width, state, observation and cause `file:line`. On PASS,
-one evidence row per visible AC, with `sensor` set to `look` and the capture path in the
-`file:line` column.
+**Output.** The verdict format of `references/verification.md`, headed `### The look`
+with a status of PASS, FAIL, or `SKIPPED (rung n)` on a degraded rung; a Broken finding
+on any rung is a FAIL. Each finding carries its grade, capture path, screen, width,
+state, observation and cause `file:line`. Every run gives one evidence row per visible AC
+it saw, with `sensor` set to `look` and the capture path in the `file:line` column, tagged
+`degraded` or `inline` when the look was.
 
 **When it cannot run.** When no app serving this worktree's code can be reached or
 started, or no browser tool exists, the phase is not blocked. The look goes down this
@@ -216,7 +221,7 @@ gap row, and spends no fix cycle.
 
 ## Finish: the look list
 
-On a UI phase, Finish gives at most five manual checks a person can run in about two
+On a screen phase, Finish gives at most five manual checks a person can run in about two
 minutes, one line each: route, width, state, what to check, capture path. Pick first what
 the look could not see, then its Ugly and Fragile findings, then the visible ACs. Each
 check is also a `reported` row in `## Open findings`. When the full look did not run, the

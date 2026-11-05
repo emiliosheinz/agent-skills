@@ -70,7 +70,7 @@ the framework's own state.
   position: relative; display: flex; align-items: center; height: 28px; padding: 0 12px;
   border: 0; border-radius: 999px; background: transparent;
   color: rgba(255, 255, 255, 0.55); font: inherit; cursor: pointer;
-  transition: color 150ms ease-out;
+  white-space: nowrap; transition: color 150ms ease-out;
 }
 .proto-picker-item:hover { color: rgba(255, 255, 255, 0.85); }
 .proto-picker-item:active { transform: scale(0.97); }
@@ -133,4 +133,6 @@ setActive((Number.parseInt(new URLSearchParams(location.search).get("v"), 10) ||
 requestAnimationFrame(() => requestAnimationFrame(() => picker.setAttribute("data-ready", "")));
 ```
 
-Drop the divider and the replay button when no variant animates on entry.
+Run this script before any page code that touches `#stage`: it declares `stage`, and code
+that reads it earlier throws. Name variants in one or two short words so the pill fits a
+phone width. Drop the divider and the replay button when no variant animates on entry.

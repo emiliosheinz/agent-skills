@@ -78,7 +78,7 @@ Baseline`:
 
 A repo already red, or whose checks cannot run here, continues only on the user's
 decision, with the failing names or the reason recorded, so old failures cost no fix
-cycles. A run that cannot ask continues as the type-check row of
+cycles. A run that cannot ask continues for any recorded check, as the type-check row of
 `references/verification.md` → *Gaps* says. Verifiers 1 and 2 compare against these
 recorded results.
 

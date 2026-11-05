@@ -217,7 +217,7 @@ Decisions and change the row to `gap-open`.
 | Verifier 5 cannot run on a one-way door | `gap-blocking` | Stop until the user decides. |
 | A configured type check cannot run | `gap-blocking` | Stop until the user decides. A run that cannot ask continues, logs the flagged assumption (`SKILL.md` honesty rule 5) and turns the row `gap-open`. |
 | Verifier 5 skipped on a two-way door, with no test seam | `gap-open` | Recorded, plus a lesson if non-obvious. |
-| Any other check skipped or degraded | `gap-open` | Recorded. Never reported as passed. |
+| Any other check skipped or degraded (an inline look excepted, see below) | `gap-open` | Recorded. Never reported as passed. |
 
 ## Graceful degradation (never fake a gate)
 

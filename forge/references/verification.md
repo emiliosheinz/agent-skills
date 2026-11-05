@@ -104,7 +104,7 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
    uncovered nor a SPEC-GAP. On a screen phase, verifier 4's prompt carries the look's
    evidence rows. A row tagged `degraded` or `inline` counts as degraded evidence, as
    under *Graceful degradation*, beside the look's `gap-open` row for what it could not
-   see.
+   see, when the ladder wrote one.
 
    **Field-level rule.** When an AC outcome is a multi-field event, returned object,
    or persisted record, require a value/state assertion at file:line for *each* named

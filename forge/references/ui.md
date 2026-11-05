@@ -166,7 +166,8 @@ string the phase changed; one serving other code counts as unreachable. Start th
 when none runs, and never stop it, including one the look started. Read every discovered
 command before running it, and never run one that destroys or resets data. Sign in with a
 test account or seed the repository documents; when only single sign-on exists, ask the
-user once. Saved sign-in state goes outside the repository.
+user once. The look is a subagent and cannot ask: it returns each such question to the
+orchestrator, which asks. Saved sign-in state goes outside the repository.
 
 **What it does**, on each screen the phase changed:
 
@@ -202,8 +203,8 @@ empty held-up list means the look did not really run.
 with a status of PASS, FAIL, or `SKIPPED (rung n)` on a degraded rung; a Broken finding
 on any rung is a FAIL. Each finding carries its grade, capture path, screen, width,
 state, observation and cause `file:line`. Every run gives one evidence row per visible AC
-it saw, with `sensor` set to `look` and the capture path in the `file:line` column, tagged
-`degraded` or `inline` when the look was.
+it saw, with `sensor` set to `look` and the capture path in the `file:line` column (the
+diff's `file:line` on a source read), tagged `degraded` or `inline` when the look was.
 
 **When it cannot run.** When no app serving this worktree's code can be reached or
 started, or no browser tool exists, the phase is not blocked. The look goes down this

@@ -51,7 +51,9 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
 
    **N/A vs gap.** A tool the project genuinely has no analogue for (e.g. no type
    checker in a dynamically-typed repo) is `N/A` — not a failure. A tool that *is*
-   configured but wasn't run is a gap: record it, never report it green.
+   configured but wasn't run is a gap: record it, never report it green. A sub-check that
+   `## Baseline` records as red or unable to run here is not this phase's failure: report
+   it with that reason, as the same gap.
 
    **Where the commands come from.** Execute discovers them once per change, from package
    scripts, config files, pre-commit hooks, or CI — never invented — and records them in
@@ -215,7 +217,7 @@ Decisions and change the row to `gap-open`.
 | **DESIGN-GAP** | `gap-open` | A recorded decision for the user. It does not block the phase unless the user acts, because the code works and the improvement needs new scope. Spends no cycle. |
 | A one-way door with no marked AC | `gap-blocking` | Stop until the spec marks one. |
 | Verifier 5 cannot run on a one-way door | `gap-blocking` | Stop until the user decides. |
-| A configured type check cannot run | `gap-blocking` | Stop until the user decides. A run that cannot ask continues, logs the flagged assumption (`SKILL.md` honesty rule 5) and turns the row `gap-open`. |
+| A configured type check cannot run | `gap-blocking` | Stop until the user decides. A run that cannot ask continues, logs the flagged assumption (`SKILL.md` honesty rule 5) and turns the row `gap-open`, except on a one-way door, where it stops. |
 | Verifier 5 skipped on a two-way door, with no test seam | `gap-open` | Recorded, plus a lesson if non-obvious. |
 | Any other check skipped or degraded (an inline look excepted, see below) | `gap-open` | Recorded. Never reported as passed. |
 

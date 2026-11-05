@@ -164,7 +164,7 @@ budget of 3 fix cycles.
 it. Its prompt carries the phase diff, the ACs, the reference, the UI rows and this
 section, and never the implementer's summary or any claim that a screen looks right. At
 `quick` the look is still a subagent, limited to the changed screen at one width plus each
-width an AC names; every width or theme step 1 names that it leaves unseen is a `gap-open`
+width an AC names, in each theme; every breakpoint it leaves unseen is a `gap-open`
 row. A look without a browser tool follows `references/verification.md` → *Graceful
 degradation*.
 
@@ -192,10 +192,11 @@ attempt.
 2. Operate each changed control by its gesture and by keyboard: press it, press it twice,
    Tab to it, Escape out of any overlay and check that focus returns. Watch the console and
    failed requests.
-3. Put realistic worst-case content in front of it: a long name, a missing optional
-   value, one item, none. Values are plausible or taken from the schema's limits, and
-   enter only through the data boundary (fixtures, mocks, seeds, request interception, or
-   records the look creates). Never edit the component or shared data to produce them.
+3. Put realistic worst-case content in front of it: a long name, an unbroken long token,
+   a missing optional value, one item, none. Values are plausible or taken from the
+   schema's limits, and enter only through the data boundary (fixtures, mocks, seeds,
+   request interception, or records the look creates). Never edit the component or shared
+   data to produce them.
 4. Act on a destructive or outbound control only for records the look created; otherwise
    stop at the confirmation step.
 5. Compare each capture with the reference for consistency: the app's components, tokens

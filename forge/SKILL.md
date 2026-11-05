@@ -130,6 +130,9 @@ step. Reviewer and lens numbers are defined in `references/review.md`, verifier 
 | **Design lenses** | no design | 1, 2, 4 | 1, 2, 3, 4 | 4 (at quick, reading the ACs gathered inline) |
 | **Verifiers** | 1, 2, 3 in conventions-only mode | 1, 2, 3, 4 | 1, 2, 3, 4, 5 | all 5 at any size, with 3 in full mode |
 
+On a plan phase whose diff renders, styles or lays out a screen, the gate also includes
+the look (`references/ui.md`), at every size, after verifier 3.
+
 Each phase ends by stating the size and naming the next needed phase: quick goes from
 `specify` to `execute`; standard and complex run the whole chain, except that `specify` may
 log a design skip at standard. The user still drives every transition.
@@ -218,7 +221,8 @@ With no effort dial, fold the intent into the tier.
   responsibility belongs is decided once, when the file or type is created; and any task
   carrying the UI brief (`references/ui.md`), even one with a `reuses` pointer.
 - **Standard, high effort:** review lenses and verifiers 3 and 4 at `standard`, or on a
-  one-way door at `quick`. Analysis and adversarial work is never economy.
+  one-way door at `quick`; the look at every size. Analysis and adversarial work is never
+  economy.
 - **Frontier, high effort:** design synthesis and plan decomposition for a complex change,
   and review lenses and verifiers 3 and 4 at `complex`.
 

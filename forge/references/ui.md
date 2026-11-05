@@ -154,9 +154,9 @@ budget of 3 fix cycles.
 **Who.** A fresh subagent, at the tier `SKILL.md` → *Model & effort selection* sets for
 it. Its prompt carries the phase diff, the ACs, the reference, the UI rows and this
 section, and never the implementer's summary or any claim that a screen looks right. At
-`quick` the look is still a subagent, limited to the changed screen. When the subagent
-lacks a browser tool the orchestrator has, the orchestrator runs the look inline under
-`references/verification.md` → *Graceful degradation*, and tags its rows `inline`.
+`quick` the look is still a subagent, limited to the changed screen at one width. When the
+subagent lacks a browser tool the orchestrator has, the orchestrator runs the look inline
+under `references/verification.md` → *Graceful degradation*, and tags its rows `inline`.
 
 **The app.** The app is usually already running. Find how to run it from what the
 repository documents (its docs, agent instructions, task-runner scripts, test-server
@@ -202,13 +202,14 @@ empty held-up list means the look did not really run.
 **Output.** The verdict format of `references/verification.md`, headed `### The look`
 with a status of PASS, FAIL, or `SKIPPED (rung n)` on a degraded rung; a Broken finding
 on any rung is a FAIL. Each finding carries its grade, capture path, screen, width,
-state, observation and cause `file:line`. Every run gives one evidence row per visible AC
-it saw, with `sensor` set to `look` and the capture path in the `file:line` column (the
-diff's `file:line` on a source read), tagged `degraded` or `inline` when the look was.
+state, observation and cause `file:line`. Every run that rendered the screen gives one
+evidence row per visible AC it saw, with `sensor` set to `look` and the capture path in the
+`file:line` column, tagged `degraded` or `inline` when the look was. A source read renders
+nothing, so it gives no evidence row; its visible ACs stay in the `gap-open` row.
 
 **When it cannot run.** When no app serving this worktree's code can be reached or
-started, or no browser tool exists, the phase is not blocked. The look goes down this
-ladder and stops at the first rung that works:
+started, sign-in is impossible, or no browser tool exists, the phase is not blocked. The
+look goes down this ladder and stops at the first rung that works:
 
 1. the running app without sign-in, for public screens;
 2. a production build served statically;

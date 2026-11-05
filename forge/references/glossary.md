@@ -32,7 +32,9 @@ prompt that uses these terms names this file.
 | **reference** | what a UI change takes the app's components, tokens and feedback patterns from: a provided design, a picked prototype or an existing screen. An anchor, not a template | `ui.md` → *Specify: the reference* |
 | **UI brief** | what the implementer of a screen task carries: the reference, the UI rows, the accessibility rules and the states statement | `ui.md` → *Execute: the UI brief* |
 | **mechanical change** | the same edit repeated, such as a rename; it stays standard at any reach | `SKILL.md` → *Sizing* |
-| **phase gate** | a plan phase's selected verifiers. There is no separate gate step | `SKILL.md` → *Sizing*; `verification.md` |
+| **phase gate** | a plan phase's selected verifiers, plus the look on a screen phase. There is no separate gate step | `SKILL.md` → *Sizing*; `verification.md` |
+| **the look** | an unnumbered stage between verifiers 3 and 4 on a screen phase: a fresh subagent judges the running app against the reference and grades findings Broken, Ugly or Fragile | `ui.md` → *Execute: the look*; placement in `verification.md` |
+| **look list** | at most five manual checks a person can run in about two minutes, given at Finish on a UI phase | `ui.md` → *Finish: the look list* |
 | **cycle** | one fix plus one re-run of the check that failed; every retry against a check stops at 3 | `SKILL.md` → *Retries* |
 | **stage** | one step of the verifier order with its own budget of 3 cycles; verifiers 1 and 2 together are one stage | `verification.md` → *Run order and progression* |
 | **baseline** | the discovered test and static-analysis commands and their first result, recorded once per change | `execute.md` → *Baseline* |

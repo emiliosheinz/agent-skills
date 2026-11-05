@@ -39,6 +39,9 @@ before acting** — it is the step-by-step playbook for that phase.
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
 | `fix` | `references/fix.md` | re-aligned artifacts + code |
 
+When `state.md` records `Surface: ui`, every phase also reads `references/ui.md`, which
+holds every frontend rule. A change with `Surface: none` never opens it.
+
 `references/structural-standards.md` is the single always-applied baseline for what good
 structure is and how a structural review runs. Two dispatches load it: `review.md`'s
 under-design lens and `verification.md`'s structure verifier. It is the only structural
@@ -76,8 +79,11 @@ describes its own fallback.
    refuses instead). Do not assume the runtime
    preserves its own internal state across phases — if it is not in `state.md`, it did not
    happen.
-4. Picking the size and classifying the door if `state.md` records neither, the door per
-   `references/specify.md`.
+4. Picking the size and classifying the door and the surface, each one `state.md` does not
+   record, the door per `references/specify.md`. `Surface` is `ui` when an AC's outcome is
+   something a person sees or operates on a rendered screen, or the change edits code that
+   renders, styles or lays out a screen; otherwise it is `none`. Judge by behaviour, never
+   by file extension.
 5. Loading `lessons.md` if it exists: all Standing Rules, plus Log entries tagged to the
    area of this work.
 
@@ -207,9 +213,10 @@ With no effort dial, fold the intent into the tier.
   creates no new file, exported type, interface or class, and either mirrors a `reuses`
   pointer or is mechanical with a clear gate. `no-precedent` is not a pointer: it says a
   design decision is needed.
-- **Standard, medium effort:** ordinary implementation; verifier 5; and any task creating
+- **Standard, medium effort:** ordinary implementation; verifier 5; any task creating
   a new file, exported type, interface or class — never economy, because where a
-  responsibility belongs is decided once, when the file or type is created.
+  responsibility belongs is decided once, when the file or type is created; and any task
+  carrying the UI brief (`references/ui.md`), even one with a `reuses` pointer.
 - **Standard, high effort:** review lenses and verifiers 3 and 4 at `standard`, or on a
   one-way door at `quick`. Analysis and adversarial work is never economy.
 - **Frontier, high effort:** design synthesis and plan decomposition for a complex change,
@@ -238,7 +245,7 @@ tiers, pick the lower and let a failed gate promote it.
    | `## Open findings` | update-in-place; clear only `applied` rows on resolve |
    | `## Verification evidence` | append-only: on PASS, plus `fix`'s superseded rows |
    | `## Handoff` | overwrite |
-   | `Size` and `Door` header fields (`state.md`) | update-in-place (upward or to one-way only; a downgrade needs the user) |
+   | `Size`, `Door` and `Surface` header fields (`state.md`) | update-in-place (upward, to one-way, or to `ui` only; a downgrade needs the user) |
    | `## Conventions observed` (`spec.md`) | overwrite-in-place (regenerated whole on a specify re-run) |
 
    A section with no row here is clobbered by the next surgical write, so adding one

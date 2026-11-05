@@ -112,6 +112,8 @@ Rules:
 - **Regenerated whole on a re-run**, so re-running a phase is idempotent.
 - **Record what is, decide nothing.** A convention you think wrong is still recorded; the
   argument belongs in `design.md`'s verdict.
+- **On a UI change** (`Surface: ui`), also name the reference and the three UI rows per
+  `references/ui.md`.
 
 **Move 2 — Trace the impact (standard+).** Trace outward from the code the change would
 touch, recording where the problem area sits and what already depends on it — never how

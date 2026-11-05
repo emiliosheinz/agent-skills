@@ -50,9 +50,10 @@ such a document in the repository.
 
 Runs in Part B, before the ACs are written, when no design was provided and the change
 adds a new screen or a substantial new piece of UI. A tweak to existing UI skips it unless
-the user asks for one. Let the user decline; then the reference is the next one in the
-order above, and `spec.md` records the decline under Assumptions as user-declined
-(`references/specify.md` → *Part B*).
+the user asks for one. Let the user decline, even after seeing variants; then delete any
+throwaway page already built, take the next reference in the order above, and record the
+decline in `spec.md` under Assumptions as user-declined (`references/specify.md` →
+*Part B*).
 
 **One piece per round.** When the change spans several screens, prototype the one that
 sets the pattern for the rest, say which and why, and let the others follow the winner.

@@ -142,3 +142,82 @@ The UI rows extend the six convention categories on such a phase, and need no ve
 > where a token exists, a hand-built control where the app has a component, or a state
 > shown differently from the app's feedback pattern is a convention finding with that
 > category's severity, not a visual choice under do-not-flag item 10.
+
+## Execute: the look
+
+The look judges the running app against the reference. `references/verification.md` →
+*Run order and progression* places it among the verifiers. It is a stage, with its own
+budget of 3 fix cycles.
+
+**Who.** A fresh subagent, at the tier `SKILL.md` → *Model & effort selection* sets for
+it. Its prompt carries the phase diff, the ACs, the reference, the UI rows and this
+section, and never the implementer's summary or any claim that a screen looks right. At
+`quick` the look is still a subagent, limited to the changed screen. When the subagent
+lacks a browser tool the orchestrator has, the orchestrator runs the look inline and labels
+it inline.
+
+**The app.** The app is usually already running. Find how to run it from what the
+repository documents (its docs, agent instructions, task-runner scripts, test-server
+config), never by guessing. Use a running app only after checking it serves this
+worktree's code, for example by finding a string the phase changed. Start the app only
+when none runs, and never stop it, including one the look started. Read every discovered
+command before running it, and never run one that destroys or resets data. Sign in with a
+test account or seed the repository documents; when only single sign-on exists, ask the
+user once. Saved sign-in state goes outside the repository.
+
+**What it does**, on each screen the phase changed:
+
+1. Open it at the repository's breakpoints, else at a common phone width and a common
+   desktop width (390 and 1280 px on the web), and capture each to
+   `./.specs/<slug>/evidence/<phase>/`.
+2. Operate each changed control by its gesture and by keyboard: press it, press it twice,
+   Tab to it, Escape out of any overlay and check that focus returns. Watch the console and
+   failed requests.
+3. Put realistic worst-case content in front of it: a long name, a missing optional
+   value, one item, none. Values are plausible or taken from the schema's limits, and
+   enter only through the data boundary (fixtures, mocks, seeds, request interception, or
+   records the look creates). Never edit the component or shared data to produce them.
+4. Act on a destructive or outbound control only for records the look created; otherwise
+   stop at the confirmation step.
+5. Compare each capture with the reference for consistency: the app's components, tokens
+   and feedback patterns. A layout that merely differs from an existing screen is not a
+   finding; a layout that differs from a provided design or a picked prototype is. Read
+   the diff to name each finding's cause `file:line`.
+
+**Grades.** Every finding takes exactly one.
+
+| Grade | Meaning | Effect |
+|---|---|---|
+| Broken | An AC's flow cannot finish, its visible outcome is wrong, content is unreadable, or an action is unreachable | Fails the stage and feeds the fix loop |
+| Ugly | Readable but visibly wrong, or inconsistent with the app's components, tokens or feedback patterns | `reported` |
+| Fragile | Fine now, one realistic step from breaking | `reported` |
+
+The report also lists what held up: the screens, states and controls that worked. An
+empty held-up list means the look did not really run.
+
+**Output.** The verdict format of `references/verification.md`, each finding with its
+grade, capture path, screen, width, state, observation and cause `file:line`. On PASS,
+one evidence row per visible AC, with `sensor` set to `look` and the capture path in the
+`file:line` column.
+
+**When it cannot run.** When no app serving this worktree's code can be reached or
+started, or no browser tool exists, the phase is not blocked. The look goes down this
+ladder and stops at the first rung that works:
+
+1. the running app without sign-in, for public screens;
+2. a production build served statically;
+3. the components in the repository's own isolation harness or test renderer;
+4. a source read of the diff against the reference and the UI rows, labelled as one.
+
+The verdict names the rung reached, a `gap-open` row names what the look could not see,
+no look PASS is reported, and the look list comes first at Finish. An app that does not
+start after one documented attempt goes down the ladder with its last error lines in the
+gap row, and spends no fix cycle.
+
+## Finish: the look list
+
+On a UI phase, Finish gives at most five manual checks a person can run in about two
+minutes, one line each: route, width, state, what to check, capture path. Pick first what
+the look could not see, then its Ugly and Fragile findings, then the visible ACs. Each
+check is also a `reported` row in `## Open findings`. When the full look did not run, the
+list comes first in the report.

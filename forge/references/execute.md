@@ -196,7 +196,7 @@ If a verifier FAILs:
 2. Fix **top-down by severity**. Blocker and Major findings must clear before the next
    verifier starts; Minor and Cosmetic ones become `reported`.
 3. Commit the fix. A fix commit touches only the files its finding cites, and their tests.
-4. Re-run verifiers 1 and 2 and the verifier that failed, then go on to the next verifier.
+4. Re-run verifiers 1 and 2 and the verifier or stage that failed, then go on to the next.
    Earlier stages that passed do not re-run. If that fix turns 1 or 2 red, repairing it
    spends the same stage's budget and `Verifying:` keeps that stage.
 
@@ -276,7 +276,8 @@ When the phase is done and green:
    `SKILL.md` → *Lessons*. Routine success writes nothing.
 3. **Report what no phase will act on:** every `reported` finding; any lesson a command
    could enforce, proposed as a concrete check; and any judgement lesson, naming the
-   project's `CODING_STANDARDS.md` as its destination when one exists.
+   project's `CODING_STANDARDS.md` as its destination when one exists. On a UI phase,
+   include the look list per `references/ui.md`.
 4. Summarize what was built, decisions made beyond the artifacts, and any unknowns.
 5. Recommend next: more phases remain → `/forge execute` again for the next phase;
    all phases done → suggest review or shipping.

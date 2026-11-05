@@ -3,16 +3,14 @@
 | Field | Value |
 |-------|-------|
 | Slug | <feature-slug> |
-| Author | @Name |
 | Date | YYYY-MM-DD |
-| Size | quick / standard / complex |
-| Mode | full / context-only |
 
 <!--
-Auto-size the depth (see references/sizing.md):
-- quick: Problem + Acceptance Criteria only — a few lines. Delete the rest (including
-  Impact / Blast Radius).
-- standard: all sections except the dimension sweep.
+Auto-size the depth (see SKILL.md → Sizing). Size and Door live in state.md only.
+- quick: Problem, Conventions observed, Request + Acceptance Criteria only — a few lines.
+  Delete the rest (including Impact / Blast Radius). A one-way door keeps Scope and
+  Assumptions. External References only if the user named a source.
+- standard: all sections, with a calibrated dimension sweep.
 - complex: all sections, including the dimension sweep and prior art.
 Acceptance criteria are written HERE and nowhere else. Downstream phases cite IDs.
 Target size ~3k words — if larger, you are restating instead of referencing by ID; trim.
@@ -68,11 +66,16 @@ no proposed changes (that is design's job).
 |---|---|---|---|
 
 <!-- Part A closure gate: confirm shared understanding with the user before filling Part B.
-     Carry remaining open questions into either "Assumptions" or "Agent discretion" in Part B. -->
+     Ask the decisions only the user can make. Carry remaining open questions into either
+     "Assumptions" or "Agent discretion" in Part B. -->
 
 ---
 
 ## Part B — Requirements
+
+### Request
+The user's opening request plus any later statement of scope, verbatim. Every sentence
+traces to an AC or an out-of-scope row.
 
 ### Overview
 3–5 sentences: what this is, the core problem, who it's for. No implementation.
@@ -85,30 +88,30 @@ Falsifiable outcomes, verifiable after shipping.
 
 ### Scope
 **In scope:** discrete, verifiable capabilities.
-**Out of scope:** anything a reader might assume is included but isn't — with a reason.
-**Deferred Ideas:** capabilities raised mid-spec, intentionally postponed (kept
-distinct from out-of-scope so they aren't lost or allowed to expand scope).
+
+**Out of scope:** anything a reader might assume is included but isn't. A capability raised
+mid-spec goes here with the reason "raised mid-spec".
+
+| Capability | Reason |
+|---|---|
 
 ### Requirements & Acceptance Criteria
-Functional only (what, not how). One per item. IDs `PREFIX-NN`, priority P0/P1/P2.
+Functional only (what, not how). One per item. IDs `PREFIX-NN`.
 
-**Door verdict:** one-way / two-way — <the triggers that fired, or "none">
-<!-- Per change, mirrored to state.md's header. One-way = reverting the commit does not
-     undo the effect. Trigger list: references/specify.md. Never blank. -->
+The door verdict is in state.md's header. Append `[critical]` to the ACs carrying the
+irreversible outcome (omit otherwise). The door verdict decides whether a gate fires; this
+marker decides where it points.
 
-Append `[critical]` to the ACs carrying the irreversible outcome (omit otherwise). The
-door verdict decides whether a gate fires; this marker decides where it points.
-
-- **[P0] PREFIX-01** — The system SHALL <observable outcome>.
+- **PREFIX-01** — The system SHALL <observable outcome>.
   - AC: WHEN <condition>, THEN the system SHALL <precise expected outcome>. [critical]
 
 ### Assumptions & Discretion
-- **Assumptions (unconfirmed):** treated as true; flag which would invalidate the
-  spec if false.
+- **Assumptions (unconfirmed):** facts nobody can confirm yet; flag which would invalidate
+  the spec if false. A user decision is asked, not assumed. Mark any the user declined.
 - **Agent discretion (user delegated):** points the user said "you decide" — safe to
   settle downstream.
 
-### Implicit-Requirement Dimensions (complex only)
+### Implicit-Requirement Dimensions (standard: calibrated; complex: full)
 <!-- See references/specify.md for the dimension lists. Classify the feature's primary
      surface (pick all that apply; name the primary), then resolve each dimension to a
      concrete requirement OR an explicit "N/A because <reason>". -->

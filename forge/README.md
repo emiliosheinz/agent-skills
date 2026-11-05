@@ -19,7 +19,7 @@ in Claude Code and OpenCode.
 
 You drive each transition. A phase recommends the next verb but never runs it for you.
 Start at any phase — a phase that finds no earlier artifacts gathers the minimum
-context it needs.
+context it needs, except where `execute` or `fix` stops and routes you.
 
 ## Correcting course
 
@@ -37,19 +37,19 @@ tells you which later phases you still need.
 
 | Size | Example | What you get |
 |------|---------|--------------|
-| **quick** | one-file fix, no new interface | inline spec, skip design and plan, go straight to execute (verifiers 1–2, plus the conventions check) |
-| **standard** | one component, a few files | full spec, light design, phased plan, execute with verifiers 1–4 and a structural review inside the task loop |
+| **quick** | one-file fix, no new interface | inline spec, skip design and plan, go straight to execute (verifiers 1–2, plus the conventions check as verifier 3) |
+| **standard** | one component, a few files | full spec, light design, phased plan, execute with verifiers 1–4 |
 | **complex** | crosses components or repos, new subsystem | full pipeline plus the dimension sweep, alternatives, and verifier 5 |
 
-Size can only increase. A downgrade requires your confirmation. See
-`references/sizing.md` for the full rubric.
+Size can only increase. A downgrade requires your confirmation. See *Sizing* in `SKILL.md`
+for the full rubric.
 
 **Reversibility overrides size.** Every change is also classified a **one-way door** or a
 two-way door — one-way meaning reverting the commit does not undo the effect (destructive
 migration, bulk delete, mass communication, money movement, an auth boundary, a broken
 contract, no revert path). A one-way door runs the heavier reviewers and the mutation
-sensor at any size: a two-line change that emails every user deserves more scrutiny than a
-sixty-file rename.
+sensor at any size, so its gate is all five verifiers: a two-line change that emails every
+user deserves more scrutiny than a sixty-file rename.
 
 ## What you get out of forge
 
@@ -74,18 +74,14 @@ sixty-file rename.
 - **Phased plan.** `plan` groups small tasks into dependency-ordered phases. Tasks
   within a phase run in parallel when a safety check approves. Each task traces to an
   acceptance criterion.
-- **Independent verifiers.** `execute` implements a phase, then dispatches verifier
-  subagents written by a different agent than the one that wrote the code. They check
-  tests, static analysis (typecheck + lint + format), spec coverage, architecture, and
-  (for complex changes or a one-way door) mutation testing.
-  A bounded fix loop addresses what they find.
-- **A structural review inside the task loop, before the commit.** At `standard`+, each
-  batch is reviewed for structure after its gate passes and before it commits, by an agent
-  that did not write it. The reviewer never edits; the batch's own implementer applies the
-  findings and re-runs the gate, and the fixes land in the same single task commit. Two
-  cycles, then the task is left uncommitted and marked `blocked` rather than looping. Each
-  finding's disposition — applied, rejected with a reason, or parked — is recorded, so a
-  finding cannot quietly vanish between verdict and commit.
+- **Independent verifiers are the phase gate.** `execute` implements a phase, then runs
+  verifier subagents that did not write the code, always in number order: (1) tests,
+  (2) static analysis — typecheck, lint and format, (3) structure, (4) spec coverage and
+  (for complex changes or a one-way door) (5) mutation testing. Each stage gets at most
+  three fix cycles, then the work stops and escalates rather than looping.
+- **Structural review after commit.** Verifier 3 reviews the phase's commits for structure
+  and fixes land as follow-up commits. Each finding's disposition — applied, rejected with a
+  reason, or reported — is recorded, so a finding cannot quietly vanish.
 - **Lessons layer.** Each change keeps its own `lessons.md` listing what went wrong and
   the rule for next time. Each phase loads it at start.
 
@@ -102,7 +98,8 @@ sixty-file rename.
 
 `state.md` is the single source of truth. It is plain markdown, not JSON, so it works
 in any agent runtime. `references/` holds the per-phase playbooks; `templates/` holds
-the document scaffolds.
+the document scaffolds. `references/glossary.md` indexes forge's terms; a change that adds,
+moves or redefines one updates its row.
 
 ## Installation
 

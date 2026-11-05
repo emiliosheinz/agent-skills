@@ -3,7 +3,6 @@
 | Field | Value |
 |-------|-------|
 | Slug | <feature-slug> |
-| Tech Lead | @Name |
 | Created | YYYY-MM-DD |
 
 <!-- See references/design.md for the playbook.
@@ -18,11 +17,11 @@ How components interact. Mermaid diagram for complex changes.
 
 ## Conventions observed — verdicts
 <!-- One row per category in spec.md's Conventions observed section, all six, always.
-     A deviation with no stated reason is a finding. Execute's structural axis re-checks
-     only the deviating rows. See references/design.md. -->
+     A deviation with no stated reason is a finding. Verifier 3 checks the diff against all
+     six. See references/design.md. -->
 
-| Category | Verdict (conformant / deviating) | Reason, if deviating |
-|---|---|---|
+| Category | `file:line` | Verdict (conformant / deviating) | Reason, if deviating |
+|---|---|---|---|
 
 ## Components
 - **<Component>** — purpose, responsibility, interface/contract, dependencies.
@@ -49,6 +48,10 @@ What makes the change done & correct. One row per spec requirement/AC ID.
 ## Architectural Risks
 | Risk | Impact (H/M/L) | Probability (H/M/L) | Mitigation |
 |---|---|---|---|
+
+## Hard-to-Reverse Choices
+| Literal shape chosen | Alternative rejected |
+|---|---|
 
 ## Decisions
 New architectural decisions made here (also mirror to state.md Decisions). Note any

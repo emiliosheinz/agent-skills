@@ -7,8 +7,8 @@
 | Created | YYYY-MM-DD |
 
 <!-- Door: set by the first phase to run, per references/specify.md. Overrides the size
-     gate for reviewer 3, design lens 4 and verifier 5. Never blank. Like Size it moves one
-     way only; a downgrade needs the user's confirmation. -->
+     gate for spec reviewer 3, design lens 4 and verifiers 3, 4 and 5. Never blank. Like Size
+     it moves one way only; a downgrade needs the user's confirmation. -->
 
 <!-- state.md is the single source of truth. Re-read at the start of every phase.
      Write SURGICALLY (see SKILL.md Universal rules for the section write-mode table).
@@ -24,33 +24,44 @@ Append-only: to reverse a decision, add a new row and mark the prior one
 |---|---|---|---|---|
 | AD-01 | <decision> | <rationale> | active | YYYY-MM-DD |
 
-## Tasks
-Populated by `plan`, updated by `execute`. Tasks grouped by phase; phases run in
-order, `[P]` tasks run in parallel within a phase. Task status: pending /
-in-progress / done / blocked. Mark a finished phase `**completed**` below its heading.
+## Baseline
+Written by `execute` before the change's first task. Verifiers 1 and 2 use these commands.
 
-The `AC-trace` column holds an AC ID **or** a design element — a named component, a
-seam, or a recorded convention. A task with neither anchor is scope creep.
+| Check | Command | Result |
+|---|---|---|
+| tests | `<cmd>` | <pass / failing names>, <test count> |
+| type check | `<cmd>` | <pass / N/A> |
+| lint | `<cmd>` | <pass / N/A> |
+| format | `<cmd>` | <pass / N/A> |
+
+## Tasks
+Populated by `plan`, updated by `execute`. Task details live in `plan.md`. Task status:
+pending / in-progress / done / blocked. Mark a finished phase `**completed**` below its
+heading. `execute` writes `Base:` when a phase starts and `Verifying:` while its verifiers
+run; `fix` writes `Fix-base:` for verifier 3. A quick change has one implicit phase.
 
 ### Phase 1 — <goal>
-Phase gate: `<full test + static analysis (typecheck + lint + format)>`
+Base: <sha>
+Fix-base: <sha, only during a fix>
+Verifying: <stage>, cycle <n>
 
-| ID | par | depends-on | AC-trace | gate | status | evidence (sha) |
-|----|-----|------------|----------|------|--------|----------------|
-| PREFIX-P1-01 | [P] | — | PREFIX-01 | `<cmd>` | pending | — |
-| PREFIX-P1-02 | seq | PREFIX-P1-01 | PREFIX-02 | `<cmd>` | pending | — |
+| ID | status | evidence (sha, test count) |
+|----|--------|----------------------------|
+| PREFIX-P1-01 | pending | — |
+| PREFIX-P1-02 | pending | — |
 
 ### Phase 2 — <goal>
-Phase gate: `<...>`
 
-| ID | par | depends-on | AC-trace | gate | status | evidence (sha) |
-|----|-----|------------|----------|------|--------|----------------|
-| PREFIX-P2-01 | [P] | — | PREFIX-03 | `<cmd>` | pending | — |
+| ID | status | evidence (sha, test count) |
+|----|--------|----------------------------|
+| PREFIX-P2-01 | pending | — |
 
-## Validation delta
-During execute retries, the specific failing items only (cleared when resolved).
+## Open findings
+One row per verifier finding or gap. Clear only `applied` rows on resolve. Disposition:
+open / applied / rejected(reason) / gap-blocking / gap-open / reported.
 
-- <none>
+| Source | Finding | Disposition |
+|---|---|---|
 
 ## Verification evidence
 Written by `execute` on phase PASS — one row per AC, no prose/logs. Preserves the
@@ -61,9 +72,10 @@ AC→code proof on green.
 | PREFIX-01 | src/checkout/refund.ts:42 | refund amount == order.total | yes | mutant: drop-field caught |
 
 ## Handoff
-Overwrite-in-place. The recommended next verb stays first; the rest is a resume
-snapshot for a phase interrupted mid-task (cross-task position is recoverable from
-git via per-task commits).
+Overwrite-in-place. The recommended next verb stays first; the rest records where a
+phase stopped. Treat it as a hypothesis on resume: reconcile it with git
+and the task status above, matching commits to tasks by evidence sha and `files`, because
+commit messages carry no task IDs. Gaps belong in `## Open findings`, never here.
 
 - Next: <verb> — <what it should do>
 - In-progress: <file:line, or none>

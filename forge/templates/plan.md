@@ -5,8 +5,8 @@
 | Slug | <feature-slug> |
 | Created | YYYY-MM-DD |
 
-<!-- See references/plan.md for the playbook.
-     Authoritative task status lives in state.md.
+<!-- See references/plan.md for the playbook. A phase's gate is its verifiers, so it has no
+     gate field here. Authoritative task status lives in state.md.
      Target size ~6k words. -->
 
 ## Overview
@@ -15,14 +15,14 @@ What is being built and the execution approach. Links: spec.md, design.md.
 ## Phase 1 — <goal / checkpoint this phase delivers>
 
 **Depends-on:** none
-**Phase gate:** `<full test + static analysis (typecheck + lint + format) — run once all tasks below are green>`
 
 ### PREFIX-P1-01 — <one-line action> `[P]` <!-- [P] — per-test in-memory DB, see <test file> -->
 - **depends-on:** none
 - **AC-trace:** PREFIX-01 <!-- an AC ID, or a design element: component / seam / recorded convention -->
 - **files:** <the exact paths this task may touch; globs ok>
 - **tests:** <co-located tests; unit for logic, e2e for routes>
-- **reuses:** <required at standard+ — a path, a path:line, or the literal `no-precedent`; blank fails the plan gate>
+- **reuses:** <a path, a path:line, or the literal `no-precedent`; blank fails the plan
+  gate>
 - **gate:** `<deterministic command, project's real runner, clean iff the task succeeded>`
 - **done-when:**
   - [ ] <pass/fail checkpoint>
@@ -35,7 +35,6 @@ What is being built and the execution approach. Links: spec.md, design.md.
 ## Phase 2 — <goal>
 
 **Depends-on:** Phase 1
-**Phase gate:** `<...>`
 
 ### PREFIX-P2-01 — <one-line action> `[P]`
 - ...

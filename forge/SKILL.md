@@ -33,20 +33,20 @@ before acting** — it is the step-by-step playbook for that phase.
 
 | Verb | Read | Produces |
 |------|------|----------|
-| `specify` | `references/specify.md` (+ `references/review.md`) | `./.specs/<slug>/spec.md` |
+| `specify` | `references/specify.md` (`references/review.md` at its review step, when a reviewer runs) | `./.specs/<slug>/spec.md` |
 | `design` | `references/design.md` (+ `references/review.md`) | `./.specs/<slug>/design.md` |
 | `plan` | `references/plan.md` | `./.specs/<slug>/plan.md` |
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
 | `fix` | `references/fix.md` | re-aligned artifacts + code |
 
 `references/structural-standards.md` is the single always-applied baseline for what good
-structure is and how a structural review runs. Three dispatches load it: `review.md`'s
-under-design lens, `execute.md`'s per-batch structural axis, and `fix.md`'s claim lenses.
-It is the only structural check set in forge.
+structure is and how a structural review runs. Two dispatches load it: `review.md`'s
+under-design lens and `verification.md`'s structure verifier. It is the only structural
+check set in forge.
 
 `references/glossary.md` indexes forge's load-bearing terms — the door verdict, blast
-radius, a seam, the three lies — and names where each one is defined. No phase dispatches
-it; read it when a pointer uses a term you cannot place.
+radius, a seam, a stage, the three lies — and names where each one is defined. No phase
+dispatches it; read it when a pointer uses a term you cannot place.
 
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
@@ -65,22 +65,68 @@ Forge does not orchestrate phase transitions — you do. Start at any phase. A p
 finds no earlier artifacts gathers the minimum context it needs; each reference
 describes its own fallback.
 
+## Every phase starts by
+
+1. Resolving `SPECS_ROOT` (see *Artifact root*).
+2. Resolving the slug. `specify` derives it from the feature name. Other phases take the
+   argument when it names a `.specs/` directory; otherwise, when the request does not
+   point elsewhere, the only directory there; otherwise they ask, and `fix` refuses when
+   none exists. A direct `/forge execute` on a new change derives one.
+3. Re-reading `state.md` if it exists, and otherwise creating it from the template (`fix`
+   refuses instead). Do not assume the runtime
+   preserves its own internal state across phases — if it is not in `state.md`, it did not
+   happen.
+4. Picking the size and classifying the door if `state.md` records neither, the door per
+   `references/specify.md`.
+5. Loading `lessons.md` if it exists: all Standing Rules, plus Log entries tagged to the
+   area of this work.
+
+**A compaction is a resume.** After one, re-read this file and the phase's reference,
+because rules read hours earlier may be gone. Treat Handoff as a hypothesis and reconcile
+it with git and the task status before acting on it.
+
 ## Sizing
 
-Every change is one of three sizes. The size controls how deep each phase goes and
-which phases are needed at all. See `references/sizing.md` for the full rubric.
+Every change is one of three sizes. The size controls how deep each phase goes and which
+phases are needed at all. A change is **quick** unless a trigger below it fires, and then
+the **largest** tier with a trigger that fires. When in doubt, size up: under-sizing skips
+rigor a change needed, and over-sizing only wastes some effort. The numeric anchors are
+rough guides; the qualitative triggers decide.
 
-| Size | Roughly | Pipeline |
-|------|---------|----------|
-| **quick** | one file/function, no new interface/schema/dep | inline spec → execute (skip design + plan) |
-| **standard** | one component/module, a few files | full spec → light design → phased plan → execute |
-| **complex** | crosses components/repos, new subsystem, ambiguous | full pipeline, all gates |
+| Tier | Triggers (any one promotes to this tier; quick's are its limits) |
+|------|------------------------------------------|
+| **quick** | ≈ ≤2 files / ~30 LOC; no new public interface; no schema/API/contract change; no new dependency; an existing test pattern already covers the seam |
+| **standard** | ≈ more than quick's limit, up to ~6 files within one component/module/service; a mechanical change of any reach (the same edit repeated, such as a rename); one new interface or endpoint; a new dependency; a schema/API/contract change; no existing test pattern covers the seam |
+| **complex** | ≈ more than ~6 files of non-mechanical change; a non-mechanical change crossing components, services, or repos; new subsystem or migration; requirements are ambiguous; touches security/PII/auth/payments |
 
-The first phase to run picks the size and writes it to `state.md`. Size can only go up.
-Any later phase may promote it with a logged reason. A downgrade requires the user's
-confirmation — ratcheting prevents work from quietly skipping rigor a later phase
-already showed it needed. Each phase ends by listing which downstream phases the
-current size needs or lets you skip.
+The first phase to run picks the size and writes it to `state.md` with a one-line
+justification. Any later phase that finds no recorded size picks it the same way. **Size
+can only go up.** Any phase may promote it with a reason logged in Decisions. A downgrade
+requires the user's confirmation — ratcheting prevents work from quietly skipping rigor a
+later phase already showed it needed.
+
+Depth per phase:
+
+| Phase | quick | standard | complex |
+|-------|-------|----------|---------|
+| **specify** | Inline spec: Problem, Conventions observed, Request, 1–3 ACs; a one-way door adds Scope and Assumptions. Light domain map, no impact trace. | Full spec + impact trace + calibrated sweep | Full spec + impact trace with cross-repo/service ripples + full dimension sweep |
+| **design** | Skip | Code-reuse analysis, interfaces, verdicts, data models if any, error matrix, verification gates, risks, hard-to-reverse choices | + architecture diagram, alternatives, full risk register |
+| **plan** | Skip (one implicit phase with one implicit task) | 1–3 phases, one per integration boundary, with a parallelism assessment | Several dependency-ordered phases, sequencing, execution risks |
+| **execute** | Implement + the gate below | Per phase: implement + the gate below | Per phase: implement + the gate below |
+
+Gates per size. A plan phase's gate **is** its verifiers: there is no separate phase-gate
+step. Reviewer and lens numbers are defined in `references/review.md`, verifier numbers in
+`references/verification.md`.
+
+| Gate | quick | standard | complex | a one-way door adds |
+|------|-------|----------|---------|---------------------|
+| **Spec reviewers** | none | 1, 2 | 1, 2, 3 | 3 |
+| **Design lenses** | no design | 1, 2, 4 | 1, 2, 3, 4 | 4 (at quick, reading the ACs gathered inline) |
+| **Verifiers** | 1, 2, 3 in conventions-only mode | 1, 2, 3, 4 | 1, 2, 3, 4, 5 | all 5 at any size, with 3 in full mode |
+
+Each phase ends by stating the size and naming the next needed phase: quick goes from
+`specify` to `execute`; standard and complex run the whole chain, except that `specify` may
+log a design skip at standard. The user still drives every transition.
 
 ## Artifacts and state
 
@@ -108,13 +154,11 @@ All work for a change lives under `./.specs/<slug>/` (create it if missing):
 ./.specs/<slug>/spec.md       what & why (requirements, acceptance criteria, scope)
 ./.specs/<slug>/design.md     how (architecture, contracts, verification gates)
 ./.specs/<slug>/plan.md       tasks grouped into phases (parallel within a phase, AC-traced)
-./.specs/<slug>/state.md      size, decisions log, task status, handoff — the source of truth
+./.specs/<slug>/state.md      size, door, decisions, task status, findings, handoff — the source of truth
 ./.specs/<slug>/lessons.md    what went wrong here and the rule going forward
 ```
 
 Templates for each are in `templates/`. **`state.md` is the single source of truth.**
-Re-read it at the start of every phase. Do not assume the runtime preserves its own
-internal state across phases — if it is not in `state.md`, it did not happen.
 
 Acceptance criteria are written **once**, in `spec.md`, with stable IDs (`PREFIX-NN`).
 Design, plan, and execute reference those IDs; they never restate the criterion text.
@@ -122,12 +166,18 @@ Design, plan, and execute reference those IDs; they never restate the criterion 
 ## Lessons
 
 Each change keeps its own `./.specs/<slug>/lessons.md` with `## Standing Rules` (short
-imperatives, always loaded) and `## Log` (tagged, append-only). Load it at the start of
-every phase, **reading only above the `<!-- environment-candidates -->` marker**. The
-text below it is parked, and no phase loads it. Append **only when something non-obvious
-was learned**: a hack, a gotcha, a corrected wrong assumption, a skipped gate. Triage
-first — a mechanical observation becomes a proposed check. Routine success writes nothing.
-See `references/lessons.md`.
+imperatives, at most about 15, always loaded) and `## Log` (tagged, append-only).
+
+Write at the end of `execute`, and at the end of a `fix` that corrected a wrong assumption
+or exposed a hidden coupling. Other phases only read. Append **only when something
+non-obvious was learned**: a hack, a gotcha, a corrected wrong assumption, a skipped gate.
+Routine success writes nothing.
+
+Every entry cites a source: an AC ID, a test, a `file:line`, a surviving mutant, or a
+failed gate. An entry with no source is an opinion, so do not record it. Log entries read
+`date · [tag] · source · what went wrong · root cause · rule going forward`. Delete a
+Standing Rule that proves wrong. If you can't name what the next agent should do
+differently, don't write an entry. Observations about forge itself stay out of this file.
 
 ## Orchestration (canonical — references should cite, not restate)
 
@@ -137,67 +187,44 @@ See `references/lessons.md`.
 - **Workflow is an optional speed-up** for dispatching many subagents at once, where
   the runtime supports it. Plain sequential subagent calls always work as a backup.
   Never require Workflow.
-- **Match model tier and reasoning effort to the task — don't pay frontier rates for
-  mechanical work.** See Model & effort selection below. This is the primary cost lever.
+- **Match model tier and reasoning effort to the task.** See below. This is the primary
+  cost lever.
 - **One level of delegation.** Subagents do not spawn subagents.
-- **Subagents are stateless.** Put everything they need in the prompt (file paths,
-  section refs, constraints). Outputs over ~100 lines go to a file; return the path,
-  not the content.
+- **Subagents are stateless.** Put everything they need in the prompt (file paths, section
+  refs, constraints), and name `references/glossary.md` when it uses forge's terms.
+  Outputs over ~100 lines go to a file; return the path, not the content.
 - **Prefer `AskUserQuestion` when available**, with a recommended default per question.
   Fall back to a single plain-text question otherwise. Never bundle unrelated questions.
 
-### Model & effort selection (canonical — references cite, not restate)
+### Model & effort selection
 
-Every subagent dispatch picks two dials. Set them explicitly per task; never let the
-whole fan-out default to the most expensive model. This is agent-agnostic — map the
-tiers to whatever your runtime exposes.
+Every subagent dispatch picks a tier and an effort; never let a whole fan-out default to
+the most expensive model. Map tiers to the runtime's per-subagent model control (in Claude
+Code, `haiku`, `sonnet`, `opus`). With no such control, skip the tier and rely on effort.
+With no effort dial, fold the intent into the tier.
 
-**Tier** — the model's capability class:
+- **Economy, low effort:** read-only scouting; verifiers 1 and 2; an implementer task that
+  creates no new file, exported type, interface or class, and either mirrors a `reuses`
+  pointer or is mechanical with a clear gate. `no-precedent` is not a pointer: it says a
+  design decision is needed.
+- **Standard, medium effort:** ordinary implementation; verifier 5; and any task creating
+  a new file, exported type, interface or class — never economy, because where a
+  responsibility belongs is decided once, when the file or type is created.
+- **Standard, high effort:** review lenses and verifiers 3 and 4 at `standard`, or on a
+  one-way door at `quick`. Analysis and adversarial work is never economy.
+- **Frontier, high effort:** design synthesis and plan decomposition for a complex change,
+  and review lenses and verifiers 3 and 4 at `complex`.
 
-| Tier | Use for | Claude Code | OpenCode |
-|------|---------|-------------|----------|
-| **economy** | mechanical, well-scoped, low-ambiguity work with a clear pass/fail or a precedent to mirror | `haiku` | cheapest capable model configured |
-| **standard** | ordinary implementation and verification needing moderate reasoning | `sonnet` | the default agent model |
-| **frontier** | ambiguous synthesis, cross-cutting design, adversarial judgment, hard trade-offs | `opus` | strongest model configured |
-
-Pass the tier via the runtime's per-subagent model control (`model` on the Agent tool
-or Workflow `agent()`, `model` in a subagent definition's frontmatter, or the OpenCode
-agent's model field). If a runtime exposes no per-subagent model control, skip this dial
-and rely on effort alone — never block on it.
-
-**Effort** — reasoning/thinking budget, where the runtime supports a reasoning-effort or
-thinking-budget setting: `low` for mechanical tasks, `medium` for ordinary work, `high`
-only for genuinely hard reasoning (adversarial refutation, ambiguous design). Where the
-runtime has no effort dial, fold the intent into tier choice.
-
-**Defaults by work type** (start here, adjust for the specific task):
-
-| Work | Tier | Effort |
-|------|------|--------|
-| Read-only codebase scouting (specify) | economy | low |
-| Mirror-a-precedent implementer: a `reuses` pointer **and** no new file, exported type, interface, or class | economy | low |
-| Mechanical `[P]` implementer task with a clear task gate, creating no new file or exported type | economy | low–medium |
-| Ordinary implementer task, most single-verifier runs | standard | medium |
-| **Structure-bearing implementer task** — creates a new file, or adds an **exported type**, interface, or class | standard (never economy) | medium |
-| Design/architecture synthesis, plan decomposition for a complex change | frontier | high |
-| Adversarial or cross-cutting verification (the AC-trace / integration verifier, the under-design lens) | standard→frontier | high |
-
-**Economy tier needs both conditions** — a `reuses` pointer *and* no new file, exported
-type, interface, or class. A precedent says what shape to copy, not where a
-responsibility belongs or which value deserves a type, and those are decided once, when
-the file or type is created.
-
-**Size interacts with tier.** A `quick` change should almost never dispatch a frontier
-subagent; a `complex` change earns frontier for its design and adversarial gates but
-still routes mechanical tasks to economy. When unsure between two tiers, pick the lower
-and let a failed gate promote it — the same ratchet as sizing.
+A `quick` change should almost never dispatch a frontier subagent. When unsure between two
+tiers, pick the lower and let a failed gate promote it.
 
 ## Universal rules (apply to every phase)
 
 ### State hygiene
 
-1. Re-read `state.md` at the start of every phase. Write size, decisions, and status
-   changes there as they happen, not at the end.
+1. Write size, decisions, and status changes to `state.md` as they happen, not at the end.
+   Write Handoff at every stop, including a blocked task and an escalation, not only on
+   success.
 2. **Write surgically.** Edit only the target section — replace the content between its
    `##` header and the next `##` or end-of-file. Never regenerate the whole file or
    reorder sections; that silently clobbers append-only or update-in-place sections you
@@ -206,13 +233,13 @@ and let a failed gate promote it — the same ratchet as sizing.
    | Section | Write mode |
    |---------|------------|
    | `## Decisions` | append-only (never edit existing rows) |
-   | `## Tasks` | update-in-place (status, evidence) |
-   | `## Validation delta` | clear-on-resolve |
-   | `## Verification evidence` | append-on-PASS |
+   | `## Baseline` | write once per change; rewritten only on a recorded user decision |
+   | `## Tasks` | update-in-place (status, evidence, each phase's `Base:`, `Fix-base:` and `Verifying:` lines) |
+   | `## Open findings` | update-in-place; clear only `applied` rows on resolve |
+   | `## Verification evidence` | append-only: on PASS, plus `fix`'s superseded rows |
    | `## Handoff` | overwrite |
-   | `Door` header field (`state.md`) | update-in-place (one-way only; a downgrade needs the user) |
+   | `Size` and `Door` header fields (`state.md`) | update-in-place (upward or to one-way only; a downgrade needs the user) |
    | `## Conventions observed` (`spec.md`) | overwrite-in-place (regenerated whole on a specify re-run) |
-   | `## Environment candidates` (`lessons.md`) | append-only, never loaded |
 
    A section with no row here is clobbered by the next surgical write, so adding one
    means adding its row in the same change.
@@ -222,15 +249,31 @@ and let a failed gate promote it — the same ratchet as sizing.
 3. Never claim a task or gate passed without running it. Done means you saw it pass,
    not that you believe it would.
 4. Record honestly. Open questions, skipped gates, and assumptions stay visible. Never
-   cover a gap with an invented answer.
+   cover a gap with an invented answer. A gap is a row in `## Open findings`.
+5. A run that cannot ask the user (non-interactive) picks the recommended default, logs it
+   in Decisions as a flagged assumption, and surfaces it when it reports. A decision about a
+   one-way door stops instead.
+
+### Retries
+
+6. **Every retry against a check stops at 3 cycles.** A cycle is one fix plus one re-run of
+   the check that failed, so a check gets its first run plus at most 3 re-runs. Each
+   playbook names the exit. An interview or a scan gathers information rather than
+   retrying a failed check, so it runs to its own stop condition instead.
+7. A failure the fix did not cause — one that predates the check's first failing run, or
+   one in a path the fix cannot affect — spends no cycle and does not loop: record it,
+   then stop and report. A cap never justifies weakening a check.
 
 ### Hand-off
 
-5. Each phase finishes, reports, and **recommends the next verb** — it never runs the
+8. Each phase finishes, reports, and **recommends the next verb** — it never runs the
    next phase. The one documented exception is `fix`: for a *contained* correction it
    re-aligns the artifacts and runs the code delta end-to-end in the same invocation
    (see `references/fix.md`); a larger correction still only recommends the phase chain.
-6. `/create-rfc` and `/create-adr` are separate skills. Use `/create-rfc` when a decision
+9. **Approval is local.** Approving a spec, a design or a plan never authorises a remote
+   action. Push, deploy, or run a production migration only on the user's explicit request
+   for that action.
+10. `/create-rfc` and `/create-adr` are separate skills. Use `/create-rfc` when a decision
    is **still open and binds someone outside this change** — a one-way door per
    `state.md`'s verdict, a contract another consumer already depends on, or an assumption
    `spec.md` flagged as spec-invalidating if wrong. Use `/create-adr` once such a decision

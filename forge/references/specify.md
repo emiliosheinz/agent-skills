@@ -1,9 +1,5 @@
 # Specify
 
-> **Phase prelude:** resolve `SPECS_ROOT` per SKILL.md → *Artifact root
-> (session CWD)* before any read or write. Every `./.specs/...` path below is
-> `$SPECS_ROOT/...`.
-
 **Goal:** reach shared understanding of the problem with the user, then capture what to
 build as testable requirements. Output: `./.specs/<slug>/spec.md`.
 
@@ -12,10 +8,7 @@ Sizing controls how much you *write*, never whether you bother to *understand*.
 
 ## Before you start
 
-1. Derive the kebab-case `<slug>` from the feature name. If no name was given, ask for
-   one.
-2. Load `./.specs/<slug>/lessons.md` if it exists. Always read Standing Rules. Read Log
-   entries tagged to this area.
+Derive the kebab-case `<slug>` from the feature name. If no name was given, ask for one.
 
 Specify runs in **two ordered passes** with a gate between them. **Do not mix them.**
 Part A captures the world as it *is* (no decisions). Part B decides what to *build*.
@@ -56,6 +49,9 @@ is still unclear.
    ("changing X for A also affects B — should B change too?").
 5. **Record, do not invent.** "I don't know" / "not decided" is a valid answer — write
    it down as an open question. Never cover a gap with an assumption.
+6. **Write each answer through to the draft as it lands,** in the Part A section it
+   belongs to, so it survives a compaction. A decision about what to build waits for Part B
+   as an open question.
 
 **How to pick the next question:** ask yourself *"if a peer asked me to describe this
 problem right now, where would I have to guess or hedge?"* Every place you'd hedge is a
@@ -163,9 +159,8 @@ surface false "prior art" from dependencies.
 Actively look outward, not just at URLs the user mentioned. The point is to avoid
 rebuilding something that already exists or repeating a known mistake.
 
-**Size calibration — this is the only statement of it; `references/sizing.md` points
-here rather than restating it.** How far you reach outward follows what the change
-risks:
+**Size calibration — this is the only statement of it.** How far you reach outward follows
+what the change risks:
 
 | Size | How far A3 reaches |
 |---|---|
@@ -174,7 +169,8 @@ risks:
 | `complex` | The full pass: every category in the list below. |
 
 A size that finds nothing to reach for records that, per the rules below. **An absent
-A3 section is a gap; an empty one with its grounds stated is complete.**
+A3 section is a gap; an empty one with its grounds stated is complete.** The exception is
+`quick`, which writes the section only when the user named a source.
 
 When web tools are available (`WebSearch` + `WebFetch`), search for and **read**:
 
@@ -209,20 +205,22 @@ Before Part B, verify:
   downstream consequences:
   - **Agent discretion (user delegated):** the user said "you decide" — safe for
     design/plan to settle without coming back.
-  - **Assumptions (unconfirmed):** a guess the work rests on; flag any that would
-    invalidate the spec if wrong, so design/plan surface them before building.
+  - **Assumptions (unconfirmed):** a fact the work rests on that nobody can confirm yet;
+    flag any that would invalidate the spec if wrong, so design/plan surface them before
+    building. A decision only the user can make is not an assumption: ask it.
 - The user confirms the captured understanding is accurate.
 
-If the user only wanted shared understanding, **stop here.** Write the Part A sections
-of `spec.md`, mark the spec `context-only` in its metadata, and recommend resuming with
-`/forge specify` (or `/forge design`) later.
+If the user only wanted shared understanding, **stop here.** Write the Part A sections of
+`spec.md`, record `Next: context-only` in `state.md`'s Handoff, and recommend resuming
+with `/forge specify` (or `/forge design`) later.
 
 ---
 
 ## Part B — Specify (decide what to build)
 
-Now turn understanding into requirements. Cover the following, asking only for what is
-genuinely missing:
+Now turn understanding into requirements. Start the Part B section of the spec with a
+short verbatim **Request** block: the user's opening request plus any later statement of
+scope, in their words. Then cover the following, asking only for what is genuinely missing:
 
 - **Success, measurably.** Falsifiable outcomes — verifiable true/false after shipping.
   Reject "users are happy" / "performance improves". Write "task completion ≥ 85%",
@@ -230,12 +228,12 @@ genuinely missing:
 - **Scope.** In-scope capabilities (discrete, verifiable) and a single **out-of-scope**
   table. Anything a reader might reasonably assume is included but isn't must appear
   here, with a reason. The feature boundary is fixed once Part B starts: if the user
-  raises a new capability mid-spec, capture it under **Deferred Ideas** (newly-raised,
-  intentionally postponed — distinct from the static out-of-scope table) and continue.
-  This keeps scope from expanding while losing nothing.
+  raises a new capability mid-spec, add it to the out-of-scope table with the reason
+  "raised mid-spec" and continue. This keeps scope from expanding while losing nothing.
 - **Requirements & acceptance criteria.** See below.
 - **Assumptions & discretion.** Split per the Part A closure gate. Flag assumptions
-  that would invalidate the spec if proven false.
+  that would invalidate the spec if proven false. A user decision gets asked, never
+  defaulted. A question the user declines stays flagged as user-declined.
 - **Edge conditions.** Empty / error / first-run / power-user behavior.
 
 ### Requirements and acceptance criteria
@@ -246,7 +244,6 @@ genuinely missing:
   pass/fail.
 - **IDs:** prefix = feature slug uppercased, shortened to 3–5 chars (`user-onboarding`
   → `ONBD`). Sequential: `ONBD-01`, `ONBD-02`.
-- Priorities: **P0** launch blocker · **P1** high value · **P2** nice to have.
 - **Classify the change one-way or two-way door, and record the verdict.** Scrutiny
   follows what a mistake costs. A **one-way door** is a change whose effect cannot be
   undone by reverting the commit. Any one of these triggers fires it:
@@ -270,18 +267,24 @@ genuinely missing:
   what they scope to: see `references/verification.md`, `review.md`, `execute.md` and
   `fix.md`.
 - Each requirement carries one or more **acceptance criteria** in WHEN/THEN/SHALL
-  form: *WHEN \<condition\>, THEN the system SHALL \<observable outcome\>.* Each AC
-  must have a single interpretation and a precise expected outcome.
+  form: *WHEN \<condition\>, THEN the system SHALL \<observable outcome\>.* Another EARS
+  form is fine where it reads better. Each AC must have a single interpretation and a
+  precise expected outcome, and **one run must settle it**.
+- A control the user operates owes a gesture: its AC names what the user does and what
+  they then see, so a dead control cannot pass.
 
 **Acceptance criteria are written here and nowhere else.** Design, plan, and execute
 reference the IDs; they never restate the criterion text. This is the single trace
 that ties code back to intent.
 
-### Implicit-requirement dimension sweep (complex tier)
+### Implicit-requirement dimension sweep
 
 For complex changes, walk the relevant dimensions. Each resolves to a concrete
 requirement **or** an explicit "N/A because \<reason\>". Skipping one silently is how
 production gaps ship.
+
+At `standard`, run it calibrated: resolve only the concerns this change touches among
+state, persistence, external calls and concurrency.
 
 First **classify the feature's primary surface** (pick all that apply; name the
 primary). Then walk the systems list plus the matching surface list:
@@ -303,37 +306,46 @@ the visible-surface dimensions are exactly what users notice if you skip them.
 Before writing the spec, confirm:
 
 - Every AC has a single interpretation and a precise expected outcome.
-- Every unresolved decision is logged as an assumption with a chosen default and
-  rationale.
+- Every sentence of the Request traces to an AC or an out-of-scope row (at `quick`, a stated
+  exclusion).
+- At `standard`+, each dependent from the impact trace lands somewhere: on an AC, an
+  out-of-scope row, "unaffected because \<reason\>", or an open question carried to design.
+  Group dependents by kind when there are many.
+- Every unresolved decision was asked. One the user declined, or one a non-interactive run
+  could not ask, stays flagged with its chosen default and rationale.
 - No requirement embeds implementation.
+
+A failing item goes back to the draft, for **at most 3 cycles** (`SKILL.md` → *Retries*).
+Then stop and report the failing items.
 
 ---
 
 ## Review the spec adversarially
 
-The closure gates above are your own self-check — and an agent grades its own work
-generously. Before writing the final spec, draft it and hand the draft to independent
-reviewer subagents that attack it from lenses you're blind to: completeness, testability,
-and scope/implementation-leak. Run the review per `references/review.md` (size-gated —
-`quick` skips it), fold the ranked delta back into the draft, and escalate any genuine
-requirement or scope decision to the user. This catches a vague AC here instead of paying
-for it as a `SPEC-GAP` at execute time.
+Before writing the final spec, draft it and hand the draft to independent reviewer
+subagents that attack it from lenses you're blind to: completeness, testability, and
+scope/implementation-leak. `SKILL.md` → *Sizing* says which run; `quick` on a two-way door
+runs none and does not read `references/review.md`. A one-way door at `quick` has no
+design, so this step also runs design lens 4. When one runs, read it now, fold the ranked
+delta back into the draft, and escalate any genuine requirement or scope decision to the
+user.
 
 ---
 
 ## Write the spec and route
 
-Write `./.specs/<slug>/spec.md` from `templates/spec.md`, sized per
-`references/sizing.md` (quick = a few lines; complex = full matrix + dimension sweep +
-prior art). Set or confirm `Size:` in `state.md` and append any decisions made.
+Write `./.specs/<slug>/spec.md` from `templates/spec.md`, sized per `SKILL.md` → *Sizing*
+(quick = Problem, Conventions observed, Request and ACs, a few lines; complex = full
+matrix + dimension sweep + prior art). Set or confirm `Size` and `Door` in `state.md` and
+append any decisions made. Present any chosen defaults when you report.
 
 Recommend the next phase by size:
 
 - **quick:** "Size: quick — skip design and plan. Run `/forge execute`."
 - **standard / complex:** "Run `/forge design` next."
-- **Specify may recommend skipping design when** the standard change adds **no new
-  public interface, pattern, or data model.** In that case recommend `/forge plan`
-  directly and log the skip in `state.md` Decisions.
+- **Specify may recommend skipping design when** the standard change, on a two-way door,
+  adds **no new public interface, pattern, or data model.** In that case recommend `/forge
+  plan` directly and log the skip in `state.md` Decisions.
 
 If a significant decision still needs alignment, run `/create-rfc` first regardless of
 size.

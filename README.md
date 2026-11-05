@@ -49,8 +49,7 @@ phase without auto-running it. Depth **auto-sizes** to the change.
 
 ```mermaid
 flowchart LR
-    SP["specify"] --> DE["design"] --> PL["plan"] --> EX["execute"]
-    FX["fix"] -.->|re-align any layer| SP & DE & PL & EX
+    IN(["Problem"]) --> SP["specify"] --> DE["design"] --> PL["plan"] --> EX["execute"] --> OUT(["Verified code"])
 ```
 
 | Phase | Verb | Question it answers | Output |

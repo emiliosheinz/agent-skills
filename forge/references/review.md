@@ -1,52 +1,39 @@
 # Review
 
-How `specify` and `design` prove their artifact is sound *before* it ships downstream.
-Correctness is enforced by **independent reviewer subagents**: the author drafts the
-spec or design; separate agents, each with a fresh context, attack it from one lens.
-Author ≠ reviewer — an agent grading its own work tends to pass it, so the check must
-come from outside the author. The closure gates each phase already runs are the author's
-self-check; this review is the external one. It supplements them, never replaces them.
+How `specify` and `design` prove their artifact is sound *before* it ships downstream:
+**independent reviewer subagents**, each with a fresh context, attacking the draft from one
+lens. Author ≠ reviewer — an agent grading its own work tends to pass it. The closure gates
+each phase already runs are the author's self-check; this review is the external one. It
+supplements them, never replaces them.
 
-## Why independent review
-
-The spec and design are the two artifacts everything downstream inherits — a vague AC
-or an orphaned requirement costs a full round-trip when `execute`'s verifiers finally
-catch it as a `SPEC-GAP` (`verification.md`), long after implementation started. Pulling
-that scrutiny forward to authoring time is the whole point. A reviewer that only saw the
-author's reasoning would rubber-stamp it; so each reviewer gets **only the drafted
-artifact, the source it is checked against, and its one lens** — never the author's
-justification for a choice.
-
-A typical run looks like:
-
-```text
-draft artifact → spawn N reviewers in parallel (size-gated)
-             → each returns a verdict (PASS / REVISE)
-             → author aggregates → ranked delta → fold objective fixes (≤2 cycles)
-             → escalate any judgment call via AskUserQuestion
-             → write final artifact + route
-```
+Each reviewer gets **only the drafted artifact, the source it is checked against, and its
+one lens** — never the author's justification for a choice, because a reviewer that saw the
+reasoning would rubber-stamp it.
 
 ## The reviewers
 
-Run by independent, stateless subagents. Give each only what it needs — the drafted
-artifact, the specific source section it checks against, its one lens, and the verdict
-format. They share none of the author's context. Each finding must carry: **where** in
-the artifact, **what** is wrong, **why it matters downstream**, and a **suggested fix**.
-A vague "could be clearer" is not a finding — name the defect and its cost.
+Run by independent, stateless subagents, whose prompts name `references/glossary.md` for
+forge's terms. Each finding must carry: **where** in the
+artifact, **what** is wrong, **why it matters downstream**, and a **suggested fix**. A vague
+"could be clearer" is not a finding — name the defect and its cost.
+
+`SKILL.md` → *Sizing* says which run at each size. A one-way door at `quick` has no design,
+so `specify`'s review step runs lens 4 and it reads the acceptance criteria gathered inline.
 
 ### Spec reviewers (run in `specify`)
 
 1. **Completeness** — hunt what the spec *omits*: missing requirements, unhandled
    edge / error / first-run / empty states, dimension-sweep items marked `N/A` without a
    real reason, stakeholders or workflows the problem implies but the spec never names,
-   assumptions the work rests on that were never written down. Ask: *"what would a user
-   reasonably expect this to cover that it doesn't?"* Given: the drafted `spec.md` plus
-   the Part A problem statement and codebase findings.
+   assumptions the work rests on that were never written down, and any sentence of the
+   request no AC or exclusion covers. Ask: *"what would a user reasonably expect this to
+   cover that it doesn't?"* Given: the drafted `spec.md`, including its verbatim Request
+   block, plus the Part A problem statement and codebase findings.
 2. **Testability** — every AC falsifiable, single interpretation, precise expected
-   value, well-formed `WHEN/THEN/SHALL`. Reject "no error thrown" where a state/value is
-   the real outcome, ACs with two readings, and outcomes with no measurable target. This
-   is execute's spec-coverage verifier (`verification.md`) pulled forward — an AC that
+   value, in a well-formed form such as `WHEN/THEN/SHALL`, and settled by one run. Reject
+   "no error thrown" where a state/value is the real outcome, ACs with two readings, and
+   outcomes with no measurable target. An enumerated set must let each member be proved.
+   This is execute's spec-coverage verifier (`verification.md`) pulled forward — an AC that
    can't anchor a test here becomes a `SPEC-GAP` there. Given: the `spec.md` Requirements
    & Acceptance Criteria section.
 3. **Scope & implementation-leak** — requirements that embed *how* (a stack, data store,
@@ -70,12 +57,15 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
    unbounded work, missing indexes), concurrency / idempotency gaps, error-matrix
    omissions, and architectural risks left without a mitigation. Ask: *"what's the first
    thing that fails under load, attack, or partial failure?"* Given: the `design.md` plus
-   the spec's door verdict, its `[critical]` ACs, and its edge-condition requirements.
+   `state.md`'s door verdict, the spec's `[critical]` ACs, and its edge-condition
+   requirements.
 3. **Simplicity / reuse** — over-engineering (an abstraction with one caller, a factory
    for one product, flexibility nothing needs), code reinvented that the spec's codebase
    findings show already exists, and implementation detail leaked into the design. Apply
    the design's own test: *"would this survive a framework swap?"* — if not, it's an
-   implementation detail that doesn't belong.
+   implementation detail that doesn't belong. Relocating a rule, or giving a primitive whose
+   validation is already repeated a domain type, is the same scope: never report it as an
+   unrequested abstraction.
 
    **The deletion test, and a two-sided verdict.** For each abstraction, ask what deleting
    it would cost and return one of two values **citing the caller count**: `pass-through`
@@ -89,52 +79,8 @@ A vague "could be clearer" is not a finding — name the defect and its cost.
    covers: one responsibility per component nameable without "and"; dependency direction
    across each named boundary; domain concepts carried by primitives; consistency
    boundaries; where rules live relative to transport; and units mixing abstraction
-   levels. Given: the drafted
-   `design.md`, the spec's `Conventions observed` section, and any discovered standards
-   file.
-
-### The scope/shape boundary (lenses 3 and 4 both carry it)
-
-Lens 3 argues for less code; lens 4 argues for better-arranged code. Both carry this
-boundary, so their findings cannot contradict each other:
-
-> **Scope** governs *whether* something is built. **Shape** governs *how* what is built
-> is arranged.
-
-Relocating a rule into the unit that owns its data, or giving a primitive whose validation
-is already repeated a domain type, is **the same scope** — lens 3 must not report it as an
-unrequested abstraction. Adding a port, layer, second implementation, flag or extension
-point *is* new scope, and lens 4 never asks for it. Full statement:
-`references/structural-standards.md` → *Scope versus shape*.
-
-## What runs when (size-gated)
-
-| Size | Reviewers | Override |
-|------|-----------|----------|
-| quick | none — closure gate only | a **one-way door** runs 3 and design lens 4 |
-| standard | 1, 2, 4 | a **one-way door** also runs 3 |
-| complex | 1, 2, 3, 4 | — |
-
-A `quick` change carries an inline spec of a few lines and no design — the author's
-closure gate is proportionate; do not dispatch reviewers for it. Standard runs the two
-highest-value lenses plus the under-design lens; complex runs the full panel.
-
-**Reversibility overrides the size gate.** A change classified a **one-way door**
-(`references/specify.md`) forces spec reviewer 3 and design lens 4 **regardless of size**,
-including at `quick` with no design — there the lens reads the acceptance criteria
-gathered inline. Same principle as execute's mutation-sensor override: a two-line change
-that moves money must not ship unreviewed because it is small.
-
-## Model tier per reviewer
-
-Adversarial review is judgment work, not a mechanical pass/fail — run it at **standard,
-or frontier with high effort for a complex change**, per SKILL.md's Model & effort
-selection (the "adversarial judgment / ambiguous synthesis" row). Never send these lenses
-to the economy tier, and never fan the whole panel to frontier by default: complex earns
-frontier for its reviewers; standard runs them at standard/high. Design lens 4 inherits
-that row — **standard/high, frontier at `complex`** — and is never economy. Dispatch the applicable
-reviewers as concurrent subagents per SKILL.md's Orchestration rules — Workflow when the
-runtime supports it, sequential subagent calls otherwise. Reviewers spawn nothing.
+   levels. Given: the drafted `design.md`, the spec's `Conventions observed` section, and
+   any discovered standards file.
 
 ## Verdict format
 
@@ -154,7 +100,9 @@ Then work the list top-down:
 
 - **Apply objective fixes to the draft directly** — tighten an ambiguous AC, add a
   missing edge-condition requirement, delete a speculative abstraction, name the gate an
-  AC was missing. Re-run only the lenses whose sections changed. **Cap at 2 cycles.**
+  AC was missing. Re-run only the lenses whose sections changed. **At most 3 cycles**
+  (`SKILL.md` → *Retries*); then record the unresolved findings and surface them to the
+  user.
 - **Escalate judgment calls.** A finding that turns on a real requirement, scope, or
   architecture decision — not a mechanical tightening — goes to the user via
   `AskUserQuestion` with a recommended default. Do not silently pick a side on something
@@ -163,9 +111,8 @@ Then work the list top-down:
   requirement just to clear a finding defeats the review — if a finding can't be resolved
   cleanly, record it and surface it.
 
-A spec defect the review surfaces is logged to `state.md` Decisions; a skipped lens or a
-gap that recurs across changes is a `lessons.md` candidate — the same gap-handling every
-other phase uses. Fixes land in the artifact itself; the review leaves no separate file.
+A spec defect the review surfaces is logged to `state.md` Decisions. Fixes land in the
+artifact itself; the review leaves no separate file.
 
 ## Graceful degradation (never fake a review)
 
@@ -175,4 +122,5 @@ other phase uses. Fixes land in the artifact itself; the review leaves no separa
 - **No spec (design run without one):** reviewer 1 traces coverage against the acceptance
   criteria gathered inline at design time, same structure.
 
-A lens that was skipped is recorded as a gap in `state.md`, never reported as reviewed.
+A lens that was skipped is a `gap-open` row in `state.md`'s `## Open findings`, never
+reported as reviewed.

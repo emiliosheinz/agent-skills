@@ -37,6 +37,13 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
    baseline**, or when existing **assertions were deleted or loosened**, unless `state.md`
    records a justified reason. (Gutting pre-existing tests to go green is invisible to
    verifier 5, which mutates only new code.)
+
+   Under the conductor, verifier 1 also checks the protected list
+   (`Scratch:/<repo>.protected`): a changed or removed assertion in a protected file, or a
+   protected file changed at all, is a Blocker, as is a test count below Baseline. It runs
+   per phase and over the whole run range at Accept. The range starts at run start, or at
+   `Adopted at` on an adopted run (`auto.md` → *Entry: resume and adoption*). Every
+   verifier prompt carries `auto.md` → Guards → *Dispatch preamble*.
 2. **Static analysis** *(automated)* — the non-runtime correctness gate. Run three
    sub-checks with the recorded commands, each giving an independent verdict
    `PASS | FAIL | N/A`, reporting unresolved issues by file:line:

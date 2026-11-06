@@ -22,32 +22,32 @@ is the delivery brief (`Scratch:/<repo>-brief.md`); its fields are *ratification
 |---|---|---|
 | H1, H12 | Entry stop and phase hand-off (`SKILL.md` rule 8: a phase never runs the next); sprawl or size promotion (`execute.md` → Stop before the change sprawls) | The conductor runs the chain and every plan phase; an entry stop becomes routing. A promotion runs the phases the new size adds (plan, or design when a contract emerged) before continuing. Procedural, not reviewed. |
 | H2 | Slug and artifact root (`SKILL.md` → Artifact root) | Slug derived from the brief. A nested `.specs/` root is a repository-preflight stop. |
-| H3, H4, H5 | Part A interview, Part A closure, Part B drafting (`specify.md` → Part A, Part A closure gate, Part B) | Recon, a draft Part B, then the clarify gate (`auto.md` → Run → *Clarify gate*). Everything unasked becomes a flagged default in `spec.md` → Assumptions & discretion. Product owner (drafting) closes Part A and drafts. |
-| H6, H8 | Judgment-call findings at the review step (`specify.md`, `design.md` → Review adversarially; `review.md` → Resolve findings: "escalate judgment calls") | Each becomes a decision for the domain owner. Findings still open after 3 cycles are recorded and go to the brief's *sensitive disclosures*. An unconfirmed fact stays an uncertainty and is disclosed there. |
+| H3, H4, H5 | Part A interview, Part A closure, Part B drafting (`specify.md` → Part A, Part A closure gate, Part B) | Recon, a draft Part B, then the conductor's clarify gate. Everything unasked becomes a flagged default in `spec.md` → Assumptions & discretion. Product owner (drafting) closes Part A and drafts. |
+| H6, H8 | Judgment-call findings at the review step (`specify.md` → Review the spec adversarially, `design.md` → Review the design adversarially; `review.md` → Resolve findings: "escalate judgment calls") | Each becomes a decision for the domain owner. Findings still open after 3 cycles are recorded and go to the brief's *sensitive disclosures*. An unconfirmed fact stays an uncertainty and is disclosed there. |
 | H7 | Approach selection (`design.md` → Explore approaches) | Architecture owner. T2 at complex size. |
 | H9 | Prototype pick, including decline or another round (`ui.md` → Specify: the prototype step; `picker.md`) | UX owner, T1. Two variants by default. Captures of the pick go into the brief's *prose disclosures*. "No servable page" takes the next reference and is disclosed there. |
 | H10 | Running the app, sign-in (`ui.md` → Execute: the look) | Follow `ui.md` as written: discover run commands, take the no-sign-in ladder. Not a hard stop. A credential needed to build or test is the *credential* hard stop. |
 | H11 | Size, door and surface verdicts (`SKILL.md` → Sizing; rule 2 header fields) | Ratchet up only; a downgrade needs the user and never happens. Procedural, not reviewed. |
 | H13 | Red baseline (`execute.md` → Baseline) | Existing non-interactive behaviour: continue and record. Red tests in the touched area go to *prose disclosures*. |
-| H14, H25 | Gate or verifier still red after 3 cycles; a blocked task (`execute.md` → Fix the delta, When to stop and ask; `SKILL.md` rule 6) | Recovery and caps (`auto.md` → Run → *Recovery and caps*), then the park step (`auto.md` → Run → *Park*), then land the plane. A blocked task is retried once by recovery and otherwise left for the human. |
+| H14, H25 | Gate or verifier still red after 3 cycles; a blocked task (`execute.md` → Fix the delta, When to stop and ask; `SKILL.md` rule 6) | The conductor's recovery under its caps, then its park step, then land the plane. A blocked task is retried once by recovery and otherwise left for the human. |
 | H15 | `SPEC-GAP` expected value (`verification.md` → Verdict format; `fix.md` → Execute now) | The conductor runs `fix`; Product owner (judging) sets the expected value. T1; T2 when it changes a `[critical]` AC. Counts toward the `fix` cap. |
 | H16 | `DESIGN-GAP` (`verification.md`; `design.md`) | Architecture owner. Default is report, do not build; build only when an AC cannot pass otherwise, then T2. Reports go to *sensitive disclosures*. |
-| H17 | Pre-existing test judged wrong (`execute.md` → Test integrity) | Product owner (judging), always T2, checked against the brief as well as the spec. The run never makes the change: the implementer returns a conflict citing the AC and evidence, an approved change leaves the task `blocked`, and the proposed change is a *ratification item*. |
+| H17 | Pre-existing test judged wrong (`execute.md` → Test integrity) | Product owner (judging), always T2, checked against the brief as well as the spec. The run never makes the change: the implementer returns `escalation: SPEC-GAP` naming the AC, its evidence and the test, an approved change leaves the task `blocked`, and the proposed change is a *ratification item*. |
 | H18 | Ambiguous AC, unworkable plan, simpler approach, missing dependency (`execute.md` → When to stop and ask) | Ambiguous AC: Product owner (judging). Unworkable plan or simpler approach: Architecture owner, then `fix`. Missing dependency that cannot be substituted: the *missing dependency* hard stop. Other unknowns: note and continue, per the clause. |
 | H19, H27 | `reported` findings and Finish reports (`execute.md` → Finish; `fix.md` → Finish) | Existing behaviour: report. Everything Finish reports goes into *prose disclosures*. |
 | H20 | Code versus spec, entry layer of a correction (`fix.md` → Lift; Edge cases) | Product owner (judging), T1. Deleting an AC is T2 and always a *ratification item*. A net-new capability is out of scope and reported. Cross-slug ripples are reported. A one-way-door correction runs the full chain under the conductor, which is the effect `fix` asks for. |
-| H21 | One-way door without a marked AC; check that cannot run (`specify.md` → One-way door; `verification.md` → One-way door, Gaps) | No marked AC: Product owner (drafting) marks one, T2. A type check or verifier 5 that cannot run on a one-way door: the *one-way-door gap* hard stop, gap first in *sensitive disclosures*. Elsewhere continue and record. |
-| H22, H28 | Push, deploy, PR, existing PR on the branch (`SKILL.md` rule 9: approval is local) | The permission contract (`auto.md` → Guards → *Permission contract*). An existing PR on an auto branch takes the resume path (`auto.md` → Run → *Entry: resume and adoption*); a rejected push stops, never force-push. Procedural, not reviewed. |
+| H21 | One-way door without a marked AC; check that cannot run (`specify.md` → Requirements and acceptance criteria; `verification.md` → One-way door, Gaps) | No marked AC: Product owner (drafting) marks one, T2. A type check or verifier 5 that cannot run on a one-way door: the *one-way-door gap* hard stop, gap first in *sensitive disclosures*. Elsewhere continue and record. |
+| H22, H28 | Push, deploy, PR, existing PR on the branch (`SKILL.md` rule 9: approval is local) | The permission contract (`auto.md` → Guards → *Permission contract*). An existing PR on an auto branch takes the conductor's resume path; a rejected push stops (*Permission contract*). Procedural, not reviewed. |
 | H23 | RFC-worthy open decision (`SKILL.md` rule 10) | T3. Auto never writes an RFC or ADR; the *prose disclosures* recommend one. |
-| H24 | "Already satisfied" (`specify.md` → Part A closure gate) | Stop with `file:line` evidence, no commit, no PR. The one exit without a deliverable after Intake. "Understanding only" does not apply: the brief requests a change. Product owner (judging) decides. |
+| H24 | "Already satisfied" (`specify.md` → Part A closure gate) | Stop with `file:line` evidence, no commit, no PR. The one non-stop exit without a deliverable after Intake. "Understanding only" does not apply: the brief requests a change. Product owner (judging) decides. |
 | H26 | Project rule versus convention conflict (`specify.md` → conventions; `design.md` → State a verdict per observed convention) | Architecture owner, T1. Disclosed in *prose disclosures*. |
 | Standing rules | A trusted instruction file requires asking before a change, e.g. before adding a dependency (`SKILL.md` rule 5; universal "never assume") | Attended: enters the clarify gate. Unattended, or arising after the gate closed: T3, built on the branch, provisional, listed among the *ratification items*. Never overridden silently. |
 
 Procedural decisions (size, door, surface, routing, retry counts, caps, stop conditions)
-are deterministic or ratchet-only and are not reviewed. An ask outcome exists only in
-three places: the clarify gate, the single question about a spec-invalidating misreading
-found by SpecAudit (attended runs only; unattended, it becomes a *ratification item*), and
-the hard-stop case (attended runs ask once and wait). Nowhere else does a touchpoint ask.
+are deterministic or ratchet-only and are not reviewed. No touchpoint here has an ask
+outcome; the places that may ask are fixed by `auto.md` → Guards → *Permission contract*.
+A spec-invalidating misreading found by SpecAudit that an unattended run cannot ask about
+becomes a *ratification item*.
 
 ## Owners
 
@@ -240,11 +240,10 @@ Decisions enter the protocol from three sources, so choices cannot hide in prose
    with no manifest entry is a finding, raised as a decision. A manifest entry or gate
    candidate that was not asked becomes a flagged default in `spec.md` → Assumptions &
    discretion.
-3. **The Accept sweep** (`auto.md` → Run → *Accept*): every T2-observable change between
-   run start and HEAD must map to a decision record. An unmapped change gets a T2 review;
-   if it fails and the `fix` cap allows, it is reverted through `fix`, otherwise it stays
-   on the branch as a *ratification item* and the run status is `partial` (`auto.md` →
-   Run → *Status rule*).
+3. **The Accept sweep**: every T2-observable change between run start (on an adopted
+   run, `Adopted at`) and HEAD must map to a decision record. An unmapped change gets a
+   T2 review; if it fails and the `fix` cap allows, it is reverted through `fix`,
+   otherwise it stays on the branch as a *ratification item* and the run status is `partial`.
 
 Artifact review (spec reviewers, design lenses, verifiers) is unchanged and stays the main
 quality engine. Mechanical tightenings are applied directly per `review.md`; only

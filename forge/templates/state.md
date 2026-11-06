@@ -16,7 +16,8 @@
      from none to ui; a downgrade needs the user's confirmation. -->
 
 <!-- Mode: auto runs only, written once. Auto stage: auto runs only, updated in place along
-     an edge of the stage machine. Absent Mode means none of Auto stage or ## Run applies. -->
+     an edge of the stage machine. Absent Mode means none of Auto stage or ## Run applies.
+     Outside an auto run, omit both rows and the ## Run section. -->
 
 <!-- state.md is the single source of truth. Re-read at the start of every phase.
      Write SURGICALLY (see SKILL.md Universal rules for the section write-mode table).
@@ -41,7 +42,7 @@ Scratch: <absolute path outside every target repository, on durable storage> (on
 Counters: fix n/3; accept re-entry n/1; diagnosed: <task IDs> (only increase)
 Denials: <one line per denied purpose and target with its consecutive count; 3 = active ban>
 Hard stop: <none or a hard-stop name>
-Lessons: <written once lessons are appended for this run>
+Lessons: <`written`, once lessons are appended for this run>
 
 <!-- Run start, Adopted at, Run branch and PR base are written once; write Run branch before
      the branch is created. The run created a branch exactly when Run branch differs from

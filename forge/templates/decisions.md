@@ -1,6 +1,7 @@
 # Decisions — <slug>
 
-<!-- Per-run ledger for auto runs. Append-only: never edit or delete a record; supersede it.
+<!-- Per-run ledger for auto runs. Append-only: never delete or rewrite a record; supersede
+     it with a new one and set the old one's Status.
      This file is the only home of a decision's tier, choice and status; state.md Decisions
      holds one pointer row per record. Spec-level assumptions stay in the spec. -->
 
@@ -23,15 +24,22 @@ Rounds asked: <n>
      starts. On resume, list those files, find the last completed step and redo only a
      missing one, saying so in the record. -->
 
-### DR-NN · <decision / assumption> · <area> · <tier>
+### DR-NN · <area>
 Question: <one sentence>
+Key: <normalized question, for re-open detection>
 Options: 1) <...> 2) <...> 3) smallest change: <...>
 Choice: <n> — <one line>
 Rationale: <at most 5 lines, each claim cited>
+Assumptions: <each, spec-invalidating or not>
 Reversibility: two-way / hard-to-reverse (<cost to undo>) / one-way
+Would change my mind: <evidence>
+Supersedes: <DR-NN or none>
 Type: <decision / assumption>
 Owner: <role>
 Tier log: <T1 -> T2 -> ...>
 Review: <outcome of the review steps>
+Arbiter: <model differs from the owner's: yes / no, and why not>; <ruling, tie-breaker>
+Dissent: <losing position, one line>
 Ratify: <yes / no>
+Binds: <tasks / components>
 Status: active

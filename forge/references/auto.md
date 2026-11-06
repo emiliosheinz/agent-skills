@@ -56,7 +56,7 @@ first dispatch. A `fix` invocation persists as its parent stage plus the existin
     at adoption; `Last commit` starts at `Adopted at`.
   - Test integrity (the protected list and verifier 1's baseline) and the Accept sweep
     measure from `Adopted at`; the PR diff and the no-`.specs/`-in-commits rule measure
-    from `Run start`.
+    from `Run start`. A new run measures all of them from `Run start`.
 - Reconcile follows `templates/state.md` → Handoff as narrowed by Guards → *Commit
   guard* (Resume reconcile).
 
@@ -155,7 +155,8 @@ skips it: the repository rows are write-once.
 4. Dirty tree, the artifact root excluded. New run: stop before any implementer and list
    the paths. Resume or adoption: continue when every changed path belongs to the
    in-progress task's `files`, else stop and list the others.
-5. Branch selection (below), first entry only. Write `Original branch`, `Run branch` and
+5. Branch selection (below), on first entry only, or on an adoption whose Handoff branch
+   is the default branch. Write `Original branch`, `Run branch` and
    `PR base` to the `Run` table before the branch is created, then create it.
 6. Host and remote, skipped under `--no-pr`: the PR host CLI authenticated and the remote
    reachable, else stop naming the check.
@@ -171,10 +172,10 @@ skips it: the repository rows are write-once.
    set `Last commit` to it. An adopted run's `Run start`, `Adopted at` and `Last commit`
    were written by Entry.
 
-Resumed form (resume, adoption): steps 5 and 9 write nothing. Write-once fields
-(`Run start`, `Adopted at`, `Run branch`, `PR base`, `Original branch`) are never
-rewritten and `Last commit` is not reset. Check that the branch is `Run branch`, then
-run the Commit guard's resume reconcile (Guards → *Commit guard*).
+Resumed form (resume, adoption): step 9 writes nothing, and step 5 only as it says.
+Write-once fields (`Run start`, `Adopted at`, `Run branch`, `PR base`) are never
+rewritten and `Last commit` is not reset. The reconcile has already run (Entry); the
+branch must be `Run branch`.
 
 A failure on a new run lands as a report of the spec path naming the failed check; no
 commit exists. On a resume or adoption with commits, a branch other than `Run branch` or

@@ -148,7 +148,7 @@ is T2 or higher, whatever its owner thought.
 **Ratification items** (brief field): every T3 decision; every arbitration where a Blocker
 objection lost; every spec-invalidating assumption; every one-way-door gap; every deleted
 AC; every Accept-sweep change left in place after the `fix` cap; every approved
-pre-existing test change left unmade.
+pre-existing test change left unmade; every UX pick made without a browser.
 
 ## Review protocol
 

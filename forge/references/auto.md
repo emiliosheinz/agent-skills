@@ -334,9 +334,10 @@ each step on resume when state shows it done.
    included; with PRs in more than one repository this also links each to the others.
 9. For each repository with no commit since run start, on every path into this step,
    check out `Original branch` and delete the branch the run created, only when its tip
-   is `Run start`. Report: the status, PR URLs, each Guards → *Harness snippet* guarantee not enforced
-   labelled prose-only, `.patch` paths, failures with retry commands. With no commit in
-   any repository, report as Guards → *Hard stops* (Land the plane) says.
+   is `Run start`. Report: the status, PR URLs, each Guards → *Harness snippet*
+   guarantee not enforced labelled prose-only, `.patch` paths, failures with retry
+   commands. With no commit in any repository, report as Guards → *Hard stops* (Land the
+   plane) says.
 
 ## Guards
 

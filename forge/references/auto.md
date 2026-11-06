@@ -47,10 +47,11 @@ first dispatch. A `fix` invocation persists as its parent stage plus the existin
   and `Evidence` as Recon does, and create `decisions.md` from the template when absent:
   - `Original branch` and `Run branch`: Handoff `Branch:`. When that is the default
     branch, branch selection applies as for a new run instead of reuse.
-  - `PR base`: an open PR's base when one exists; otherwise the nearest local branch
-    whose tip is an ancestor of the slug's branch, has at least one commit not on the
-    remote default branch, and has the slug's branch at least one commit past it, ranked
-    by fewest commits between; otherwise the default branch. Record the choice as a T1
+  - `PR base`, unless branch selection applies as above: an open PR's base when one
+    exists; otherwise the nearest local branch whose tip is an ancestor of the slug's
+    branch, has at least one commit not on the remote default branch, and has the slug's
+    branch at least one commit past it, ranked by fewest commits between; otherwise the
+    default branch. Record the choice as a T1
     decision (`decide.md` → *Tiers*).
   - `Run start`: the merge-base of the slug's branch with `PR base`. `Adopted at`: HEAD
     at adoption; `Last commit` starts at `Adopted at`.

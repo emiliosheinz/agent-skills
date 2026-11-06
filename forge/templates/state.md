@@ -6,12 +6,17 @@
 | Door | one-way / two-way door — <the triggers that fired, or "none"> |
 | Surface | ui / none — <the trigger that fired, or "none"> |
 | Created | YYYY-MM-DD |
+| Mode | auto — auto runs only; absent means no auto field applies |
+| Auto stage | Intake / Recon / DraftSpec / Clarify / Specify / SpecAudit / Design / Plan / Execute / Accept / Deliver / done |
 
 <!-- Door: set by the first phase to run, per references/specify.md. Overrides the size
      gate for spec reviewer 3, design lens 4 and verifiers 3, 4 and 5. Never blank. Like Size
      it moves one way only; a downgrade needs the user's confirmation.
      Surface: set by the first phase to run, per SKILL.md step 4. Never blank; moves only
      from none to ui; a downgrade needs the user's confirmation. -->
+
+<!-- Mode: auto runs only, written once. Auto stage: auto runs only, updated in place along
+     an edge of the stage machine. Absent Mode means none of Auto stage or ## Run applies. -->
 
 <!-- state.md is the single source of truth. Re-read at the start of every phase.
      Write SURGICALLY (see SKILL.md Universal rules for the section write-mode table).
@@ -26,6 +31,26 @@ Append-only: to reverse a decision, add a new row and mark the prior one
 | # | Decision | Why | Status | Date |
 |---|---|---|---|---|
 | AD-01 | <decision> | <rationale> | active | YYYY-MM-DD |
+
+## Run
+Auto runs only; absent `Mode` means this section does not exist. Update in place except
+the write-once fields, marked (once).
+
+Flags: <`--no-pr` or none> (once)
+Scratch: <absolute path outside every target repository, on durable storage> (once)
+Counters: fix n/3; accept re-entry n/1; diagnosed: <task IDs> (only increase)
+Denials: <one line per denied purpose and target with its consecutive count; 3 = active ban>
+Hard stop: <none or a hard-stop name>
+Lessons: <written once lessons are appended for this run>
+
+<!-- Run start, Adopted at, Run branch and PR base are written once; write Run branch before
+     the branch is created. The run created a branch exactly when Run branch differs from
+     Original branch. Last commit starts at Run start (or Adopted at) and advances only after
+     each commit the run makes. Delivery: opened / failed: <act> / withheld.
+     A ledger pointer in Decisions: | DR-NN | decisions.md | — | ledger | YYYY-MM-DD | -->
+
+| Repo | Path | Evidence | Run start | Adopted at | Original branch | Run branch | PR base | Last commit | PR | Delivery |
+|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Baseline
 Written by `execute` before the change's first task. Verifiers 1 and 2 use these commands.

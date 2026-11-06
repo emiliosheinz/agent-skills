@@ -2,12 +2,14 @@
 name: forge
 description: >
   Spec-driven development from problem to shipped, verified code in four phases:
-  `/forge specify|design|plan|execute`, plus `/forge fix` to correct course mid-stream.
+  `/forge specify|design|plan|execute`, plus `/forge fix` to correct course mid-stream
+  and `/forge auto <brief>` to run the whole chain from one brief to a draft PR.
   TRIGGER when: the user asks to ship/build/implement a feature, write a PRD or spec or
   requirements, design architecture, write a technical design, break work into tasks or
-  an implementation plan, run TDD or write acceptance criteria, or correct/adjust an
+  an implementation plan, run TDD or write acceptance criteria, correct/adjust an
   in-flight change — a misstated requirement, a design or implementation detail that's
-  wrong, or a bug found while testing. SKIP for: trivial one-off edits the user already
+  wrong, or a bug found while testing — or run a change end to end without stopping
+  between phases. SKIP for: trivial one-off edits the user already
   has fully specified, pure code review, or questions about how forge itself works.
 ---
 
@@ -54,7 +56,9 @@ radius, a seam, a stage, the three lies — and names where each one is defined.
 dispatches it; read it when a pointer uses a term you cannot place.
 
 Only `auto` loads `references/auto.md` and `references/decide.md`; a plain verb never
-opens them. Under the conductor (the agent running `/forge auto`), every ask, confirm or
+opens them. The conductor reads both fully at entry and keeps them for the whole run, so
+a playbook's "Under the conductor" clause that cites them resolves without a second read.
+Under the conductor (the agent running `/forge auto`), every ask, confirm or
 escalate in a phase is a decision point handled per `references/decide.md`, not a
 question to the user.
 
@@ -68,6 +72,7 @@ a verb is missing or unknown. Common mappings:
 | "break this into tasks", "plan the work" | `plan` |
 | "implement X", "build this", spec + plan already exist | `execute` |
 | "this detail is wrong", "correct course", "I don't like this design", "found a bug while testing", change to an in-flight spec/design/plan/code | `fix` |
+| "run it end to end", "take this to a PR without stopping", a brief handed off for unattended work | `auto` |
 
 `specify` takes a feature name. If absent, ask for one and derive a kebab-case slug.
 

@@ -6,6 +6,34 @@ the conductor; plain verbs never load it. Its Guards part holds the rules every 
 auto run obeys; playbook clauses and dispatch prompts cite Guards by section name and do
 not restate it.
 
+## Contents
+
+- Run: Invocation and modes; Entry: resume and adoption; Session preflight; Intake;
+  Recon; Clarify gate; Repository preflight; Branch selection; Driving the chain;
+  SpecAudit; Accept; Recovery and caps; Park; Status rule; Deliver
+- Guards: Hard stops; Commit guard; Dispatch preamble; Trust boundary; Permission
+  contract; Commands; Docs rule; Harness snippet
+
+## Progress
+
+Copy this checklist into the run's working notes and tick each stage as `Auto stage`
+leaves it. On resume, tick every stage before the persisted `Auto stage`.
+
+```text
+- [ ] Session preflight
+- [ ] Intake
+- [ ] Recon
+- [ ] DraftSpec, Clarify (clarify gate)
+- [ ] Specify (repository preflight first)
+- [ ] SpecAudit
+- [ ] Design (standard and complex)
+- [ ] Plan (standard and complex)
+- [ ] Execute, once per plan phase
+- [ ] Accept
+- [ ] Deliver
+- [ ] done
+```
+
 ## Run
 
 ### Invocation and modes
@@ -75,6 +103,10 @@ Runs before Intake. A failure stops with nothing written. Checks:
    `_SECRET`, `_PASSWORD` or `_KEY`; well-known provider key prefixes). Name the patterns
    checked and the matching variables in the report, never their values.
 6. Whether a sandbox is active, for the install rule in Guards → *Commands*.
+7. Sibling skills: whether `pr` and `diagnose` are installed. Without `pr`, the run
+   delivers as under `--no-pr` and the report says why. Without `diagnose`, Recovery
+   and caps step 2 runs one inline root-cause pass instead (reproduce, rank hypotheses,
+   probe the top one, try to refute the cause) and the brief discloses it.
 
 Print the report. Without subagents, `decide.md` → *Owners* (Without subagents) applies,
 and the delivery brief says so once.
@@ -120,7 +152,7 @@ the gate record.
    a dependency, standing-rule or enlist-base candidate: those leave a round only at the
    five-question cap.
 4. A round is at most five questions, one or more consecutive ask calls, most
-   load-bearing first (split at the ask tool's per-call limit; batch as `grill-me` does).
+   load-bearing first (split at the ask tool's per-call limit).
    Batching is the auto exception to one question at a time. Each question offers
    concrete options with a recommended answer first, labelled. When the draft recorded
    two readings, round 1 opens with them as options ("A: X, not Y, checked by Z"), never
@@ -237,15 +269,11 @@ Stage Accept, after the last plan phase. In order:
 
 1. Verifiers 1 and 2 over the run range in each target repository, measured as Entry
    states.
-2. Diff sweep: every T2-observable change in the range (measured as Entry states) maps to
-   a decision record, and an unmapped one gets a T2 review (`decide.md` → *Decision
-   discovery*). A change that fails review is reverted through `fix` (`fix.md`), which
-   counts toward `fix n/3`. With the cap spent it stays on the branch as a ratification
-   item and the status is
-   `partial`.
+2. Diff sweep over the range (measured as Entry states), per `decide.md` → *Decision
+   discovery* (the Accept sweep). Its reverts run through `fix` (`fix.md`) and count
+   toward `fix n/3`.
 3. Supersession: a record that contradicts an active one is carried out per `decide.md`
-   → *Supersession and re-open*. Rebind every pending task bound by the old record;
-   reopen committed work bound by it through `fix` (`fix.md`).
+   → *Supersession and re-open*, its reopens through `fix` (`fix.md`).
 4. Intent audit #2: a fresh frontier auditor gets the brief, the answers, the
    out-of-scope capability names without reasons and the final diff, plus the running
    app or CLI where possible, never the spec. Each finding cites a brief sentence; the
@@ -258,7 +286,7 @@ Stage Accept, after the last plan phase. In order:
 A task gate or verifier stage still red after 3 cycles:
 
 1. Park the task's tree (Park).
-2. Run the `diagnose` procedure inline (`diagnose/SKILL.md` → *The loop*), so its probes
+2. Run the `diagnose` skill's procedure inline (its *The loop* section), so its probes
    and refuter are the conductor's single level of delegation. Supply the repro and the
    failing gate and skip its intake; keep its harness under `Scratch:`. Applying its
    proposal is a T1 decision (`decide.md` → *Tiers*). A cause in the plan or design goes
@@ -312,7 +340,7 @@ each step on resume when state shows it done.
      arbiter on the same model, test protection prose-only, installs run with lifecycle
      scripts off or skipped, red baseline tests, open audit findings, reported findings,
      Finish reports, UX captures or "no servable page", a rule-versus-convention conflict,
-     an RFC or ADR recommendation;
+     an RFC or ADR recommendation, a sibling skill missing (session preflight);
    - a decision log of one plain line per T1-or-higher record, with no verification
      results.
    No planning identifiers anywhere.
@@ -322,9 +350,9 @@ each step on resume when state shows it done.
    identifiers (remove an identifier). A credential is hard stop credential and a moved
    HEAD is hard stop unexpected git state; both land local only. A repository failing
    any other check is recorded `withheld` in `Delivery` and not delivered.
-6. Under `--no-pr` or a local-only stop: report the commits per repository. For each
-   repository that already has a `PR`, re-render its block with the stop status (an edit,
-   no push). Go to step 9.
+6. Under `--no-pr`, a local-only stop, or no `pr` skill: report the commits per
+   repository. For each repository that already has a `PR`, re-render its block with the
+   stop status (an edit, no push). Go to step 9.
 7. Run `pr` per repository with a commit, not yet `opened` and not `withheld`, passing
    the slug so it asks nothing. Pushes happen only inside `pr`, after step 5 cleared
    every repository. Record its per-act result in `PR` and `Delivery` (`opened` or

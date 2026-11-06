@@ -11,6 +11,16 @@ record must hold.
 `H1` to `H28` are this file's labels for the touchpoints below. A playbook clause that
 says "Under the conductor" cites a row here by label.
 
+## Contents
+
+- Dispositions: every touchpoint H1 to H28 and its auto disposition
+- Owners: Product, Architecture and UX owners; roles; model choice; without subagents
+- Tiers: T0 to T3 triggers; ratification items
+- Review protocol: propose, second proposal, challenge, evidence rule, arbitrate, record
+- Rubric
+- Supersession and re-open
+- Decision discovery
+
 ## Dispositions
 
 Each row: the touchpoint, the playbook clause it reconciles, the auto disposition. "Brief"

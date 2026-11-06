@@ -13,8 +13,6 @@
 |---|---|---|---|
 | 1 | <question> | <where it came from> | asked |
 
-Rank 1 is the highest priority.
-
 Rounds asked: <n>
 
 ## Records

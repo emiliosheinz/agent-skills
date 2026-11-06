@@ -128,5 +128,5 @@ reported as reviewed.
 Under the conductor, a lens also raises a choice in the artifact that has no entry in the
 drafting owner's manifest as a decision (`decide.md` → *Decision discovery*). Its prompt
 carries `auto.md` → Guards → *Dispatch preamble*. Where subagents are unavailable the
-inline rule above applies, and the record says the review was not independent (`decide.md` → *Owners*, Without
-subagents).
+inline rule above applies, and the record says the review was not independent
+(`decide.md` → *Owners*, Without subagents).

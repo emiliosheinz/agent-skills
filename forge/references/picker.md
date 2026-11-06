@@ -34,11 +34,11 @@ the framework's own state.
 ```html
 <nav class="proto-picker" aria-label="Prototype variants">
   <span class="proto-picker-highlight" aria-hidden="true"></span>
-  <button class="proto-picker-item">Variant one</button>
-  <button class="proto-picker-item">Variant two</button>
-  <button class="proto-picker-item">Variant three</button>
+  <button type="button" class="proto-picker-item">Variant one</button>
+  <button type="button" class="proto-picker-item">Variant two</button>
+  <button type="button" class="proto-picker-item">Variant three</button>
   <span class="proto-picker-divider" aria-hidden="true"></span>
-  <button class="proto-picker-item proto-picker-replay" aria-label="Replay (R)">↻</button>
+  <button type="button" class="proto-picker-item proto-picker-replay" aria-label="Replay (R)">↻</button>
 </nav>
 ```
 
@@ -129,10 +129,12 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "r" || e.key === "R") mount(current);
 });
 
-setActive((Number.parseInt(new URLSearchParams(location.search).get("v"), 10) || 1) - 1);
+const requested = Number.parseInt(new URLSearchParams(location.search).get("v"), 10) || 1;
+setActive(Math.min(Math.max(requested, 1), variants.length) - 1);
 requestAnimationFrame(() => requestAnimationFrame(() => picker.setAttribute("data-ready", "")));
 ```
 
-Run this script before any page code that touches `#stage`: it declares `stage`, and code
-that reads it earlier throws. Name variants in one or two short words so the pill fits a
+Place this script after the picker markup and `#stage`, which it looks up on load, and run
+it before any page code that touches `#stage`: it declares `stage`, and code that reads it
+earlier throws. Name variants in one or two short words so the pill fits a
 phone width. Drop the divider and the replay button when no variant animates on entry.

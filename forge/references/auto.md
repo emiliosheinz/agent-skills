@@ -142,6 +142,86 @@ item. Zero questions asked: one report line saying so. After close, no question 
 hard stop or the SpecAudit misreading question. Next: Specify, starting with Repository
 preflight.
 
+### Repository preflight
+
+First step of Specify, per target repository, in this order. A back-edge into Specify
+skips it: the repository rows are write-once.
+
+1. Enlist. A repository not yet available for edits is enlisted the way the trusted
+   instruction files describe (Forge names no tool); where they describe none and the path
+   is not editable, stop naming the repository. A trusted rule requiring the base to be
+   asked first was a gate candidate; unattended, enlist off the default branch.
+2. Detached HEAD: stop naming the check.
+3. `.specs/` tracked in the repository: stop. Untracked and not already ignored: add it
+   to the repository-local exclude file, modifying no tracked file. This precedes the
+   dirty check so the run's own drafts are never dirty.
+4. Dirty tree, the artifact root excluded. New run: stop before any implementer and list
+   the paths. Resume or adoption: continue when every changed path belongs to the
+   in-progress task's `files`, else stop and list the others.
+5. Branch selection (below). Write `Original branch`, `Run branch` and `PR base` to the
+   `Run` table before the branch is created, then create it.
+6. Host and remote, skipped under `--no-pr`: the PR host CLI authenticated and the remote
+   reachable, else stop naming the check.
+7. Existing PR on the run branch, skipped under `--no-pr`. An open PR with an auto slug
+   is the resume path: Deliver pushes new commits and re-renders only the status-and-links
+   block. Otherwise, or when the PR is closed or merged, stop.
+8. Protected list: write the repository's tracked test files, their snapshots and fixture
+   files at `Run start` (at `Adopted at` on an adopted run), matching the project's test
+   locations and naming, to `Scratch:/<repo>.protected`, one path per line. Dependency
+   manifests and runner configuration are not listed.
+9. Write `Run start` (HEAD now; never recomputed) and set `Last commit` to it (to
+   `Adopted at` on an adopted run).
+
+A failure on a new run lands as a report of the spec path naming the failed check; no
+commit exists. On a resume or adoption with commits, a branch other than `Run branch` or
+a HEAD other than `Last commit` after the reconcile is hard stop unexpected git state,
+naming both; any other failure lands the plane (Guards → *Hard stops*).
+
+### Branch selection
+
+| HEAD at preflight | Result |
+|---|---|
+| Default branch, in sync with its remote | Create a new branch named from the slug; `PR base` is the default branch |
+| Default branch, ahead of or diverged from its remote | Stop at preflight naming the branch |
+| Another branch, no commits past the default branch, no open PR | Work on it; `Run branch` is that branch; `PR base` is the default branch |
+| Another branch, commits past the default branch | Create a new branch on top of it; `PR base` is that branch |
+| That stacked-on branch diverged from its remote counterpart | Stop at preflight naming the branch |
+| That stacked-on branch absent from its remote, or behind its local copy by a fast-forward | Proceed; Deliver pushes it with no commits added and the PR body says so |
+| Another branch with an open PR | The existing-PR step decides |
+
+- A created name that exists locally or on the remote takes a numeric suffix, unless it
+  is `Run branch` with its tip at `Run start`: adopt that branch, never suffix it.
+- A branch was created by the run exactly when `Run branch` differs from `Original
+  branch`.
+- An adopted slug reuses its branch; only an adopted slug on the default branch falls
+  into the first two rows.
+
+### Driving the chain
+
+After the clarify gate and SpecAudit, run every phase the recorded size requires and
+every plan phase, with no verb from the user: quick goes to Execute; standard and complex
+go to Design, or to Plan with the skip logged, then Plan, then Execute for each plan
+phase in order, then Accept. Write `Auto stage` before each stage's first dispatch. Each
+playbook runs under the conductor: every ask, confirm or escalate becomes a decision per
+`decide.md`, and every commit goes through Guards → *Commit guard*.
+
+Promotion back-edges: a size promoted at Plan or Execute re-enters the first phase the
+new size adds (Design when a contract emerged, Plan when the change sprawled), then runs
+forward again; completed plan phases stay done. A one-way-door correction found in
+Execute re-enters Specify. A hard stop at any stage follows Guards → *Hard stops*.
+
+### SpecAudit
+
+Stage SpecAudit, after Specify and before Design or Plan. Dispatch a fresh intent auditor
+(`decide.md` → *Owners*) with only the brief, the answers (the gate record and any
+recorded answers), the out-of-scope capability names without their reasons, and the ACs.
+It reports what the spec adds or misses; each finding cites a brief sentence. The judging
+Product owner rules on each finding under the evidence rule (`decide.md` → *Review
+protocol*). An upheld finding revises the spec once; a finding still open is disclosed in
+the delivery brief. A spec-invalidating misreading: attended, ask at most one question
+about it; unattended, make it a ratification item. Then enter the stage the size
+requires, as in Driving the chain.
+
 ## Guards
 
 ### Hard stops

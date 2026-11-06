@@ -64,10 +64,11 @@ Under `Mode: auto` (this repository's row): `BASE` is the row's
 parent before the fetch, and only as a fast-forward refspec (no `+`, no `--force`) and
 only when the run added no commits to it; a parent that has diverged from its remote is
 not pushed, and the failing act is reported at Step 7. The other Step 0 rows apply
-unchanged. An existing PR on the row's `Run branch` is the resume path, not a stop: push
+unchanged. An open PR on the row's `Run branch` is the resume path, not a stop: push
 the new commits and write no body, because only the conductor re-renders the
 status-and-links block (`auto.md` → *Deliver*). Go to
-Step 7 with the push as the only act. An existing PR on any other branch still stops.
+Step 7 with the push as the only act. A closed or merged PR on it, or an existing PR on
+any other branch, still stops.
 
 ## Step 1 — Gather context
 
@@ -185,6 +186,9 @@ gh pr create \
   --title "<title from step 4>" \
   --body-file "/tmp/pr-body-<branch>.md"
 ```
+
+Under `Mode: auto` (this repository's row), `--body-file` is the body file Step 4 wrote
+under `Scratch:`.
 
 With `--attach` available and an image captured, add one flag per image, using
 the absolute path `show-me` returned:

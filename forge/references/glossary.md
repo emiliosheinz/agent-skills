@@ -60,6 +60,6 @@ prompt that uses these terms names this file.
 | **hard stop** | one of the few named conditions where the conductor stops (asks, if attended) instead of deciding | `auto.md` → Guards → *Hard stops* |
 | **land the plane** | what a hard stop does for each target repository: open a draft PR (or list the commits under `--no-pr`) leading with the status | `auto.md` → Guards → *Hard stops* |
 | **attended run** | a conductor run with an ask tool available and `--no-ask` absent; otherwise unattended | `auto.md` → Run → *Invocation and modes* |
-| **target repository** | a repository the run changes, with its own run branch and PR | `auto.md` → Run → *Repository preflight* |
+| **target repository** | a repository the run changes, with its own run branch and PR | `auto.md` → Run → *Recon* |
 | **brake** | *(defined here)* a mechanism that can stop the work rather than only comment on it: a gate, a verifier, a required field, a cycle limit. Prose that cannot fail is not a brake |
 | **slop** | *(defined here)* output that satisfies the instruction's letter while failing its purpose — a test that cannot fail, a rejection with no reason, a convention row marked empty without searching. What the gates exist to catch |

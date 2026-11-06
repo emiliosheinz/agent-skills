@@ -8,7 +8,139 @@ not restate it.
 
 ## Run
 
-Filled by a later task. No subsections yet.
+### Invocation and modes
+
+`/forge auto [<brief> | <slug>] [--no-ask] [--no-pr]`. A brief is free text; a slug names
+an existing artifact directory under the artifact root. Derive a new slug from the brief;
+when its directory exists, use the slug with a numeric suffix and say so in the report.
+
+- Attended run: an ask tool is available and `--no-ask` is absent. Unattended run:
+  `--no-ask`, no ask tool, or headless with prompts disabled. Decide this per invocation,
+  report it, never persist it. An unattended run asks zero questions; every ask in this
+  file is attended-only.
+- `--no-pr`: push nothing, open no PR, end with a report listing the local commits per
+  target repository. Persisted as `Flags:` (write once); a resume reuses the persisted
+  value and reports a differing flag as ignored.
+- No brief and no slug: attended, ask for the brief; unattended, stop before session
+  preflight naming the missing brief.
+- A plain `/forge <phase>` on an auto slug runs that phase with its interactive behaviour
+  on the same artifacts; it never loads this file.
+
+### Entry: resume and adoption
+
+Every entry runs session preflight, then (resume, adoption) the reconcile, then repository
+preflight in its resumed form, then jumps to its stage. A new brief runs session
+preflight, then Intake.
+
+`Auto stage` holds Intake, Recon, DraftSpec, Clarify, Specify, SpecAudit, Design, Plan,
+Execute, Accept, Deliver or `done`. Write it before each stage's first dispatch. A `fix`
+invocation persists as its parent stage plus the existing `Fix-base:` line.
+
+- Resume (`Mode: auto`): enter at `Auto stage`. Reuse every persisted proposal, verdict,
+  run start, branch and PR base; produce none again. At `done`, report the final status
+  and stop.
+- Adoption (`/forge auto <slug>` on a slug interactive Forge started, no `Mode`): write
+  `Mode: auto` and treat answers already recorded in its artifacts as the user's. Enter
+  at the stage after the slug's most advanced artifact: no spec, Intake; a spec,
+  SpecAudit; a design, Plan; a plan, Execute. It counts as a resumed run for the
+  dirty-tree and existing-PR checks. Rebuild the repository table:
+  - `Original branch` and `Run branch`: Handoff `Branch:`. When that is the default
+    branch, branch selection applies as for a new run instead of reuse.
+  - `PR base`: an open PR's base when one exists; otherwise the nearest local branch
+    whose tip is an ancestor of the slug's branch, has at least one commit not on the
+    remote default branch, and has the slug's branch at least one commit past it, ranked
+    by fewest commits between; otherwise the default branch. Record the choice as a T1
+    decision (`decide.md` → *Tiers*).
+  - `Run start`: the merge-base of the slug's branch with `PR base`. `Adopted at`: HEAD
+    at adoption.
+  - Test integrity (the protected list and verifier 1's baseline) and the Accept sweep
+    measure from `Adopted at`; the PR diff and the no-`.specs/`-in-commits rule measure
+    from `Run start`.
+- Reconcile follows `templates/state.md` → Handoff as narrowed by Guards → *Commit
+  guard* (Resume reconcile).
+
+### Session preflight
+
+Runs before Intake. A failure stops with nothing written. Checks:
+
+1. Arguments, as in Invocation and modes.
+2. The artifact root resolved once (`SKILL.md` → Artifact root). Inside another
+   repository's `.specs/`: stop.
+3. Capabilities: can the runtime ask, spawn subagents, set a model per subagent, drive a
+   browser. No ask tool makes the run unattended.
+4. Which Guards → *Harness snippet* items are active, inactive or undetectable.
+5. Environment variables matching credential patterns (examples: names ending `_TOKEN`,
+   `_SECRET`, `_PASSWORD` or `_KEY`; well-known provider key prefixes). Name the
+   variables in the report, never their values.
+6. Whether a sandbox is active, for the install rule in Guards → *Commands*.
+
+Print the report. Without subagents, every review, audit and verifier step runs inline
+under `review.md`'s degradation rule; each affected record says its review was not
+independent, and the delivery brief says so once.
+
+### Intake
+
+Stage Intake. Create the artifact directory and `state.md` with `Mode: auto`, `Flags:` and
+`Scratch:`. Scratch is an absolute path on durable storage (not system temp: it may hold
+the only copy of parked work), outside every repository working tree the run will edit;
+write it once. Record the brief verbatim as the Request of `spec.md`.
+
+A brief that requires an action whose effect leaves the branch is hard stop off-branch
+action (Guards → *Hard stops*): write the code, never run the action, list it in the
+report.
+
+### Recon
+
+Stage Recon. Part A by economy scouts with no interview (`specify.md` A2, A3), including
+the docs that describe the touched behaviour (Guards → *Docs rule*). Recon then:
+
+- Lists every target repository in the `Run` table with its evidence (a brief sentence
+  or `file:line`) in `Repo`, `Path`, `Evidence`. None identifiable: stop naming the
+  failed check, no commit. `Scratch:` inside a target repository: stop likewise.
+- Finds the brief already satisfied: stop with `file:line` evidence, no commit, no PR;
+  set `Auto stage` to `done`.
+
+### Clarify gate
+
+Stages DraftSpec, then Clarify. The drafting Product owner (`decide.md` → *Owners*)
+writes a draft Part B (cheap) and records two or more readings of any brief sentence.
+Create `./.specs/<slug>/decisions.md` from `templates/decisions.md`; its first entry is
+the gate record.
+
+1. Codebase first: what the code, git history or `.specs/` answers is not a question; it
+   is dropped with the `file:line`, commit or path that answers it.
+2. Candidates come from the drafting owners (the Architecture owner too at complex), the
+   completeness and scope lenses run on the draft, trusted standing rules that require
+   asking, a dependency named by the brief or recon and absent from the project's
+   manifests, and a required enlist-base ask.
+3. Rank, with rank 1 the highest priority: impact (different ACs or architecture) times
+   uncertainty (no default derivable), hard-to-reverse first. Take at most five the user
+   can answer (expected behaviour, concrete values, error semantics; never
+   implementation internals). Drop one whose recommended default is clearly right.
+4. A round is at most five questions, one or more consecutive ask calls, most
+   load-bearing first (split at the ask tool's per-call limit; batch as `grill-me` does).
+   Batching is the auto exception to one question at a time. Each question offers
+   concrete options with a recommended answer first, labelled. When the draft recorded
+   two readings, round 1 opens with them as options ("A: X, not Y, checked by Z"), never
+   a yes/no "correct?".
+5. After a round, apply the answers, redraft Part B and rescan. A candidate absent from
+   the record's table is new; one left unasked because the round was full is kept as a
+   default. Another round (three in total at most) runs only when a new candidate ranks
+   above every kept default, or, with no default kept, when any new candidate exists.
+   Otherwise close.
+6. Write the record: candidate table (rank, candidate, source, outcome `asked`,
+   `default` or `dropped: <evidence>`), the rank-1 note, rounds asked.
+
+Unattended: rank the same, ask nothing; every candidate is `default`, and an enlist base
+the trusted rules require is the default branch as a T3 decision (`decide.md` →
+*Tiers*). A new dependency, or a change a standing rule says to ask about, the user did
+not answer is T3.
+
+Close: list every unasked candidate and every owner choice-list entry under the spec's
+Assumptions & discretion as a flagged default; a spec-invalidating one is a ratification
+item. Zero questions asked: one report line saying so. After close, no question except a
+hard stop or the SpecAudit misreading question. Next: Specify, starting with Repository
+preflight.
 
 ## Guards
 

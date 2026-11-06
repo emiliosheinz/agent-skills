@@ -132,6 +132,8 @@ batches — `execute` runs it in the main agent. This is exactly what `execute` 
   the task it unblocks. A task with no anchor is scope creep; drop it or find its anchor.
 - Every `[P]` / seq call cites its parallelism evidence.
 - Each phase has a goal.
+- Under the conductor, every existing doc that recon found describing altered behaviour
+  has a task that updates it (`auto.md` → Guards → *Docs rule*).
 
 A failing item goes back to the task list, for **at most 3 cycles** (`SKILL.md` →
 *Retries*). Then stop and report the failing items; do not present the plan as validated.

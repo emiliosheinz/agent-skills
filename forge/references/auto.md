@@ -21,8 +21,8 @@ when its directory exists, use the slug with a numeric suffix and say so in the 
 - `--no-pr`: push nothing, open no PR, end with a report listing the local commits per
   target repository. Persisted as `Flags:` (write once); a resume reuses the persisted
   value and reports a differing flag as ignored.
-- No brief and no slug: attended, ask for the brief; unattended, stop before session
-  preflight naming the missing brief.
+- No brief and no slug: attended, ask for the brief; unattended, session
+  preflight stops naming the missing brief.
 - A plain `/forge <phase>` on an auto slug runs that phase with its interactive behaviour
   on the same artifacts; it never loads this file.
 
@@ -32,9 +32,9 @@ Every entry runs session preflight, then (resume, adoption) the reconcile, then 
 preflight in its resumed form, then jumps to its stage. A new brief runs session
 preflight, then Intake.
 
-`Auto stage` holds Intake, Recon, DraftSpec, Clarify, Specify, SpecAudit, Design, Plan,
-Execute, Accept, Deliver or `done`. Write it before each stage's first dispatch. A `fix`
-invocation persists as its parent stage plus the existing `Fix-base:` line.
+`Auto stage` takes the values `templates/state.md` lists. Write it before each stage's
+first dispatch. A `fix` invocation persists as its parent stage plus the existing
+`Fix-base:` line.
 
 - Resume (`Mode: auto`): enter at `Auto stage`. Reuse every persisted proposal, verdict,
   run start, branch and PR base; produce none again. At `done`, report the final status
@@ -43,7 +43,8 @@ invocation persists as its parent stage plus the existing `Fix-base:` line.
   `Mode: auto` and treat answers already recorded in its artifacts as the user's. Enter
   at the stage after the slug's most advanced artifact: no spec, Intake; a spec,
   SpecAudit; a design, Plan; a plan, Execute. It counts as a resumed run for the
-  dirty-tree and existing-PR checks. Rebuild the repository table:
+  dirty-tree and existing-PR checks. Rebuild the repository table, filling `Repo`, `Path`
+  and `Evidence` as Recon does, and create `decisions.md` from the template when absent:
   - `Original branch` and `Run branch`: Handoff `Branch:`. When that is the default
     branch, branch selection applies as for a new run instead of reuse.
   - `PR base`: an open PR's base when one exists; otherwise the nearest local branch
@@ -52,7 +53,7 @@ invocation persists as its parent stage plus the existing `Fix-base:` line.
     by fewest commits between; otherwise the default branch. Record the choice as a T1
     decision (`decide.md` → *Tiers*).
   - `Run start`: the merge-base of the slug's branch with `PR base`. `Adopted at`: HEAD
-    at adoption.
+    at adoption; `Last commit` starts at `Adopted at`.
   - Test integrity (the protected list and verifier 1's baseline) and the Accept sweep
     measure from `Adopted at`; the PR diff and the no-`.specs/`-in-commits rule measure
     from `Run start`.
@@ -74,9 +75,8 @@ Runs before Intake. A failure stops with nothing written. Checks:
    variables in the report, never their values.
 6. Whether a sandbox is active, for the install rule in Guards → *Commands*.
 
-Print the report. Without subagents, every review, audit and verifier step runs inline
-under `review.md`'s degradation rule; each affected record says its review was not
-independent, and the delivery brief says so once.
+Print the report. Without subagents, `decide.md` → *Owners* (Without subagents) applies,
+and the delivery brief says so once.
 
 ### Intake
 
@@ -86,8 +86,7 @@ the only copy of parked work), outside every repository working tree the run wil
 write it once. Record the brief verbatim as the Request of `spec.md`.
 
 A brief that requires an action whose effect leaves the branch is hard stop off-branch
-action (Guards → *Hard stops*): write the code, never run the action, list it in the
-report.
+action (Guards → *Hard stops*); list the action in the report.
 
 ### Recon
 
@@ -129,18 +128,15 @@ the gate record.
    above every kept default, or, with no default kept, when any new candidate exists.
    Otherwise close.
 6. Write the record: candidate table (rank, candidate, source, outcome `asked`,
-   `default` or `dropped: <evidence>`), the rank-1 note, rounds asked.
+   `default` or `dropped: <evidence>`), rounds asked.
 
-Unattended: rank the same, ask nothing; every candidate is `default`, and an enlist base
-the trusted rules require is the default branch as a T3 decision (`decide.md` →
-*Tiers*). A new dependency, or a change a standing rule says to ask about, the user did
-not answer is T3.
+Unattended: rank the same, ask nothing; every candidate is `default`, tiered per
+`decide.md` → *Tiers*.
 
 Close: list every unasked candidate and every owner choice-list entry under the spec's
 Assumptions & discretion as a flagged default; a spec-invalidating one is a ratification
-item. Zero questions asked: one report line saying so. After close, no question except a
-hard stop or the SpecAudit misreading question. Next: Specify, starting with Repository
-preflight.
+item. Zero questions asked: one report line saying so. After close, ask only as Guards →
+*Permission contract* allows. Next: Specify, starting with Repository preflight.
 
 ### Repository preflight
 
@@ -150,7 +146,8 @@ skips it: the repository rows are write-once.
 1. Enlist. A repository not yet available for edits is enlisted the way the trusted
    instruction files describe (Forge names no tool); where they describe none and the path
    is not editable, stop naming the repository. A trusted rule requiring the base to be
-   asked first was a gate candidate; unattended, enlist off the default branch.
+   asked first was a gate candidate; unattended, the enlist base follows its
+   `decide.md` → *Tiers* record.
 2. Detached HEAD: stop naming the check.
 3. `.specs/` tracked in the repository: stop. Untracked and not already ignored: add it
    to the repository-local exclude file, modifying no tracked file. This precedes the
@@ -158,19 +155,26 @@ skips it: the repository rows are write-once.
 4. Dirty tree, the artifact root excluded. New run: stop before any implementer and list
    the paths. Resume or adoption: continue when every changed path belongs to the
    in-progress task's `files`, else stop and list the others.
-5. Branch selection (below). Write `Original branch`, `Run branch` and `PR base` to the
-   `Run` table before the branch is created, then create it.
+5. Branch selection (below), first entry only. Write `Original branch`, `Run branch` and
+   `PR base` to the `Run` table before the branch is created, then create it.
 6. Host and remote, skipped under `--no-pr`: the PR host CLI authenticated and the remote
    reachable, else stop naming the check.
-7. Existing PR on the run branch, skipped under `--no-pr`. An open PR with an auto slug
-   is the resume path: Deliver pushes new commits and re-renders only the status-and-links
-   block. Otherwise, or when the PR is closed or merged, stop.
+7. Existing PR on the run branch, skipped under `--no-pr`. An open PR with an auto slug is
+   the resume path: Deliver, through `pr`, pushes new commits, and the conductor
+   re-renders only the status-and-links block. Otherwise, or when the PR is closed or
+   merged, stop.
 8. Protected list: write the repository's tracked test files, their snapshots and fixture
-   files at `Run start` (at `Adopted at` on an adopted run), matching the project's test
-   locations and naming, to `Scratch:/<repo>.protected`, one path per line. Dependency
-   manifests and runner configuration are not listed.
-9. Write `Run start` (HEAD now; never recomputed) and set `Last commit` to it (to
-   `Adopted at` on an adopted run).
+   files as of the point Entry gives for test integrity, matching the project's test
+   locations and naming, to `Scratch:/<repo>.protected`, one path per line, when that
+   file is absent. Dependency manifests and runner configuration are not listed.
+9. First entry of a new run only: write `Run start` (HEAD now; never recomputed) and
+   set `Last commit` to it. An adopted run's `Run start`, `Adopted at` and `Last commit`
+   were written by Entry.
+
+Resumed form (resume, adoption): steps 5 and 9 write nothing. Write-once fields
+(`Run start`, `Adopted at`, `Run branch`, `PR base`, `Original branch`) are never
+rewritten and `Last commit` is not reset. Check that the branch is `Run branch`, then
+run the Commit guard's resume reconcile (Guards → *Commit guard*).
 
 A failure on a new run lands as a report of the spec path naming the failed check; no
 commit exists. On a resume or adoption with commits, a branch other than `Run branch` or
@@ -186,8 +190,8 @@ naming both; any other failure lands the plane (Guards → *Hard stops*).
 | Another branch, no commits past the default branch, no open PR | Work on it; `Run branch` is that branch; `PR base` is the default branch |
 | Another branch, commits past the default branch | Create a new branch on top of it; `PR base` is that branch |
 | That stacked-on branch diverged from its remote counterpart | Stop at preflight naming the branch |
-| That stacked-on branch absent from its remote, or behind its local copy by a fast-forward | Proceed; Deliver pushes it with no commits added and the PR body says so |
-| Another branch with an open PR | The existing-PR step decides |
+| That stacked-on branch absent from its remote, or behind its local copy by a fast-forward | Proceed; `pr`, run from Deliver, pushes it with no commits added and the PR body says so |
+| Another branch, no commits past the default branch, open PR | The existing-PR step decides |
 
 - A created name that exists locally or on the remote takes a numeric suffix, unless it
   is `Run branch` with its tip at `Run start`: adopt that branch, never suffix it.
@@ -198,12 +202,12 @@ naming both; any other failure lands the plane (Guards → *Hard stops*).
 
 ### Driving the chain
 
-After the clarify gate and SpecAudit, run every phase the recorded size requires and
-every plan phase, with no verb from the user: quick goes to Execute; standard and complex
-go to Design, or to Plan with the skip logged, then Plan, then Execute for each plan
-phase in order, then Accept. Write `Auto stage` before each stage's first dispatch. Each
-playbook runs under the conductor: every ask, confirm or escalate becomes a decision per
-`decide.md`, and every commit goes through Guards → *Commit guard*.
+After the clarify gate and SpecAudit, run every phase the recorded size requires and every
+plan phase, with no verb from the user: quick goes to Execute; standard and complex go to
+Design, or to Plan with the skip logged, then Plan, then Execute for each plan phase in
+order; every size then goes to Accept. Each playbook runs under the conductor: every ask,
+confirm or escalate becomes a decision per `decide.md`, and every commit goes through
+Guards → *Commit guard*.
 
 Promotion back-edges: a size promoted at Plan or Execute re-enters the first phase the
 new size adds (Design when a contract emerged, Plan when the change sprawled), then runs
@@ -226,12 +230,13 @@ requires, as in Driving the chain.
 
 Stage Accept, after the last plan phase. In order:
 
-1. Verifiers 1 and 2 over the run range in each target repository (from `Run start`;
-   test integrity from `Adopted at` on an adopted run).
-2. Diff sweep: every T2-observable change in the range maps to a decision record, and an
-   unmapped one gets a T2 review (`decide.md` → *Decision discovery*). A change that
-   fails review is reverted through `fix` (`fix.md`), which counts toward `fix n/3`. With
-   the cap spent it stays on the branch as a ratification item and the status is
+1. Verifiers 1 and 2 over the run range in each target repository, measured as Entry
+   states.
+2. Diff sweep: every T2-observable change in the range (measured as Entry states) maps to
+   a decision record, and an unmapped one gets a T2 review (`decide.md` → *Decision
+   discovery*). A change that fails review is reverted through `fix` (`fix.md`), which
+   counts toward `fix n/3`. With the cap spent it stays on the branch as a ratification
+   item and the status is
    `partial`.
 3. Supersession: a record that contradicts an active one is carried out per `decide.md`
    → *Supersession and re-open*. Rebind every pending task bound by the old record;
@@ -241,8 +246,7 @@ Stage Accept, after the last plan phase. In order:
    app or CLI where possible, never the spec. Each finding cites a brief sentence; the
    judging Product owner rules under the evidence rule. An upheld Major finding
    re-enters `fix` once (`accept re-entry n/1`), then is disclosed.
-5. Added-file check: a standalone doc the brief did not ask for (Guards → *Docs rule*)
-   is removed by a plain task commit through the Commit guard, outside the `fix` cap.
+5. The added-file check of Guards → *Docs rule*, judged by the judging Product owner.
 
 ### Recovery and caps
 
@@ -259,8 +263,10 @@ A task gate or verifier stage still red after 3 cycles:
 
 Caps, kept in `Counters:` and never repeated once spent: `fix n/3` per run from any
 trigger; `diagnosed: <task IDs>`, one diagnose per task; `accept re-entry n/1`. Recovery
-changes the approach, never reruns the same thing, and never weakens a check to finish. A
-task needing a protected file changed is `blocked` per Guards → *Permission contract*.
+changes the approach, never reruns the same thing, and never weakens a check to finish. An
+implementer's `escalation: SPEC-GAP` naming a protected test gets a T2 review (`decide.md`
+→ *Dispositions*, H17 row): a rejected change lets the task continue without it; an
+approved one leaves the task `blocked`, the proposed change a ratification item.
 
 ### Park
 
@@ -276,7 +282,7 @@ One status per run, the same on every PR:
 - `stopped: <hard stop name>` when `Hard stop:` is not `none`;
 - else `blocked` when no plan task reached done;
 - else `partial` when a task is blocked, unverified or unstarted, a sweep item was left
-  in place, or delivery failed in any target repository;
+  in place, or delivery failed or was withheld in any target repository;
 - else no status line.
 
 `unverified` counts as not done. An attended hard stop the user resolved sets no stop.
@@ -292,18 +298,16 @@ each step on resume when state shows it done.
 4. Compute the status. Write `Scratch:/<repo>-brief.md` per repository, also under
    `--no-pr` and local-only landings so a later plain `/pr` has it:
    - the status;
-   - ratification items: every T3 decision, every arbitration a Blocker objection lost,
-     every spec-invalidating assumption, one-way-door gap and deleted AC, every sweep
-     item left in place, every approved protected-test change left unmade, and an
-     unattended SpecAudit misreading (first in Sensitive parts); with more than five,
-     the line after the status says a decision review is needed before code review;
+   - ratification items per `decide.md` → *Tiers* (Ratification items), plus an
+     unattended SpecAudit misreading, first in Sensitive parts; with more than five, the
+     line after the status says a decision review is needed before code review;
    - sensitive disclosures: unresolved lens findings and unconfirmed facts, one-way-door
      gaps first, design-gap reports;
    - prose disclosures: stacked parent pushed, docs updated, reviews not independent,
      arbiter on the same model, test protection prose-only, installs run with lifecycle
      scripts off or skipped, red baseline tests, open audit findings, reported findings,
-     UX captures or "no servable page", a rule-versus-convention conflict, an RFC or
-     ADR recommendation;
+     Finish reports, UX captures or "no servable page", a rule-versus-convention conflict,
+     an RFC or ADR recommendation;
    - a decision log of one plain line per T1-or-higher record.
    No planning identifiers anywhere.
 5. Pre-pass over every repository before any push: the Commit guard over the run range;
@@ -311,22 +315,22 @@ each step on resume when state shows it done.
    ancestry rechecked; the body rendered from the brief and scanned for credentials and
    identifiers (remove an identifier). A credential is hard stop credential and a moved
    HEAD is hard stop unexpected git state; both land local only. A repository failing
-   any other check is `withheld` and not delivered.
+   any other check is recorded `withheld` in `Delivery` and not delivered.
 6. Under `--no-pr` or a local-only stop: report the commits per repository. For each
    repository that already has a `PR`, re-render its block with the stop status (an edit,
    no push). Go to step 9.
-7. Run `pr` per repository not yet `opened`, passing the slug so it asks nothing. Pushes
-   happen only inside `pr`, after step 5 cleared every repository. Record its per-act
-   result in `PR` and `Delivery` (`opened`, `failed: <act>` or `withheld`); a failure
-   marks that repository and continues with the rest. For a repository with no commit,
-   check out `Original branch` and delete the created branch, only when its tip is `Run
-   start`.
+7. Run `pr` per repository with a commit, not yet `opened` and not `withheld`, passing
+   the slug so it asks nothing. Pushes happen only inside `pr`, after step 5 cleared
+   every repository. Record its per-act result in `PR` and `Delivery` (`opened` or
+   `failed: <act>`); a failure marks that repository and continues with the rest. For a
+   repository with no commit, check out `Original branch` and delete the created branch,
+   only when its tip is `Run start`.
 8. Compute the final status. The conductor, not `pr`, re-renders the delimited
    status-and-links block of every PR in the `PR` column, a single PR and a resume
    included; with PRs in more than one repository this also links each to the others.
 9. Report: the status, PR URLs, each Guards → *Harness snippet* guarantee not enforced
    labelled prose-only, `.patch` paths, failures with retry commands. With no commit in
-   any repository, report the spec and design paths.
+   any repository, report as Guards → *Hard stops* (Land the plane) says.
 
 ## Guards
 
@@ -416,12 +420,15 @@ Invoking `/forge auto` is the explicit request for exactly this.
 
 Allowed: read the repository; edit the working tree within the plan's `files` sets and the
 docs tasks; run the discovered test, lint, type-check, format and dev-server commands (see
-Commands); commit locally through the Commit guard; push the run's own branch and, only
-when stacked on a branch absent from its remote or whose remote is behind it by a
-fast-forward, that parent with no commits added by the run; open one draft PR per target
-repository; edit the delimited status-and-links block of a PR the run opened. Pushes
-happen only inside `pr`, after the Deliver pre-pass cleared every repository. `--no-pr`
-pushes nothing.
+Commands); commit locally through the Commit guard; enlist a target repository the way the
+trusted instruction files describe; create and check out the run's branch; add the
+artifact root to the repository-local exclude file; at exit, check out the original branch
+and safe-delete a branch the run created whose tip is still run start; push the run's own
+branch and, only when stacked on a branch absent from its remote or whose remote is behind
+it by a fast-forward, that parent with no commits added by the run; open one draft PR per
+target repository; edit the delimited status-and-links block of a PR the run opened.
+Pushes happen only inside `pr`, after the Deliver pre-pass cleared every repository.
+`--no-pr` pushes nothing.
 
 Never: push any other branch, push to a default or deploy branch, force-push; merge,
 approve or mark ready; deploy; run migrations or seeds against non-ephemeral data; send

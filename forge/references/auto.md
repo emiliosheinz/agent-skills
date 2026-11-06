@@ -72,8 +72,8 @@ Runs before Intake. A failure stops with nothing written. Checks:
    browser. No ask tool makes the run unattended.
 4. Which Guards → *Harness snippet* items are active, inactive or undetectable.
 5. Environment variables matching credential patterns (examples: names ending `_TOKEN`,
-   `_SECRET`, `_PASSWORD` or `_KEY`; well-known provider key prefixes). Name the
-   variables in the report, never their values.
+   `_SECRET`, `_PASSWORD` or `_KEY`; well-known provider key prefixes). Name the patterns
+   checked and the matching variables in the report, never their values.
 6. Whether a sandbox is active, for the install rule in Guards → *Commands*.
 
 Print the report. Without subagents, `decide.md` → *Owners* (Without subagents) applies,
@@ -116,7 +116,9 @@ the gate record.
 3. Rank, with rank 1 the highest priority: impact (different ACs or architecture) times
    uncertainty (no default derivable), hard-to-reverse first. Take at most five the user
    can answer (expected behaviour, concrete values, error semantics; never
-   implementation internals). Drop one whose recommended default is clearly right.
+   implementation internals). Drop one whose recommended default is clearly right, except
+   a dependency, standing-rule or enlist-base candidate: those leave a round only at the
+   five-question cap.
 4. A round is at most five questions, one or more consecutive ask calls, most
    load-bearing first (split at the ask tool's per-call limit; batch as `grill-me` does).
    Batching is the auto exception to one question at a time. Each question offers
@@ -158,7 +160,8 @@ skips it: the repository rows are write-once.
    in-progress task's `files`, else stop and list the others.
 5. Branch selection (below), on first entry only, or on an adoption whose Handoff branch
    is the default branch. Write `Original branch`, `Run branch` and
-   `PR base` to the `Run` table before the branch is created, then create it.
+   `PR base` to the `Run` table before the branch is created, then create and check it
+   out.
 6. Host and remote, skipped under `--no-pr`: the PR host CLI authenticated and the remote
    reachable, else stop naming the check.
 7. Existing PR on the run branch, skipped under `--no-pr`. An open PR with an auto slug is
@@ -310,7 +313,8 @@ each step on resume when state shows it done.
      scripts off or skipped, red baseline tests, open audit findings, reported findings,
      Finish reports, UX captures or "no servable page", a rule-versus-convention conflict,
      an RFC or ADR recommendation;
-   - a decision log of one plain line per T1-or-higher record.
+   - a decision log of one plain line per T1-or-higher record, with no verification
+     results.
    No planning identifiers anywhere.
 5. Pre-pass over every repository before any push: the Commit guard over the run range;
    credential and `.specs/` scans over the stacked parent's unpushed range; the parent's
@@ -324,13 +328,13 @@ each step on resume when state shows it done.
 7. Run `pr` per repository with a commit, not yet `opened` and not `withheld`, passing
    the slug so it asks nothing. Pushes happen only inside `pr`, after step 5 cleared
    every repository. Record its per-act result in `PR` and `Delivery` (`opened` or
-   `failed: <act>`); a failure marks that repository and continues with the rest. For a
-   repository with no commit, check out `Original branch` and delete the created branch,
-   only when its tip is `Run start`.
+   `failed: <act>`); a failure marks that repository and continues with the rest.
 8. Compute the final status. The conductor, not `pr`, re-renders the delimited
    status-and-links block of every PR in the `PR` column, a single PR and a resume
    included; with PRs in more than one repository this also links each to the others.
-9. Report: the status, PR URLs, each Guards → *Harness snippet* guarantee not enforced
+9. For each repository with no commit since run start, on every path into this step,
+   check out `Original branch` and delete the branch the run created, only when its tip
+   is `Run start`. Report: the status, PR URLs, each Guards → *Harness snippet* guarantee not enforced
    labelled prose-only, `.patch` paths, failures with retry commands. With no commit in
    any repository, report as Guards → *Hard stops* (Land the plane) says.
 

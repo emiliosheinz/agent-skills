@@ -82,7 +82,9 @@ design, so it is never styled like the app and never judged with the variants.
 **Check before showing.** Flip through every variant on a fresh load: it renders, its
 controls respond, and the console logs no error. Capture each at the look's widths to
 `./.specs/<slug>/evidence/prototype/`. The step runs before `spec.md` exists, so the
-pick's handoff lives in `state.md`.
+pick's handoff lives in `state.md`. With no browser tool, show the variants unchecked and
+say so. When no page can be served at all, skip the step, tell the user why, take the
+next reference in the order above, and record the skip under Assumptions.
 
 **Ask for the pick.** Give the URL and a table (variant, axis, when it wins, what it
 costs), then ask with a recommended default reasoned from the product's personality and
@@ -90,7 +92,8 @@ how often the screen is used, never from looks alone. The user may ask for anoth
 that explores around one variant.
 
 **After the pick.** Save the winner's captures and a copy of its source under
-`./.specs/<slug>/design/` as the reference, delete the throwaway page and anything
+`./.specs/<slug>/design/` as the reference, the source with a `.txt` suffix added so no
+type checker, linter or test glob picks it up, delete the throwaway page and anything
 generated from it (route types, caches) before Baseline, and write the ACs against the
 winner. With no visual system yet, the winner also becomes the app's direction, recorded
 in Decisions: its tokens become the app's, and the UI rows cite the saved winner.
@@ -105,8 +108,10 @@ reviewer can tell a snap from a miss.
 
 ## Plan
 
-A task in a screen phase that touches what the screen shows names its screen's reference
-in `reuses`.
+A task in a screen phase that touches what the screen shows gets a `reference` field: the
+reference row from `spec.md`'s `Conventions observed` for each screen it touches. It sits
+beside `reuses`, which still names the code precedent the task mirrors; the two often
+differ. A screen task with a blank `reference` fails the plan gate.
 
 ## Execute: the UI brief
 
@@ -114,8 +119,8 @@ A task in a screen phase that touches what the screen shows carries the UI brief
 implementer prompt, at the tier `SKILL.md` → *Model & effort selection* sets for it. The
 brief holds:
 
-- the reference for each screen the task touches, with the line that it is a consistency
-  anchor, not a template;
+- the task's `reference` field, with the line that it is a consistency anchor, not a
+  template;
 - the three UI rows;
 - the accessibility rules below;
 - this sentence: "The reference's states (empty, loading, error, disabled, pending) are
@@ -248,7 +253,7 @@ gap row, and spends no fix cycle.
 
 On a screen phase, Finish gives at most five manual checks a person can run in about two
 minutes, one line each: route, width, state, what to check, capture path. Pick first what
-the look could not see, then its Ugly and Fragile findings, then the visible ACs. Each
-check is one `reported` row in `## Open findings`; a check that repeats a finding or the
-`gap-open` row cites that row instead of adding one. Handoff places it per
+the look could not see, then its Ugly and Fragile findings, then the visible ACs. A
+check that repeats a finding or the `gap-open` row cites that row; the list adds no rows
+to `## Open findings`. Handoff places it per
 `templates/state.md`; when the full look did not run, it also comes first in the report.

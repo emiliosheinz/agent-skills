@@ -23,6 +23,8 @@ What is being built and the execution approach. Links: spec.md, design.md.
 - **tests:** <co-located tests; unit for logic, e2e for routes>
 - **reuses:** <a path, a path:line, or the literal `no-precedent`; blank fails the plan
   gate>
+- **reference:** <Surface: ui screen tasks only (references/ui.md → Plan); the screen's
+  reference from spec.md's Conventions observed>
 - **gate:** `<deterministic command, project's real runner, clean iff the task succeeded>`
 - **done-when:**
   - [ ] <pass/fail checkpoint>

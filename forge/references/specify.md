@@ -112,6 +112,8 @@ Rules:
 - **Regenerated whole on a re-run**, so re-running a phase is idempotent.
 - **Record what is, decide nothing.** A convention you think wrong is still recorded; the
   argument belongs in `design.md`'s verdict.
+- **On a UI change** (`Surface: ui`), also name the reference and the three UI rows per
+  `references/ui.md`.
 
 **Move 2 — Trace the impact (standard+).** Trace outward from the code the change would
 touch, recording where the problem area sits and what already depends on it — never how
@@ -209,6 +211,8 @@ Before Part B, verify:
     flag any that would invalidate the spec if wrong, so design/plan surface them before
     building. A decision only the user can make is not an assumption: ask it.
 - The user confirms the captured understanding is accurate.
+- If the code already does what was asked, say so with `file:line` and stop. Ask before
+  building anything else.
 
 If the user only wanted shared understanding, **stop here.** Write the Part A sections of
 `spec.md`, record `Next: context-only` in `state.md`'s Handoff, and recommend resuming
@@ -235,6 +239,9 @@ scope, in their words. Then cover the following, asking only for what is genuine
   that would invalidate the spec if proven false. A user decision gets asked, never
   defaulted. A question the user declines stays flagged as user-declined.
 - **Edge conditions.** Empty / error / first-run / power-user behavior.
+
+On a UI change with no provided design, check whether the prototype step in
+`references/ui.md` applies, before writing the ACs.
 
 ### Requirements and acceptance criteria
 

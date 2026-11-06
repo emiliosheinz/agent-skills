@@ -4,11 +4,14 @@
 |-------|-------|
 | Size | quick / standard / complex — <one-line justification> |
 | Door | one-way / two-way door — <the triggers that fired, or "none"> |
+| Surface | ui / none — <the trigger that fired, or "none"> |
 | Created | YYYY-MM-DD |
 
 <!-- Door: set by the first phase to run, per references/specify.md. Overrides the size
      gate for spec reviewer 3, design lens 4 and verifiers 3, 4 and 5. Never blank. Like Size
-     it moves one way only; a downgrade needs the user's confirmation. -->
+     it moves one way only; a downgrade needs the user's confirmation.
+     Surface: set by the first phase to run, per SKILL.md step 4. Never blank; moves only
+     from none to ui; a downgrade needs the user's confirmation. -->
 
 <!-- state.md is the single source of truth. Re-read at the start of every phase.
      Write SURGICALLY (see SKILL.md Universal rules for the section write-mode table).
@@ -36,7 +39,8 @@ Written by `execute` before the change's first task. Verifiers 1 and 2 use these
 
 ## Tasks
 Populated by `plan`, updated by `execute`. Task details live in `plan.md`. Task status:
-pending / in-progress / done / blocked. Mark a finished phase `**completed**` below its
+pending / in-progress / done / blocked / unverified (committed; its gate could not run
+here, and a `gap-open` row says why). Mark a finished phase `**completed**` below its
 heading. `execute` writes `Base:` when a phase starts and `Verifying:` while its verifiers
 run; `fix` writes `Fix-base:` for verifier 3. A quick change has one implicit phase.
 
@@ -72,11 +76,13 @@ AC→code proof on green.
 | PREFIX-01 | src/checkout/refund.ts:42 | refund amount == order.total | yes | mutant: drop-field caught |
 
 ## Handoff
-Overwrite-in-place. The recommended next verb stays first; the rest records where a
-phase stopped. Treat it as a hypothesis on resume: reconcile it with git
-and the task status above, matching commits to tasks by evidence sha and `files`, because
-commit messages carry no task IDs. Gaps belong in `## Open findings`, never here.
+Overwrite-in-place. The recommended next verb stays first, except that a screen phase's
+look list leads; the rest records where a phase stopped. Treat it as a hypothesis on
+resume: reconcile it with git and the task status above, matching commits to tasks by
+evidence sha and `files`, because commit messages carry no task IDs. Gaps belong in
+`## Open findings`, never here.
 
+- Look list: <screen phase only; at most five checks, per references/ui.md>
 - Next: <verb> — <what it should do>
 - In-progress: <file:line, or none>
 - Completed task IDs: <…>

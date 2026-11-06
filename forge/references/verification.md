@@ -6,7 +6,9 @@ agent grading its own work tends to pass it, so the check must come from outside
 author.
 
 A plan phase's gate **is** its verifiers. `SKILL.md` → *Sizing* says which run for a given
-size and door. Numbers match run order.
+size and door. Numbers match run order. On a screen phase (`SKILL.md` → *Sizing*),
+**the look** (`references/ui.md`) runs after verifier 3 and before 4, at every size. It is
+a named stage and carries no number.
 
 ## Run order and progression
 
@@ -49,7 +51,9 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
 
    **N/A vs gap.** A tool the project genuinely has no analogue for (e.g. no type
    checker in a dynamically-typed repo) is `N/A` — not a failure. A tool that *is*
-   configured but wasn't run is a gap: record it, never report it green.
+   configured but wasn't run is a gap: record it, never report it green. A sub-check that
+   `## Baseline` records as red or unable to run here is not this phase's failure: report
+   it with that reason, as the same gap.
 
    **Where the commands come from.** Execute discovers them once per change, from package
    scripts, config files, pre-commit hooks, or CI — never invented — and records them in
@@ -76,10 +80,11 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
    verdict, and record a gap.
 
    **Conventions-only mode** (`quick` on a two-way door). Compare the diff against the
-   `Conventions observed` records and nothing else. It **reads no design document**,
-   **loads no structural catalogue**, and **dispatches no subagent**: it runs inline.
-   Those three exclusions keep `quick` cheap. Report each category as conformant or
-   deviating, with the deviating `file:line`. A section present with nothing observed
+   `Conventions observed` records, with the UI rows on a screen phase, and nothing else. It
+   **reads no design document**, **loads no structural catalogue**, and **dispatches no
+   subagent**: it runs inline. Those three exclusions keep `quick` cheap; the look, on a
+   screen phase, still runs as a subagent. Report each category as conformant or deviating,
+   with the deviating `file:line`. A section present with nothing observed
    passes and says so; a none-observed marker that does not name where it looked is a
    finding. This step is part of quick's gate: a deviation feeds the fix loop.
 
@@ -95,6 +100,16 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
    must check the AC's actual outcome value, not "something ran" / "no error thrown"
    (unless not-throwing *is* the criterion). The row must also show the test ran: its name
    in the gate's output, or a pass line the gate matched.
+
+   An AC whose expected outcome is visible may instead be evidenced by a `look` row: the
+   capture path and the observed outcome. Lacking an assertion, it is then neither
+   uncovered nor a SPEC-GAP. On a screen phase, verifier 4's prompt carries the look's
+   evidence rows. A row tagged `degraded` or `inline` scores covered, keeping its tag; it
+   is degraded evidence, not a skipped check. It sits beside the look's `gap-open` row for
+   what the look could not see, when the ladder wrote one. A visible AC that row names is
+   scored `gap-open`, not uncovered or SPEC-GAP. A visible AC a look row evidences needs
+   no test, and a gesture the toolchain cannot test is left to the look and recorded
+   `gap-open`.
 
    **Field-level rule.** When an AC outcome is a multi-field event, returned object,
    or persisted record, require a value/state assertion at file:line for *each* named
@@ -181,14 +196,12 @@ blocking gap: ask the spec, rather than mutating everything or nothing.
 
 ## Human checks
 
-**Optional UAT** *(conditional)* — for **user-facing** ACs only (visual/UX/end-to-end
-correctness the five automated verifiers cannot see), offer a manual acceptance check:
-present a short checklist via `AskUserQuestion` when available, plain checklist otherwise,
-and record the result against the AC IDs. Backend/infra ACs rely on the automated
-verifiers — keep the default pipeline automated.
+**On a screen phase**, the look and its look list (`references/ui.md`) replace a manual
+check. Backend and infrastructure ACs rely on the automated verifiers.
 
-**Agent walk.** If the agent can start the app, it walks the user-facing paths before
-Finish and labels the result an author check, never an independent one. A break with no AC
+**Agent walk.** For other user-facing changes, such as CLI output, if the agent can start
+the app it walks the user-facing paths before Finish and labels the result an author check,
+never an independent one. A break with no AC
 behind it is reported with a recommended `/forge fix`.
 
 ## Gaps
@@ -204,9 +217,9 @@ Decisions and change the row to `gap-open`.
 | **DESIGN-GAP** | `gap-open` | A recorded decision for the user. It does not block the phase unless the user acts, because the code works and the improvement needs new scope. Spends no cycle. |
 | A one-way door with no marked AC | `gap-blocking` | Stop until the spec marks one. |
 | Verifier 5 cannot run on a one-way door | `gap-blocking` | Stop until the user decides. |
-| A configured type check cannot run | `gap-blocking` | Stop until the user decides. |
+| A configured type check cannot run | `gap-blocking` | Stop until the user decides. A run that cannot ask continues, logs the flagged assumption (`SKILL.md` honesty rule 5) and turns the row `gap-open`, except on a one-way door, where it stops. |
 | Verifier 5 skipped on a two-way door, with no test seam | `gap-open` | Recorded, plus a lesson if non-obvious. |
-| Any other check skipped or degraded | `gap-open` | Recorded. Never reported as passed. |
+| Any other check skipped or degraded (an inline look excepted, see below) | `gap-open` | Recorded. Never reported as passed. |
 
 ## Graceful degradation (never fake a gate)
 
@@ -222,6 +235,10 @@ Decisions and change the row to `gap-open`.
   from disk, with no edits during the review. Report the tree comparison as `inoperative`,
   because one context gives a tree delta no boundary to straddle. Record those verifiers as
   run **inline**, never as independent.
+- **No browser tool:** a look subagent without one returns `SKIPPED (no browser tool)`
+  unrun. When the orchestrator has one, it runs the look inline (`references/ui.md` →
+  *Execute: the look*). An inline look may PASS; its rows are tagged `inline` and count as
+  degraded evidence. With no browser anywhere, the look's ladder applies.
 
 ## Verdict format
 

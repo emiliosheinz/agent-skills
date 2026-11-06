@@ -27,9 +27,15 @@ prompt that uses these terms names this file.
 | **seam** | a place a dependency can be substituted without editing the code that uses it | `structural-standards.md` → check 4 |
 | **locality** | same module, same files; the axis `plan` groups implementer batches along and `execute` batches by | `plan.md` → *Execution plan* |
 | **depth** | how far a phase goes for a given size, as opposed to which phases run at all | `SKILL.md` → *Sizing* |
-| **ratchet** | a recorded judgement that may tighten freely but loosens only with the user's confirmation — size and door | `SKILL.md` → *Sizing* |
+| **ratchet** | a recorded judgement that may tighten freely but loosens only with the user's confirmation — size, door and surface | `SKILL.md` → *Sizing* |
+| **surface** | whether a change alters a rendered screen, `ui` or `none`, in `state.md`'s header. Unrelated to a check's *surface facts* and to the sweep's *primary surface* | `SKILL.md` → *Every phase starts by*, step 4 |
+| **reference** | what a UI change takes the app's components, tokens and feedback patterns from: a provided design, a picked prototype or an existing screen. An anchor, not a template | `ui.md` → *Specify: the reference* |
+| **UI brief** | what the implementer of a screen task carries: the reference, the UI rows, the accessibility rules and the states statement | `ui.md` → *Execute: the UI brief* |
 | **mechanical change** | the same edit repeated, such as a rename; it stays standard at any reach | `SKILL.md` → *Sizing* |
-| **phase gate** | a plan phase's selected verifiers. There is no separate gate step | `SKILL.md` → *Sizing*; `verification.md` |
+| **phase gate** | a plan phase's selected verifiers, plus the look on a screen phase. There is no separate gate step | `SKILL.md` → *Sizing*; `verification.md` |
+| **the look** | an unnumbered stage between verifiers 3 and 4 on a screen phase: a fresh subagent judges the running app against the reference and grades findings Broken, Ugly or Fragile | `ui.md` → *Execute: the look*; placement in `verification.md` |
+| **screen phase** | a plan phase whose diff renders, styles or lays out a screen, or adds or changes an item, message or label a screen displays; it gets the UI rows in verifier 3, the look and the look list | `SKILL.md` → *Sizing* |
+| **look list** | at most five manual checks a person can run in about two minutes, given at Finish on a screen phase | `ui.md` → *Finish: the look list* |
 | **cycle** | one fix plus one re-run of the check that failed; every retry against a check stops at 3 | `SKILL.md` → *Retries* |
 | **stage** | one step of the verifier order with its own budget of 3 cycles; verifiers 1 and 2 together are one stage | `verification.md` → *Run order and progression* |
 | **baseline** | the discovered test and static-analysis commands and their first result, recorded once per change | `execute.md` → *Baseline* |
@@ -41,6 +47,7 @@ prompt that uses these terms names this file.
 | **`gap-blocking` / `gap-open`** | a gap the phase cannot pass with, and one recorded without stopping it | `verification.md` → *Gaps* |
 | **SPEC-GAP** | a verdict that the spec, not the implementation, is what is wrong; resolves through `/forge fix` | `verification.md` → *Gaps* |
 | **DESIGN-GAP** | a finding that cannot be applied without new scope; a recorded decision for the user, spending no fix cycle | `verification.md` → *Gaps*; `execute.md` → *Fix the delta* |
+| **`unverified`** | a task committed although its gate could not run in this environment; a `gap-open` row says why, and it blocks nothing | `execute.md` → *Per-task loop* |
 | **`reported`** | a finding no phase will act on, which goes to the user at Finish | `execute.md` → *Fix the delta* |
 | **delta** | the ranked list a review or verifier returns, folded back into what it reviewed | `review.md` → *Resolve findings*; `execute.md` → *Fix the delta* |
 | **scope vs shape** | scope governs *whether* something is built, shape governs *how* what is built is arranged; relocating a rule or replacing a primitive is the same scope | `structural-standards.md` → *Scope versus shape* |

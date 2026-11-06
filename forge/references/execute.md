@@ -34,9 +34,10 @@ stop and recommend `/forge specify`. Don't do a broad survey.
 ## Phase selection
 
 Read `state.md`'s task status. Implement **exactly one phase per invocation** — the first
-phase whose prerequisite phases are complete and that isn't done yet. If the user names a
-phase, use that one. Do not continue into the next phase; finish, report, and let the user
-invoke `/forge execute` again.
+phase whose prerequisite phases are complete and that isn't done yet. A phase with every
+task `done` or `unverified`, no `Verifying:` line, and only `gap-open` rows open counts as
+complete. If the user names a phase, use that one. Do not continue into the next phase;
+finish, report, and let the user invoke `/forge execute` again.
 
 **Resume comes first.** On a user's re-invocation, a `blocked` task is picked up before
 anything else, from its recorded failure, with its counter restarted. A phase whose
@@ -48,6 +49,9 @@ stands.
 `## Tasks` and its `Base:` line first. Its task gate is a real discovered command from the
 Baseline step, run against the surface the change touches. Run the per-task loop once and
 go to the gate. Its evidence row, when verifier 4 does not run, is labelled an author check.
+On a screen phase at `quick`, the look's rows go into Verification evidence as the look
+wrote them, with `sensor` set to `look`, and a visible AC the look did not see is a
+`gap-open` row.
 
 ### Stop before the change sprawls
 
@@ -72,8 +76,11 @@ Baseline`:
 2. Run them and record the commands, the result, and the test count. Verifiers 1 and 2 use
    these.
 
-A repo already red continues only on the user's decision, with the failing names recorded,
-so old failures cost no fix cycles.
+A repo already red, or whose checks cannot run here, continues only on the user's
+decision, with the failing names or the reason recorded, so old failures cost no fix
+cycles. A run that cannot ask continues for any recorded check, as the type-check row of
+`references/verification.md` → *Gaps* says. Verifiers 1 and 2 compare against these
+recorded results.
 
 ## Run the phase
 
@@ -97,6 +104,9 @@ so old failures cost no fix cycles.
      `references/structural-standards.md` and any discovered `CODING_STANDARDS.md` go to
      **review-time agents only**. The only structural text an implementer's prompt carries
      is the scope/shape boundary in the self-check below.
+   - A task in a screen phase that touches what the screen shows also carries the UI brief
+     from `references/ui.md`, which the main agent reads first when it implements the task
+     itself. On `Surface: none`, promote the surface first, as in *Run the verifiers*.
    - The subagent returns the files it changed and does **not** commit; you run its
      gates and commit.
    - Use the Workflow tool to dispatch the fan-out if your runtime supports it;
@@ -149,6 +159,11 @@ For each task:
    committed**, the tree is left as-is, its status becomes **`blocked`**, and `## Open
    findings` records the failure. Stop and report. Tasks already in flight may finish and
    commit, but start no new task behind a `blocked` one, and do not run the phase's gate.
+
+   **A gate that cannot run here** (its command needs what the environment lacks) is not
+   red. Go on to steps 4 and 5; in step 6 the task's status is **`unverified`**, not
+   `done`, with a `gap-open` row saying why. It spends no cycle and blocks nothing, unless
+   `references/verification.md` → *Gaps* makes that check `gap-blocking`.
 4. **Self-check before committing.** Would a senior engineer call this overcomplicated,
    or badly arranged? **Scope** governs *whether* something is built. **Shape** governs
    *how* what is built is arranged. Moving a rule to the unit that owns its data, or
@@ -172,6 +187,11 @@ Once all the phase's tasks are committed, dispatch the phase's verifiers over it
 `references/verification.md` holds the run order, and `SKILL.md` → *Sizing* says which run,
 including what a one-way door adds. Author ≠ verifier; fresh context.
 
+If `Surface` is `none` and a task or the phase's diff would make a screen phase
+(`SKILL.md` → *Sizing*), set it to `ui`, log the reason in Decisions, and read
+`references/ui.md` before dispatching. On a screen phase, verifier 3's prompt also carries
+the reference and the UI rows, per that file.
+
 Write `Verifying: <stage>, cycle <n>` under the phase's heading in `## Tasks` as each stage
 and cycle starts, so a compaction or a re-invocation keeps the position. Before a long
 dispatch, verifier 5 above all, also note it in Handoff.
@@ -188,7 +208,7 @@ If a verifier FAILs:
 2. Fix **top-down by severity**. Blocker and Major findings must clear before the next
    verifier starts; Minor and Cosmetic ones become `reported`.
 3. Commit the fix. A fix commit touches only the files its finding cites, and their tests.
-4. Re-run verifiers 1 and 2 and the verifier that failed, then go on to the next verifier.
+4. Re-run verifiers 1 and 2 and the verifier or stage that failed, then go on to the next.
    Earlier stages that passed do not re-run. If that fix turns 1 or 2 red, repairing it
    spends the same stage's budget and `Verifying:` keeps that stage.
 
@@ -268,7 +288,8 @@ When the phase is done and green:
    `SKILL.md` → *Lessons*. Routine success writes nothing.
 3. **Report what no phase will act on:** every `reported` finding; any lesson a command
    could enforce, proposed as a concrete check; and any judgement lesson, naming the
-   project's `CODING_STANDARDS.md` as its destination when one exists.
+   project's `CODING_STANDARDS.md` as its destination when one exists. On a screen phase,
+   include the look list per `references/ui.md`.
 4. Summarize what was built, decisions made beyond the artifacts, and any unknowns.
 5. Recommend next: more phases remain → `/forge execute` again for the next phase;
    all phases done → suggest review or shipping.

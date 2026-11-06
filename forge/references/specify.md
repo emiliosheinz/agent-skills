@@ -320,6 +320,8 @@ Before writing the spec, confirm:
   Group dependents by kind when there are many.
 - Every unresolved decision was asked. One the user declined, or one a non-interactive run
   could not ask, stays flagged with its chosen default and rationale.
+  Under the conductor, a gate candidate left unasked and a drafting-owner manifest entry
+  go to Assumptions & discretion as flagged defaults (`decide.md` → *Decision discovery*).
 - No requirement embeds implementation.
 
 A failing item goes back to the draft, for **at most 3 cycles** (`SKILL.md` → *Retries*).

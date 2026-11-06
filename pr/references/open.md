@@ -59,7 +59,7 @@ branch name across forks and defaults to open PRs only.
 
 The base branch is read from the remote, never assumed to be `main`.
 
-Under the conductor (state `Mode: auto`, this repository's row): `BASE` is the row's
+Under `Mode: auto` (this repository's row): `BASE` is the row's
 `PR base`, not the remote default branch. When `PR base` is a stacked parent, push the
 parent before the fetch, and only as a fast-forward refspec (no `+`, no `--force`) and
 only when the run added no commits to it; a parent that has diverged from its remote is
@@ -83,7 +83,7 @@ Read what is available; none is required.
   `./.specs/<slug>/`: `state.md`'s door verdict and decisions, `spec.md`'s
   problem statement and blast radius, `design.md`'s architectural risks. Newest
   slug if there are several; ask which if that is ambiguous.
-  Under the conductor, the slug comes from state and `pr` never asks which.
+  Under `Mode: auto` (this repository's row), the slug comes from state and `pr` never asks which.
 - An issue or ticket reference in a commit message or branch name. When one
   exists, close it from the body with `Closes #<n>`.
 
@@ -119,7 +119,7 @@ rewrite it in place.
 With no `--attach` and a captured image, or on an unsupported host, Step 4
 writes a placeholder line instead.
 
-Under `Mode: auto`, captures go under the state's `Scratch:` directory, never into the
+Under `Mode: auto` (this repository's row), captures go under the state's `Scratch:` directory, never into the
 repository or `/tmp`.
 
 ## Step 4 — Write the body
@@ -135,7 +135,7 @@ Use the file-writing tool, not a heredoc:
 /tmp/pr-body-<branch>.md
 ```
 
-Under `Mode: auto`, write the body file under `Scratch:` instead of `/tmp`, and render the
+Under `Mode: auto` (this repository's row), write the body file under `Scratch:` instead of `/tmp`, and render the
 body from the delivery brief, `Scratch:/<repo>-brief.md`, per
 [writing-the-body.md](writing-the-body.md) → *Rendering a delivery brief*. The title is
 still written fresh from the change.

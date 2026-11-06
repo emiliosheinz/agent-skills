@@ -53,10 +53,10 @@ prompt that uses these terms names this file.
 | **scope vs shape** | scope governs *whether* something is built, shape governs *how* what is built is arranged; relocating a rule or replacing a primitive is the same scope | `structural-standards.md` → *Scope versus shape* |
 | **decision point** | a place where Forge would have asked, confirmed or escalated, which the conductor settles as a recorded decision | `decide.md` → *Dispositions* |
 | **tier** | the review depth a decision earns (T0 to T3); ratchets up only | `decide.md` → *Tiers* |
-| **owner** | a question domain with its inputs and criteria, run as a stateless subagent that proposes a choice and returns a manifest of the choices it made | `decide.md` → *Owners* |
+| **owner** | a question domain with its inputs and criteria, run as a stateless subagent that proposes a choice; a drafting owner also returns its choice manifest | `decide.md` → *Owners* |
 | **challenger** | a stateless reviewer that tries to break a decision before it stands | `decide.md` → *Review protocol* |
-| **matcher** | the check that maps a decision to the record or convention it must agree with | `decide.md` → *Review protocol* |
-| **arbiter** | the final judge when a challenger and an owner dispute a decision | `decide.md` → *Review protocol* |
+| **matcher** | the check that judges whether two proposals for one decision are equivalent, or whether a new record contradicts an active one | `decide.md` → *Review protocol* |
+| **arbiter** | the final judge when a review disagrees (an owner-challenger dispute, a matcher `different`, or split challengers), on another model than the owner's | `decide.md` → *Review protocol* |
 | **hard stop** | one of the few named conditions where the conductor stops (asks, if attended) instead of deciding | `auto.md` → Guards → *Hard stops* |
 | **land the plane** | what a hard stop does for each target repository: open a draft PR (or list the commits under `--no-pr`) leading with the status | `auto.md` → Guards → *Hard stops* |
 | **attended run** | a conductor run with an ask tool available and `--no-ask` absent; otherwise unattended | `auto.md` → Run → *Invocation and modes* |

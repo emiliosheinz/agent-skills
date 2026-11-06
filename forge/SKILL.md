@@ -24,7 +24,7 @@ phase's depth auto-sizes to the change — see Sizing.
 /forge plan             Atomic tasks, dependencies, AC traces            → plan.md
 /forge execute          Implement, then run independent verifiers        → working code
 /forge fix <change>     Correct course mid-stream, keep the chain aligned → aligned artifacts + code
-/forge auto [brief]     Run the whole chain unattended, then open the PR → branch + PR
+/forge auto <brief>     Run the whole chain itself, ratify at the PR      → draft PR + decision log
 ```
 
 ## Dispatch
@@ -259,9 +259,9 @@ tiers, pick the lower and let a failed gate promote it.
    | `## Open findings` | update-in-place; clear only `applied` rows on resolve |
    | `## Verification evidence` | append-only: on PASS, plus `fix`'s superseded rows |
    | `## Handoff` | overwrite |
-| `Mode` and `Auto stage` header fields (`state.md`) | `Mode`: write once (`auto`); `Auto stage`: update-in-place along the stage machine |
-| `## Run` (`state.md`) | update-in-place; its write-once fields are marked (once) in the template |
-| `decisions.md` | append-only (supersede a record, never rewrite it) |
+   | `Mode` and `Auto stage` header fields (`state.md`) | `Mode`: write once (`auto`); `Auto stage`: update-in-place along the stage machine |
+   | `## Run` (`state.md`) | update-in-place; its write-once fields are marked (once) in the template |
+   | `decisions.md` | append-only (supersede a record, never rewrite it) |
    | `Size`, `Door` and `Surface` header fields (`state.md`) | update-in-place (upward, to one-way, or to `ui` only; a downgrade needs the user) |
    | `## Conventions observed` (`spec.md`) | overwrite-in-place (regenerated whole on a specify re-run) |
 
@@ -277,8 +277,10 @@ tiers, pick the lower and let a failed gate promote it.
 5. A run that cannot ask the user (non-interactive) picks the recommended default, logs it
    in Decisions as a flagged assumption, and surfaces it when it reports. A decision about a
    one-way door stops instead.
-   Under the conductor, `references/decide.md` governs instead; a one-way door's
-   irreversible path is a provisional decision there, not a stop.
+   Under the conductor, `references/decide.md` → *Tiers* (T3) governs instead; a one-way
+   door's irreversible path is a provisional decision there, not a stop. A check that
+   cannot run on a one-way door is still a hard stop (`references/auto.md` → Guards →
+   *Hard stops*).
 
 ### Retries
 

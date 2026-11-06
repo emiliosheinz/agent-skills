@@ -89,8 +89,7 @@ history; a correction to shipped code is a new commit or a revert+reapply.
 
 Under the conductor, every `fix` commit runs `auto.md` → Guards → *Commit guard* and
 counts toward the run's `fix` cap (`Counters:` `fix n/3`, `auto.md` → *Recovery and
-caps*). `fix`'s own asks become decision points per `decide.md` (the code-versus-spec
-row).
+caps*). `fix`'s own asks become decision points per `decide.md` → *Dispositions* H20.
 
 ### 3. Verify the trace invariant
 

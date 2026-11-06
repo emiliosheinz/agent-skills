@@ -60,7 +60,7 @@ flowchart LR
 | Plan | `/forge plan` | What are the phases of tasks, and what runs in parallel? | `.specs/<slug>/plan.md` |
 | Execute | `/forge execute` | Turn the plan into verified, committed code | working code |
 | Fix | `/forge fix <change>` | Something's wrong mid-stream — re-align it end-to-end | aligned artifacts + code |
-| Auto | `/forge auto <brief>` | Run the whole chain unattended and hand back a draft PR | draft PR + decision log |
+| Auto | `/forge auto <brief>` | Run the whole chain itself and hand back a draft PR | draft PR + decision log |
 
 ### Auto-sizing
 

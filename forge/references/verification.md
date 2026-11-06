@@ -40,7 +40,8 @@ gates, the phase's diff, the commands from `state.md`'s `## Baseline`, and
 
    Under the conductor, verifier 1 also checks the protected list
    (`Scratch:/<repo>.protected`): a changed or removed assertion in a protected file, or a
-   protected file changed at all, is a Blocker, as is a test count below Baseline. It runs
+   protected file changed at all, is a Blocker, as is a test count below Baseline; the justified-reason escape above does not apply
+   there, because no human records the reason in an unattended run. It runs
    per phase and over the whole run range at Accept. The range starts at run start, or at
    `Adopted at` on an adopted run (`auto.md` → *Entry: resume and adoption*). Every
    verifier prompt carries `auto.md` → Guards → *Dispatch preamble*.

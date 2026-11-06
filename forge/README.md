@@ -15,7 +15,7 @@ in Claude Code and OpenCode.
 /forge plan             Atomic tasks, dependencies, AC traces            → plan.md
 /forge execute          Implement, then run independent verifiers        → working code
 /forge fix <change>     Correct course mid-stream, keep the chain aligned → aligned artifacts + code
-/forge auto <brief>     Run the whole chain unattended, ratify at the PR  → draft PR + decision log
+/forge auto <brief>     Run the whole chain itself, ratify at the PR      → draft PR + decision log
 ```
 
 You drive each transition. A phase recommends the next verb but never runs it for you. `/forge auto` is the exception: it runs the whole chain itself.

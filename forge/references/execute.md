@@ -260,11 +260,9 @@ otherwise be lost once tests are green. Clear the `Verifying:` and `Fix-base:` l
 - If a test is genuinely wrong per the spec, stop and ask before changing it.
 - Don't fake a gate — a check that can't run is recorded as a gap (see
   `references/verification.md`).
-- Under the conductor, a protected file (`Scratch:/<repo>.protected`) is never changed by
-  the run. A needed change is escalated as `escalation: SPEC-GAP` naming the file and gets
-  a T2 review per `decide.md` → *Dispositions* (the pre-existing-test row). An approved
-  change leaves the task `blocked` and becomes a ratification item; the change is never
-  made.
+- Under the conductor, never change a protected file (`Scratch:/<repo>.protected`);
+  escalate with `escalation: SPEC-GAP ... test: <file>` and follow `auto.md` → *Recovery
+  and caps* (`decide.md` → *Dispositions* H17).
 
 ## Scope guardrail
 

@@ -24,6 +24,7 @@ phase's depth auto-sizes to the change — see Sizing.
 /forge plan             Atomic tasks, dependencies, AC traces            → plan.md
 /forge execute          Implement, then run independent verifiers        → working code
 /forge fix <change>     Correct course mid-stream, keep the chain aligned → aligned artifacts + code
+/forge auto [brief]     Run the whole chain unattended, then open the PR → branch + PR
 ```
 
 ## Dispatch
@@ -38,6 +39,7 @@ before acting** — it is the step-by-step playbook for that phase.
 | `plan` | `references/plan.md` | `./.specs/<slug>/plan.md` |
 | `execute` | `references/execute.md` (+ `references/verification.md`) | code + commits |
 | `fix` | `references/fix.md` | re-aligned artifacts + code |
+| `auto` | `references/auto.md` (+ `references/decide.md`) | code + commits + PR |
 
 When `state.md` records `Surface: ui`, every phase also reads `references/ui.md`, which
 holds every frontend rule. A change with `Surface: none` never opens it.
@@ -50,6 +52,11 @@ check set in forge.
 `references/glossary.md` indexes forge's load-bearing terms — the door verdict, blast
 radius, a seam, a stage, the three lies — and names where each one is defined. No phase
 dispatches it; read it when a pointer uses a term you cannot place.
+
+Only `auto` loads `references/auto.md` and `references/decide.md`; a plain verb never
+opens them. Under the conductor (the agent running `/forge auto`), every ask, confirm or
+escalate in a phase is a decision point handled per `references/decide.md`, not a
+question to the user.
 
 If no verb is given, infer the phase from the request and confirm it. Never fail because
 a verb is missing or unknown. Common mappings:
@@ -205,6 +212,8 @@ differently, don't write an entry. Observations about forge itself stay out of t
   Outputs over ~100 lines go to a file; return the path, not the content.
 - **Prefer `AskUserQuestion` when available**, with a recommended default per question.
   Fall back to a single plain-text question otherwise. Never bundle unrelated questions.
+  Under the conductor, the clarify gate batches up to five questions per round, per
+  `references/auto.md` → *Clarify gate*.
 
 ### Model & effort selection
 
@@ -250,6 +259,9 @@ tiers, pick the lower and let a failed gate promote it.
    | `## Open findings` | update-in-place; clear only `applied` rows on resolve |
    | `## Verification evidence` | append-only: on PASS, plus `fix`'s superseded rows |
    | `## Handoff` | overwrite |
+| `Mode` and `Auto stage` header fields (`state.md`) | `Mode`: write once (`auto`); `Auto stage`: update-in-place along the stage machine |
+| `## Run` (`state.md`) | update-in-place; its write-once fields are marked (once) in the template |
+| `decisions.md` | append-only (supersede a record, never rewrite it) |
    | `Size`, `Door` and `Surface` header fields (`state.md`) | update-in-place (upward, to one-way, or to `ui` only; a downgrade needs the user) |
    | `## Conventions observed` (`spec.md`) | overwrite-in-place (regenerated whole on a specify re-run) |
 
@@ -265,6 +277,8 @@ tiers, pick the lower and let a failed gate promote it.
 5. A run that cannot ask the user (non-interactive) picks the recommended default, logs it
    in Decisions as a flagged assumption, and surfaces it when it reports. A decision about a
    one-way door stops instead.
+   Under the conductor, `references/decide.md` governs instead; a one-way door's
+   irreversible path is a provisional decision there, not a stop.
 
 ### Retries
 
@@ -282,6 +296,8 @@ tiers, pick the lower and let a failed gate promote it.
    next phase. The one documented exception is `fix`: for a *contained* correction it
    re-aligns the artifacts and runs the code delta end-to-end in the same invocation
    (see `references/fix.md`); a larger correction still only recommends the phase chain.
+   Under the conductor, the chain runs phase to phase per `references/auto.md` → *Driving
+   the chain*.
 9. **Approval is local.** Approving a spec, a design or a plan never authorises a remote
    action. Push, deploy, or run a production migration only on the user's explicit request
    for that action.

@@ -20,11 +20,14 @@ rendered body.
 
 Never run the project's checks. CI is the check.
 
-Under the conductor, a verb step changes only as its own clause below says. Steps 0, 1, 3
-and 4 take their branch from Forge state `Mode: auto` plus this repository's row in the
-state `## Run` table. Steps 2 and 5 take theirs from the conductor's invocation: the
-conductor (`/forge auto`) runs `pr` and passes the slug. A plain `/pr` with no Forge auto
-state reads every step exactly as written above and below.
+Under a Forge auto run, a verb step changes only as its own clause below
+says. Steps 0, 1, 3, 4, 5 and 6 key on Forge state `Mode: auto` plus this
+repository's row in the state `## Run` table, so a later plain `/pr` on an auto
+branch gets them too. Steps 2 and 7 key on the conductor's invocation: the
+conductor (`/forge auto`) runs `pr` and passes the slug. A plain `/pr` with no
+Forge auto state reads every step exactly as written above and below.
+`auto.md` below is the `forge` skill's `references/auto.md`; when `forge` is
+not installed, no auto state exists and no clause applies.
 
 ## Step 0 — Preconditions
 
@@ -59,16 +62,16 @@ branch name across forks and defaults to open PRs only.
 
 The base branch is read from the remote, never assumed to be `main`.
 
-Under `Mode: auto` (this repository's row): `BASE` is the row's
-`PR base`, not the remote default branch. When `PR base` is a stacked parent, push the
-parent before the fetch, and only as a fast-forward refspec (no `+`, no `--force`) and
-only when the run added no commits to it; a parent that has diverged from its remote is
-not pushed, and the failing act is reported at Step 7. The other Step 0 rows apply
-unchanged. An open PR on the row's `Run branch` is the resume path, not a stop: push
-the new commits and write no body, because only the conductor re-renders the
-status-and-links block (`auto.md` → *Deliver*). Go to
-Step 7 with the push as the only act. A closed or merged PR on it, or an existing PR on
-any other branch, still stops.
+Under `Mode: auto` (this repository's row): `BASE` is the row's `PR base`, not
+the remote default branch. When `PR base` is a stacked parent, push the parent
+before the fetch, and only as a fast-forward refspec (no `+`, no `--force`) and
+only when the run added no commits to it; a parent that has diverged from its
+remote is not pushed, and the failing act is reported at Step 7. The other Step
+0 rows apply unchanged. An open PR on the row's `Run branch` is the resume path,
+not a stop: push the new commits and write no body, because only the conductor
+re-renders the status-and-links block (`auto.md` → *Deliver*). Go to Step 7 with
+the push as the only act. A closed or merged PR on it, or an existing PR on any
+other branch, still stops.
 
 ## Step 1 — Gather context
 
@@ -84,7 +87,8 @@ Read what is available; none is required.
   `./.specs/<slug>/`: `state.md`'s door verdict and decisions, `spec.md`'s
   problem statement and blast radius, `design.md`'s architectural risks. Newest
   slug if there are several; ask which if that is ambiguous.
-  Under `Mode: auto` (this repository's row), the slug comes from state and `pr` never asks which.
+  Under `Mode: auto` (this repository's row), the slug comes from state and
+  `pr` never asks which.
 - An issue or ticket reference in a commit message or branch name. When one
   exists, close it from the body with `Closes #<n>`.
 
@@ -95,9 +99,9 @@ If anything is uncommitted, commit it, without asking.
 Never amend an existing commit. Never rewrite history on the branch.
 
 Under the conductor (invoked by `/forge auto`), do not commit. Stop and list the
-uncommitted paths in the Step 7 result: the run's commits already passed the commit guard
-(`auto.md` → Guards → *Commit guard*), and a change outside them is not committed
-unreviewed.
+uncommitted paths in the Step 7 result: the run's commits already passed the
+commit guard (`auto.md` → Guards → *Commit guard*), and a change outside them is
+not committed unreviewed.
 
 ## Step 3 — Capability and screenshots
 
@@ -120,8 +124,8 @@ rewrite it in place.
 With no `--attach` and a captured image, or on an unsupported host, Step 4
 writes a placeholder line instead.
 
-Under `Mode: auto` (this repository's row), captures go under the state's `Scratch:` directory, never into the
-repository or `/tmp`.
+Under `Mode: auto` (this repository's row), captures go under the state's
+`Scratch:` directory, never into the repository or `/tmp`.
 
 ## Step 4 — Write the body
 
@@ -136,10 +140,10 @@ Use the file-writing tool, not a heredoc:
 /tmp/pr-body-<branch>.md
 ```
 
-Under `Mode: auto` (this repository's row), write the body file under `Scratch:` instead of `/tmp`, and render the
-body from the delivery brief, `Scratch:/<repo>-brief.md`, per
-[writing-the-body.md](writing-the-body.md) → *Rendering a delivery brief*. The title is
-still written fresh from the change.
+Under `Mode: auto` (this repository's row), write the body file under
+`Scratch:` instead of `/tmp`, and render the body from the delivery brief,
+`Scratch:/<repo>-brief.md`, per [writing-the-body.md](writing-the-body.md) →
+*Rendering a delivery brief*. The title is still written fresh from the change.
 
 **One line per paragraph, no hard wrapping.** A comment field on GitHub renders a
 single newline as a line break, so a body wrapped at 80 columns arrives as ragged
@@ -166,14 +170,15 @@ Run both checks in [writing-the-body.md](writing-the-body.md):
 
 A draft that has not been through both does not get pushed.
 
-Under the conductor, two further checks run over the body before the push, as a backstop
-to the Deliver pre-pass (`auto.md` → *Deliver*):
+Under `Mode: auto` (this repository's row), two further checks run over the
+body before the push, as a backstop to the Deliver pre-pass (`auto.md` →
+*Deliver*), and as the only scan when a plain `/pr` renders the brief:
 
-3. **Credential scan.** A credential value in the body is the hard stop *credential*
-   (`auto.md` → Guards → *Hard stops*): push and open nothing, and report the failing
-   act at Step 7.
-4. **Forge-identifier check.** Remove any planning identifier, spec slug or `.specs/`
-   path from the body and re-walk the patterns.
+3. **Credential scan.** A credential value in the body is the hard stop
+   *credential* (`auto.md` → Guards → *Hard stops*): push and open nothing, and
+   report the failing act at Step 7.
+4. **Forge-identifier check.** Remove any planning identifier, spec slug or
+   `.specs/` path from the body and re-walk the patterns.
 
 ## Step 6 — Push and open
 
@@ -187,8 +192,8 @@ gh pr create \
   --body-file "/tmp/pr-body-<branch>.md"
 ```
 
-Under `Mode: auto` (this repository's row), `--body-file` is the body file Step 4 wrote
-under `Scratch:`.
+Under `Mode: auto` (this repository's row), `--body-file` is the body file Step
+4 wrote under `Scratch:`.
 
 With `--attach` available and an image captured, add one flag per image, using
 the absolute path `show-me` returned:
@@ -207,10 +212,10 @@ Always `--draft`. Delete the body file once `gh` has succeeded.
 
 Do not paste the body back.
 
-Under the conductor, return a per-act result instead, one entry per act in order: the
-stacked parent pushed (sha), the branch pushed (sha), the PR URL, or the failing act and
-its error. Add any uncommitted paths Step 2 listed. Never force-push, merge, mark ready
-or approve.
+Under the conductor, return a per-act result instead, one entry per act in
+order: the stacked parent pushed (sha), the branch pushed (sha), the PR URL, or
+the failing act and its error. Add any uncommitted paths Step 2 listed. Never
+force-push, merge, mark ready or approve.
 
 ## Failure handling
 

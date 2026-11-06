@@ -199,13 +199,13 @@ blast radius already carry this. Read them rather than re-deriving.
 
 ## Rendering a delivery brief
 
-When `open.md` Step 4 passes a delivery brief, `Scratch:/<repo>-brief.md`, everything in
-this section applies only when a brief is passed; every other section above governs the
-body as before. The brief's fields are its status, ratification items,
-sensitive disclosures, prose disclosures and decision log (`auto.md` → *Deliver*).
+This section applies only when `open.md` Step 4 passes a delivery brief,
+`Scratch:/<repo>-brief.md`; every other section above governs the body as
+before. The brief's fields are its status, ratification items, sensitive
+disclosures, prose disclosures and decision log (`auto.md` → *Deliver*).
 
-**The status-and-links block.** The body opens with this block, then a blank line, then
-the answer to the three questions:
+**The status-and-links block.** The body opens with this block, then a blank
+line, then the answer to the three questions:
 
 ```markdown
 <!-- status-and-links:start -->
@@ -215,24 +215,26 @@ Related: [<repo>](<PR URL>), [<repo>](<PR URL>)
 <!-- status-and-links:end -->
 ```
 
-The two comment markers are exact and each sits on its own line. The `Related:` line
-exists only when the run opened PRs in more than one repository; leave it out otherwise,
-and when the brief has no status line and the run has no `Related:` line, the block holds
-the two markers with nothing between them. Write the block once and never
-touch it again: only the conductor edits what sits between the markers after the PR
-opens, re-rendering it as the run's status changes and as sibling PRs open.
+The two comment markers are exact and each sits on its own line. The `Related:`
+line exists only when the run opened PRs in more than one repository; leave it
+out otherwise, and when the brief has no status line and the run has no
+`Related:` line, the block holds the two markers with nothing between them.
+Write the block once and never touch it again: only the conductor edits what
+sits between the markers after the PR opens, re-rendering it as the run's status
+changes and as sibling PRs open.
 
-**Sensitive parts.** Under a brief, the section fires whatever the change's reach, and it
-leads with the brief's ratification items, then its sensitive disclosures, each one a
-consequence as above. Entries the change earns on reach follow. Prose disclosures go in
-the prose, where they read as part of the account, not in this section.
+**Sensitive parts.** Under a brief, the section fires whatever the change's
+reach, and it leads with the brief's ratification items, then its sensitive
+disclosures, each one a consequence as above. Entries the change earns on reach
+follow. Prose disclosures go in the prose, where they read as part of the
+account, not in this section.
 
-When the brief carries the line saying a decision review is needed before code review
-(`auto.md` → *Deliver*), render it directly after the closing marker, before anything
-else in the body.
+When the brief carries the line saying a decision review is needed before code
+review (`auto.md` → *Deliver*), render it directly after the closing marker,
+before anything else in the body.
 
-**The decision log.** Close the body with the brief's decision log in one collapsed
-block, one plain-language line per record:
+**The decision log.** Close the body with the brief's decision log in one
+collapsed block, one plain-language line per record:
 
 ```markdown
 <details>
@@ -243,11 +245,11 @@ block, one plain-language line per record:
 </details>
 ```
 
-No planning identifiers and no verification results appear in the log or anywhere else
-in the body; say the decision itself.
+No planning identifiers and no verification results appear in the log or
+anywhere else in the body; say the decision itself.
 
-**Without a brief.** A run whose artifacts record no decision review,
-writes no ratification items, no status-and-links block and no decision log.
+**Without a brief.** When no brief is passed, the body has no ratification
+items, no status-and-links block and no decision log.
 
 ## Examples
 

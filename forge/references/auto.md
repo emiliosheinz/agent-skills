@@ -222,6 +222,112 @@ the delivery brief. A spec-invalidating misreading: attended, ask at most one qu
 about it; unattended, make it a ratification item. Then enter the stage the size
 requires, as in Driving the chain.
 
+### Accept
+
+Stage Accept, after the last plan phase. In order:
+
+1. Verifiers 1 and 2 over the run range in each target repository (from `Run start`;
+   test integrity from `Adopted at` on an adopted run).
+2. Diff sweep: every T2-observable change in the range maps to a decision record, and an
+   unmapped one gets a T2 review (`decide.md` → *Decision discovery*). A change that
+   fails review is reverted through `fix` (`fix.md`), which counts toward `fix n/3`. With
+   the cap spent it stays on the branch as a ratification item and the status is
+   `partial`.
+3. Supersession: a record that contradicts an active one is carried out per `decide.md`
+   → *Supersession and re-open*. Rebind every pending task bound by the old record;
+   reopen committed work bound by it through `fix` (`fix.md`).
+4. Intent audit #2: a fresh frontier auditor gets the brief, the answers, the
+   out-of-scope capability names without reasons and the final diff, plus the running
+   app or CLI where possible, never the spec. Each finding cites a brief sentence; the
+   judging Product owner rules under the evidence rule. An upheld Major finding
+   re-enters `fix` once (`accept re-entry n/1`), then is disclosed.
+5. Added-file check: a standalone doc the brief did not ask for (Guards → *Docs rule*)
+   is removed by a plain task commit through the Commit guard, outside the `fix` cap.
+
+### Recovery and caps
+
+A task gate or verifier stage still red after 3 cycles:
+
+1. Park the task's tree (Park).
+2. Run the `diagnose` procedure inline (`diagnose/SKILL.md` → *The loop*), so its probes
+   and refuter are the conductor's single level of delegation. Supply the repro and the
+   failing gate and skip its intake; keep its harness under `Scratch:`. Applying its
+   proposal is a T1 decision (`decide.md` → *Tiers*). A cause in the plan or design goes
+   to the Architecture owner, then `fix`.
+3. Still red: mark the task `blocked`, parked. Skip its dependents; continue every other
+   task.
+
+Caps, kept in `Counters:` and never repeated once spent: `fix n/3` per run from any
+trigger; `diagnosed: <task IDs>`, one diagnose per task; `accept re-entry n/1`. Recovery
+changes the approach, never reruns the same thing, and never weakens a check to finish. A
+task needing a protected file changed is `blocked` per Guards → *Permission contract*.
+
+### Park
+
+At any exit from Execute or Accept, and at a gate cap, for every not-done task whose
+`files` are dirty: stage those files (tracked and new), save the staged binary diff as
+`Scratch:/<task>.<n>.patch` (never overwritten), verify it applies, then restore only
+those files. Remove `diagnose` probes. List the `.patch` paths in the report.
+
+### Status rule
+
+One status per run, the same on every PR:
+
+- `stopped: <hard stop name>` when `Hard stop:` is not `none`;
+- else `blocked` when no plan task reached done;
+- else `partial` when a task is blocked, unverified or unstarted, a sweep item was left
+  in place, or delivery failed in any target repository;
+- else no status line.
+
+`unverified` counts as not done. An attended hard stop the user resolved sets no stop.
+
+### Deliver
+
+Stage Deliver; every exit after Intake except an already-satisfied brief lands here. Skip
+each step on resume when state shows it done.
+
+1. Lessons, once (`Lessons:`), per `SKILL.md` → Lessons.
+2. Park every not-done task with dirty `files`.
+3. Overwrite Handoff, before any PR opens.
+4. Compute the status. Write `Scratch:/<repo>-brief.md` per repository, also under
+   `--no-pr` and local-only landings so a later plain `/pr` has it:
+   - the status;
+   - ratification items: every T3 decision, every arbitration a Blocker objection lost,
+     every spec-invalidating assumption, one-way-door gap and deleted AC, every sweep
+     item left in place, every approved protected-test change left unmade, and an
+     unattended SpecAudit misreading (first in Sensitive parts); with more than five,
+     the line after the status says a decision review is needed before code review;
+   - sensitive disclosures: unresolved lens findings and unconfirmed facts, one-way-door
+     gaps first, design-gap reports;
+   - prose disclosures: stacked parent pushed, docs updated, reviews not independent,
+     arbiter on the same model, test protection prose-only, installs run with lifecycle
+     scripts off or skipped, red baseline tests, open audit findings, reported findings,
+     UX captures or "no servable page", a rule-versus-convention conflict, an RFC or
+     ADR recommendation;
+   - a decision log of one plain line per T1-or-higher record.
+   No planning identifiers anywhere.
+5. Pre-pass over every repository before any push: the Commit guard over the run range;
+   credential and `.specs/` scans over the stacked parent's unpushed range; the parent's
+   ancestry rechecked; the body rendered from the brief and scanned for credentials and
+   identifiers (remove an identifier). A credential is hard stop credential and a moved
+   HEAD is hard stop unexpected git state; both land local only. A repository failing
+   any other check is `withheld` and not delivered.
+6. Under `--no-pr` or a local-only stop: report the commits per repository. For each
+   repository that already has a `PR`, re-render its block with the stop status (an edit,
+   no push). Go to step 9.
+7. Run `pr` per repository not yet `opened`, passing the slug so it asks nothing. Pushes
+   happen only inside `pr`, after step 5 cleared every repository. Record its per-act
+   result in `PR` and `Delivery` (`opened`, `failed: <act>` or `withheld`); a failure
+   marks that repository and continues with the rest. For a repository with no commit,
+   check out `Original branch` and delete the created branch, only when its tip is `Run
+   start`.
+8. Compute the final status. The conductor, not `pr`, re-renders the delimited
+   status-and-links block of every PR in the `PR` column, a single PR and a resume
+   included; with PRs in more than one repository this also links each to the others.
+9. Report: the status, PR URLs, each Guards → *Harness snippet* guarantee not enforced
+   labelled prose-only, `.patch` paths, failures with retry commands. With no commit in
+   any repository, report the spec and design paths.
+
 ## Guards
 
 ### Hard stops

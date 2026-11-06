@@ -87,6 +87,10 @@ the correction resolves becomes `applied`: run verifiers 1, 2 and 3 on the corre
 write `Verifying:` for the verifier that raised the gap, and resume there. Never rewrite
 history; a correction to shipped code is a new commit or a revert+reapply.
 
+Under the conductor, every `fix` commit runs `auto.md` → Guards → *Commit guard* and
+counts toward the run's `fix` cap (`Counters:` `fix n/3`, `auto.md` → *Recovery and
+caps*). `fix`'s own asks become decision points per `decide.md` → *Dispositions* H20.
+
 ### 3. Verify the trace invariant
 
 Every affected AC → gate → task → code+test, no orphans in either direction. A structural

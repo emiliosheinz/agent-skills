@@ -39,6 +39,9 @@ task `done` or `unverified`, no `Verifying:` line, and only `gap-open` rows open
 complete. If the user names a phase, use that one. Do not continue into the next phase;
 finish, report, and let the user invoke `/forge execute` again.
 
+Under the conductor, the conductor selects phases one at a time (`auto.md` → *Driving the
+chain*), so this stop is each invocation's, not the run's.
+
 **Resume comes first.** On a user's re-invocation, a `blocked` task is picked up before
 anything else, from its recorded failure, with its counter restarted. A phase whose
 `Verifying:` line is set re-runs verifiers 1 and 2, resumes at the recorded stage, and
@@ -116,6 +119,9 @@ recorded results.
    - The subagent returns a **compact summary**: paths changed, task-gate result
      (pass/fail), AC IDs satisfied, deviations/blockers/assumptions. No raw logs,
      diffs, or test dumps.
+   - Under the conductor, the summary also ends with `escalation:` (`none`, or
+     `SPEC-GAP: <AC> <evidence> [test: <protected file>]`) and `denied:`. Every implementer
+     prompt carries `auto.md` → Guards → *Dispatch preamble*.
 5. Each task follows the **per-task loop** below.
 6. **Run the phase's gate:** its verifiers, then fix the delta (below).
 7. **Mark the phase `completed`** in `state.md` and write the Handoff section.
@@ -160,6 +166,9 @@ For each task:
    findings` records the failure. Stop and report. Tasks already in flight may finish and
    commit, but start no new task behind a `blocked` one, and do not run the phase's gate.
 
+   Under the conductor, the cap parks the task per `auto.md` → *Park* instead of stopping
+   the run, and the conductor recovers it per `auto.md` → *Recovery and caps*.
+
    **A gate that cannot run here** (its command needs what the environment lacks) is not
    red. Go on to steps 4 and 5; in step 6 the task's status is **`unverified`**, not
    `done`, with a `gap-open` row saying why. It spends no cycle and blocks nothing, unless
@@ -179,6 +188,7 @@ For each task:
    definition (its `files` set). Conventional Commits, type matching the change
    (`feat`/`fix`/`refactor`/...), imperative mood, body when the "why" isn't obvious.
    (Skip Claude/AI co-author trailers.)
+   Under the conductor, every commit runs `auto.md` → Guards → *Commit guard*.
 6. **Update `state.md`.** Mark the task `done` with evidence (commit sha and test count).
 
 ### Run the verifiers
@@ -250,6 +260,9 @@ otherwise be lost once tests are green. Clear the `Verifying:` and `Fix-base:` l
 - If a test is genuinely wrong per the spec, stop and ask before changing it.
 - Don't fake a gate — a check that can't run is recorded as a gap (see
   `references/verification.md`).
+- Under the conductor, never change a protected file (`Scratch:/<repo>.protected`);
+  escalate with `escalation: SPEC-GAP ... test: <file>` and follow `auto.md` → *Recovery
+  and caps* (`decide.md` → *Dispositions* H17).
 
 ## Scope guardrail
 

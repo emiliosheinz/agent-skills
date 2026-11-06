@@ -51,5 +51,15 @@ prompt that uses these terms names this file.
 | **`reported`** | a finding no phase will act on, which goes to the user at Finish | `execute.md` → *Fix the delta* |
 | **delta** | the ranked list a review or verifier returns, folded back into what it reviewed | `review.md` → *Resolve findings*; `execute.md` → *Fix the delta* |
 | **scope vs shape** | scope governs *whether* something is built, shape governs *how* what is built is arranged; relocating a rule or replacing a primitive is the same scope | `structural-standards.md` → *Scope versus shape* |
+| **decision point** | a place where Forge would have asked, confirmed or escalated, which the conductor settles as a recorded decision | `decide.md` → *Dispositions* |
+| **tier** | the review depth a decision earns (T0 to T3); ratchets up only | `decide.md` → *Tiers* |
+| **owner** | a question domain with its inputs and criteria, run as a stateless subagent that proposes a choice; a drafting owner also returns its choice manifest | `decide.md` → *Owners* |
+| **challenger** | a stateless reviewer that tries to break a decision before it stands | `decide.md` → *Review protocol* |
+| **matcher** | the check that judges whether two proposals for one decision are equivalent, or whether a new record contradicts an active one | `decide.md` → *Review protocol* |
+| **arbiter** | the final judge when a review disagrees (an owner-challenger dispute, a matcher `different`, or split challengers), on another model than the owner's | `decide.md` → *Review protocol* |
+| **hard stop** | one of the few named conditions where the conductor stops (asks, if attended) instead of deciding | `auto.md` → Guards → *Hard stops* |
+| **land the plane** | what a hard stop does for each target repository: open a draft PR (or list the commits under `--no-pr`) leading with the status | `auto.md` → Guards → *Hard stops* |
+| **attended run** | a conductor run with an ask tool available and `--no-ask` absent; otherwise unattended | `auto.md` → Run → *Invocation and modes* |
+| **target repository** | a repository the run changes, with its own run branch and PR | `auto.md` → Run → *Recon* |
 | **brake** | *(defined here)* a mechanism that can stop the work rather than only comment on it: a gate, a verifier, a required field, a cycle limit. Prose that cannot fail is not a brake |
 | **slop** | *(defined here)* output that satisfies the instruction's letter while failing its purpose — a test that cannot fail, a rejection with no reason, a convention row marked empty without searching. What the gates exist to catch |

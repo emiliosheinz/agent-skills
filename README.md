@@ -46,6 +46,7 @@ npx skills add emiliosheinz/agent-skills --global
 one skill, plus a `fix` command that re-enters the flow to correct course. You invoke one
 phase at a time; each does its work, updates shared state, and **recommends** the next
 phase without auto-running it. Depth **auto-sizes** to the change.
+`/forge auto` is the exception: it runs the whole chain itself.
 
 ```mermaid
 flowchart LR
@@ -59,6 +60,7 @@ flowchart LR
 | Plan | `/forge plan` | What are the phases of tasks, and what runs in parallel? | `.specs/<slug>/plan.md` |
 | Execute | `/forge execute` | Turn the plan into verified, committed code | working code |
 | Fix | `/forge fix <change>` | Something's wrong mid-stream — re-align it end-to-end | aligned artifacts + code |
+| Auto | `/forge auto <brief>` | Run the whole chain itself and hand back a draft PR | draft PR + decision log |
 
 ### Auto-sizing
 

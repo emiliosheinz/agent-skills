@@ -21,7 +21,7 @@ is the delivery brief (`Scratch:/<repo>-brief.md`); its fields are *ratification
 | Label | Touchpoint, reconciled clause | Auto disposition |
 |---|---|---|
 | H1, H12 | Entry stop and phase hand-off (`SKILL.md` rule 8: a phase never runs the next); sprawl or size promotion (`execute.md` → Stop before the change sprawls) | The conductor runs the chain and every plan phase; an entry stop becomes routing. A promotion runs the phases the new size adds (plan, or design when a contract emerged) before continuing. Procedural, not reviewed. |
-| H2 | Slug and artifact root (`SKILL.md` → Artifact root) | Slug derived from the brief. A nested `.specs/` root is a repository-preflight stop. |
+| H2 | Slug and artifact root (`SKILL.md` → Artifact root) | Slug derived from the brief. A nested `.specs/` root is a session-preflight stop. |
 | H3, H4, H5 | Part A interview, Part A closure, Part B drafting (`specify.md` → Part A, Part A closure gate, Part B) | Recon, a draft Part B, then the conductor's clarify gate. Everything unasked becomes a flagged default in `spec.md` → Assumptions & discretion. Product owner (drafting) closes Part A and drafts. |
 | H6, H8 | Judgment-call findings at the review step (`specify.md` → Review the spec adversarially, `design.md` → Review the design adversarially; `review.md` → Resolve findings: "escalate judgment calls") | Each becomes a decision for the domain owner. Findings still open after 3 cycles are recorded and go to the brief's *sensitive disclosures*. An unconfirmed fact stays an uncertainty and is disclosed there. |
 | H7 | Approach selection (`design.md` → Explore approaches) | Architecture owner. T2 at complex size. |
